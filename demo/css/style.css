@@ -1,0 +1,588 @@
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+   margin: 0;
+   padding: 0;
+   border: 0;
+   font-size: 100%;
+   font: inherit;
+   vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+   display: block;
+}
+
+body {
+   line-height: 1;
+}
+
+ol,
+ul {
+   list-style: none;
+}
+
+blockquote,
+q {
+   quotes: none;
+}
+
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+   content: '';
+   content: none;
+}
+
+table {
+   border-collapse: collapse;
+   border-spacing: 0;
+}
+
+
+.wrap {
+   max-width: 1100px;
+   max-width: 1240px;
+   margin: 0 auto;
+}
+
+.section {
+   padding: 125px 0;
+}
+
+.pair {
+   background: #f8f8f8;
+}
+
+body {
+   font-family: 'Raleway', sans-serif;
+   background: #fff;
+   color: #666;
+   font-size: 1.1em;
+}
+
+.text-center {
+   text-align: center;
+}
+
+header {
+   background: url(../img/head.jpg);
+   background-size: cover;
+   margin-bottom: 0px;
+   height: 100vh;
+   width: 100%;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+}
+
+.fixed-nav {
+   position: absolute;
+   top: 0;
+   left: 0;
+   width: 100%;
+   padding: 21px 0;
+   background: transparent;
+   border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+   -webkit-transition: all 0.5s ease-in-out;
+   -moz-transition: all 0.5s ease-in-out;
+   transition: all 0.5s ease-in-out;
+   z-index: 9999;
+}
+
+.fixed-nav.below {
+    background: #fff;
+    border-bottom: 1px solid #d8d8d8;
+   -webkit-transition: all 0.3s ease-in-out;
+   -moz-transition: all 0.3s ease-in-out;
+   transition: all 0.3s ease-in-out;
+}
+
+.logo {
+   font-family: 'Lobster', cursive;
+   color: #000;
+   float: left;
+   font-size: 1.6em;
+}
+
+.fixed-nav ul {
+   float: right;
+   position: relative;
+   top: 4px;
+}
+
+.fixed-nav ul li {
+   float: left;
+   list-style: none;
+   margin-left: 25px;
+}
+
+.fixed-nav ul li a {
+   color: #2b2b2b;
+   font-weight: 600;
+   font-size: 0.8em;
+}
+
+.fixed-nav.below a {
+    color: #000;
+}
+
+
+.intro {
+   width: 100%;
+   margin: 0 auto;
+   margin-top: 7em;
+}
+
+h3 {
+   font-size: 1.3em;
+   border-bottom: 1px solid #eee;
+   padding-bottom: 39px;
+   margin-bottom: 45px;
+   font-weight: 600;
+   text-transform: uppercase;
+   color: #000;
+   letter-spacing: 2px;
+}
+
+p {
+   line-height: 1.7em;
+   margin-bottom: 2em;
+}
+
+.mcbutton {
+   padding: 18px 45px;
+   margin-top: 20px;
+   display: inline-block;
+   border-radius: 2px;
+   margin-right: 10px;
+   color: #000;
+   border: 2px solid #000;
+   font-weight: 600;
+   font-weight: 700;
+   text-transform: uppercase;
+   font-size: .7em;
+}
+
+.mcbutton i {
+   color: inherit;
+   font-size: 1.2em;
+   margin-right: 10px;
+}
+.mcbutton:hover {
+   color: #000;
+   border-color: #000;
+}
+
+.mcbutton.light {
+   color: #eee;
+   border: 1px solid #eee;
+}
+
+.mcbutton.light:hover {
+   color: #fff;
+   border: 1px solid #fff;
+}
+
+
+a {
+   text-decoration: none;
+}
+
+ol {
+   margin-left: 2em;
+   margin-bottom: 2em;
+}
+
+ul {
+   margin-left: 1em;
+   margin-bottom: 0;
+}
+
+ul ul {
+   margin-left: 1em;
+}
+
+strong {
+   font-weight: 600;
+   color: #1f1f1f;
+}
+
+header h1 {
+   margin-top: 0;
+   font-size: 4.3em;
+   color: #000;
+   font-weight: 100;
+   margin-bottom: 35px;
+}
+
+.tagline {
+   color: #3a3a3a;
+   margin-bottom: 30px;
+}
+
+.lead {
+   margin-bottom: 2em;
+}
+
+.lead .mcbutton {
+   color: #353535;
+   border-color: #595959;
+   cursor: pointer;
+}
+
+.lead .mcbutton:hover {
+   color: #000;
+   border-color: #000;
+}
+
+.section {
+    text-align: center;
+}
+
+.heading-icon {
+    margin-right: 16px
+}
+
+.box-container {
+    display: inline-block;
+    margin-top: 1.4em;
+    width: 100%;
+}
+
+.box {
+   list-style-type: none;
+   float: left;
+   margin-bottom: 1.8rem;
+   margin-left: 1%;
+   margin-right: 1%;
+}
+
+.inviewport .box {
+   transform: translateY(140px);
+   opacity: 0;
+   -webkit-transition: all 0.2s ease-in-out;
+   -moz-transition: all 0.2s ease-in-out;
+   transition: all 0.2s ease-in-out;
+}
+
+.box.visible {
+   transform: translateY(0);
+   opacity: 1;
+   -webkit-transition: all 0.8s ease-in-out;
+   -moz-transition: all 0.8s ease-in-out;
+   transition: all 0.8s ease-in-out;
+}
+
+
+
+.box a {
+   display: block;
+   width: 100%;
+   height: auto;
+}
+
+
+.three-cols .box {
+    width: 32%;
+}
+.three-cols .box:nth-child(3n+0) {
+   margin-right: 0;
+}
+.three-cols .box:nth-child(3n+1) {
+   clear: both;
+   margin-left: 0;
+}
+
+.four-cols .box {
+   width: 23.1%;
+}
+
+.four-cols .box:nth-child(4n+0) {
+   margin-right: 0;
+}
+
+.four-cols .box:nth-child(4n+1) {
+   clear: both;
+   margin-left: 0;
+}
+
+.box a img {
+   -webkit-back-visibility: hidden;
+   display: block;
+   width: 100%;
+   height: auto;
+   vertical-align: bottom;
+   -webkit-transition: opacity 0.2s ease-in;
+   -moz-transition: opacity 0.2s ease-in;
+   transition: opacity 0.2s ease-in;
+}
+.box:hover img{
+    opacity: 0.8;
+    -webkit-transition: opacity 0.3s ease-in;
+    -moz-transition: opacity 0.3s ease-in;
+    transition: opacity 0.3s ease-in;
+}
+
+
+
+.options-list {
+   width: 700px;
+   margin: 0 auto;
+   border: 1px solid #ececec;
+   border-radius: 2px;
+}
+
+.options-list .option {
+    overflow: hidden;
+    border-bottom: 1px solid #ececec;
+}
+.options-list .option .name {
+   font-weight: 600;
+   display: inline-block;
+   width: 23%;
+   float: left;
+   text-align: left;
+   padding: 14px 17px;
+   color: #000;
+   font-size: 0.89em;
+}
+
+.options-list .option .value {
+   display: inline-block;
+   width: 65%;
+   float: left;
+   padding: 14px 17px;
+   text-align: left;
+   line-height: 1.7em;
+   font-size: 0.89em;
+   border-left: 1px solid #eee;
+}
+
+.options-list .option .type {
+    color: #ed7205;
+    font-weight: 600;
+}
+
+.api-examples {
+   width: 700px;
+   margin: 0 auto;
+   border: 1px solid #ececec;
+   border-radius: 2px;
+   padding-left: 30px
+}
+
+
+footer {
+   font-family: "Helvetica neue", Helvetica, Arial, sans-serif;
+   text-align: center;
+   color: #666;
+   margin: 2rem 0;
+}
+
+footer a {
+   color: #000;
+}
+
+.copyright {
+   font-size: 0.8em;
+}
+
+
+@media screen and (max-width: 799px) {
+   header h1 {
+      font-size: 8rem;
+   }
+
+   hr {
+      margin: 2rem 0;
+   }
+
+   .button {
+      margin-left: 0;
+      margin-right: 0;
+      width: 100%;
+   }
+
+   .button {
+      font-size: 1.3rem;
+      padding: 1.4rem 2rem;
+   }
+}
+
+
+@media (max-width: 767px) {
+   header {
+      padding: 95px 0 120px 0 !important;
+   }
+   .wrap {
+        width: 100%;
+        overflow: hidden;
+        max-width: 100%;
+   }
+   .options-list,
+   .api-examples {
+        width: 100%;
+   }
+
+   .options-list .option .value,
+   .options-list .option .name {
+       width: 87%;
+   }
+
+   .three-cols .box,
+   .four-cols .box {
+        width: 45%;
+   }
+   .three-cols .box:nth-child(2n+0) {
+        margin-right: 0;
+   }
+   .three-cols .box:nth-child(3n+0) {
+       margin-right: 1%;
+   }
+   .three-cols .box:nth-child(2n+1) {
+        margin-right: 1%;
+   }
+   .three-cols .box:nth-child(3n+1),
+   .four-cols .box:nth-child(4n+1) {
+      clear: none;
+      margin-left: 0;
+   }
+
+   .lead {
+      padding: 0 27px;
+      margin-bottom: 0;
+   }
+   .logo {
+       margin-left: 16px;
+   }
+
+   header h1 {
+       font-size: 6rem;
+   }
+   .fixed-nav ul {
+       display: none;
+   }
+
+   .box {
+      width: 100%;
+      margin: 0;
+      margin-bottom: 15px;
+   }
+
+   .mcbutton {
+      text-align: center;
+   }
+}
+@media screen and (max-width: 410px) {
+   header h1 {
+      font-size: 5rem;
+   }
+
+   .box {
+      width: 100%;
+      margin-left: 0;
+      margin-right: 0;
+   }
+}
+
+.CodeMirror {
+   clear: both;
+   text-align: left;
+   margin-top: 25px;
+   height: auto !important;
+}
+
+.CodeMirror pre {
+    font-size: 15px !important;
+    color: #3a3a3a !important;
+}

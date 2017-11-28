@@ -1,0 +1,6 @@
+{
+    "esnext": true,
+    "esversion": 6,
+    "maxparams": 4,
+    "asi": false
+}
