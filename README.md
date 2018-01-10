@@ -3,7 +3,7 @@
 Glightbox is a pure javascript lightbox. It can display images, videos with optional autoplay for youtube, vimeo and even self hosted videos with JWPlayer support
 
 ## Demo
-You can check the live [clicking here](http://glightbox.mcstudios.com.mx/)
+You can check the live demo [clicking here](http://glightbox.mcstudios.com.mx/)
 
 ## Installation
 
@@ -27,6 +27,9 @@ GLightbox was tested in the following browsers.
 - Internet Explorer 11
 
 It will work in any browser that supports css Flexbox
+
+## Todo
+- [ ] Improve github description with more documentation and examples
 
 ## License
 

@@ -123,8 +123,10 @@
 
 
 .gslide-image {
+    align-items: center;
+
     img {
-        max-height: 93%;
+        max-height: 100vh;
         display: block;
         max-width: 100%;
         margin: 0;
@@ -133,6 +135,7 @@
         outline: none;
         border: none;
         user-select: none;
+        width: initial;
 
         @media (--medium-small-viewport) {
             width: initial;
