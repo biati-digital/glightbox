@@ -43,6 +43,12 @@
         return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
     };
 
+    /**
+     * GLightbox v1.0.2
+     * Awesome pure javascript lightbox
+     * made by mcstudios.com.mx
+     */
+
     var isMobile = navigator.userAgent.match(/(iPad)|(iPhone)|(iPod)|(Android)|(PlayBook)|(BB10)|(BlackBerry)|(Opera Mini)|(IEMobile)|(webOS)|(MeeGo)/i);
     var isTouch = isMobile !== null || document.createTouch !== undefined || 'ontouchstart' in window || 'onmsgesturechange' in window || navigator.msMaxTouchPoints;
     var html = document.getElementsByTagName('html')[0];
@@ -1787,6 +1793,8 @@
         var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
         var instance = new GlightboxInit(options);
-        return instance.init();
+        instance.init();
+
+        return instance;
     };
 });

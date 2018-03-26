@@ -1,3 +1,9 @@
+/**
+ * GLightbox v1.0.2
+ * Awesome pure javascript lightbox
+ * made by mcstudios.com.mx
+ */
+
 const isMobile = navigator.userAgent.match(/(iPad)|(iPhone)|(iPod)|(Android)|(PlayBook)|(BB10)|(BlackBerry)|(Opera Mini)|(IEMobile)|(webOS)|(MeeGo)/i);
 const isTouch = isMobile !== null || document.createTouch !== undefined || ('ontouchstart' in window) || ('onmsgesturechange' in window) || navigator.msMaxTouchPoints;
 const html = document.getElementsByTagName('html')[0];
@@ -1780,7 +1786,9 @@ class GlightboxInit {
     }
 }
 
-module.exports = function(options = { }) {
+module.exports = (options = { }) => {
     const instance = new GlightboxInit(options);
-    return instance.init();
+    instance.init()
+
+    return instance;
 }
