@@ -44,7 +44,7 @@
     };
 
     /**
-     * GLightbox v1.0.2
+     * GLightbox v1.0.3
      * Awesome pure javascript lightbox
      * made by mcstudios.com.mx
      */
@@ -106,6 +106,7 @@
         closeEffect: 'zoomOut', // fade, zoom
         slideEffect: 'slide', // fade, slide, zoom,
         moreText: 'See more',
+        moreLength: 60,
         slideHtml: '',
         lightboxHtml: '',
         cssEfects: {
@@ -581,8 +582,8 @@
                 slideTitle.parentNode.removeChild(slideTitle);
             }
             if (slideText && data.description !== '') {
-                if (isMobile) {
-                    data.smallDescription = slideShortDesc(data.description, 60, this.settings.moreText);
+                if (isMobile && this.settings.moreLength > 0) {
+                    data.smallDescription = slideShortDesc(data.description, this.settings.moreLength, this.settings.moreText);
                     slideText.innerHTML = data.smallDescription;
                     slideDescriptionEvents.apply(this, [slideText, data]);
                 } else {
