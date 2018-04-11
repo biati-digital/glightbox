@@ -1,5 +1,5 @@
 /**
- * GLightbox v1.0.3
+ * GLightbox v1.0.4
  * Awesome pure javascript lightbox
  * made by mcstudios.com.mx
  */
@@ -10,6 +10,7 @@ const html = document.getElementsByTagName('html')[0];
 const body = document.body;
 const transitionEnd = whichTransitionEvent();
 const animationEnd = whichAnimationEvent();
+
 let YTTemp = [];
 let videoPlayers = { }
 
@@ -448,7 +449,8 @@ const getSlideData = function getSlideData(element = null) {
         title: '',
         description: '',
         descPosition: 'bottom',
-        effect: ''
+        effect: '',
+        node: element
     };
 
     let sourceType = getSourceType(url);
@@ -935,6 +937,9 @@ const getSourceType = function(url) {
  * Desktop keyboard navigation
  */
 function keyboardNavigation() {
+    if (this.events.hasOwnProperty('keyboard')) {
+        return false;
+    }
     this.events['keyboard'] = addEvent('keydown', {
         onElement: window,
         withCallback: (event, target) => {
@@ -951,6 +956,9 @@ function keyboardNavigation() {
  * Touch navigation
  */
 function touchNavigation() {
+    if (this.events.hasOwnProperty('touchStart')) {
+        return false;
+    }
     let index,
         hDistance,
         vDistance,
@@ -1638,10 +1646,9 @@ class GlightboxInit {
 
         let nodes = false;
         if (element !== null) {
-            let relVal, nodes;
             let gallery = element.getAttribute('data-gallery')
             if (gallery && gallery !== '') {
-                nodes = document.querySelectorAll('[data-gallery="' + relVal + '"]');
+                nodes = document.querySelectorAll(`[data-gallery="${gallery}"]`);
             }
         }
         if (nodes == false) {
@@ -1689,10 +1696,15 @@ class GlightboxInit {
      * @return {null}
      */
     build() {
+        if (this.built) {
+            return false;
+        }
+
         var content,
             contentHolder,
             docFrag;
-        var lightbox_html = createHTML(this.settings.lightboxHtml);
+
+        const lightbox_html = createHTML(this.settings.lightboxHtml);
         document.body.appendChild(lightbox_html);
 
         const modal = document.getElementById('glightbox-body');
@@ -1743,6 +1755,8 @@ class GlightboxInit {
         if (isTouch) {
             addClass(html, 'glightbox-touch');
         }
+
+        this.built = true;
     }
 
 
@@ -1757,12 +1771,13 @@ class GlightboxInit {
         addClass(this.modal, 'glightbox-closing')
         animateElement(this.overlay, this.settings.cssEfects.fade.out)
         animateElement(this.activeSlide, this.settings.cssEfects.zoom.out, () => {
-            this.activeSlide = null
-            this.prevActiveSlideIndex = null
-            this.prevActiveSlide = null
+            this.activeSlide = null;
+            this.prevActiveSlideIndex = null;
+            this.prevActiveSlide = null;
+            this.built = false;
 
             if (this.events) {
-                for (var key in this.events) {
+                for (let key in this.events) {
                     if (this.events.hasOwnProperty(key)) {
                         this.events[key].destroy()
                     }

@@ -28,6 +28,13 @@ GLightbox was tested in the following browsers.
 
 It will work in any browser that supports css Flexbox
 
+## Changelog
+- 1.0.4 Improved the open method so it can be called without duplicating the structure and events, also the original node is passed to events like beforeSlideChange, afterSlideChange, etc.
+- 1.0.3 Added option moreLength to control the number of characters in the description for mobile devices
+- 1.0.2 Fixed instance not returned and unable to call public methods
+- 1.0.1 Fixed large images not displayed correctly
+- 1.0.0 Initial release
+
 ## Todo
 - [ ] Improve github description with more documentation and examples
 

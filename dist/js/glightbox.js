@@ -44,7 +44,7 @@
     };
 
     /**
-     * GLightbox v1.0.3
+     * GLightbox v1.0.4
      * Awesome pure javascript lightbox
      * made by mcstudios.com.mx
      */
@@ -55,6 +55,7 @@
     var body = document.body;
     var transitionEnd = whichTransitionEvent();
     var animationEnd = whichAnimationEvent();
+
     var YTTemp = [];
     var videoPlayers = {};
 
@@ -490,7 +491,8 @@
             title: '',
             description: '',
             descPosition: 'bottom',
-            effect: ''
+            effect: '',
+            node: element
         };
 
         var sourceType = getSourceType(url);
@@ -969,6 +971,9 @@
     function keyboardNavigation() {
         var _this3 = this;
 
+        if (this.events.hasOwnProperty('keyboard')) {
+            return false;
+        }
         this.events['keyboard'] = addEvent('keydown', {
             onElement: window,
             withCallback: function withCallback(event, target) {
@@ -987,6 +992,9 @@
     function touchNavigation() {
         var _this4 = this;
 
+        if (this.events.hasOwnProperty('touchStart')) {
+            return false;
+        }
         var index = void 0,
             hDistance = void 0,
             vDistance = void 0,
@@ -1653,11 +1661,9 @@
 
                 var nodes = false;
                 if (element !== null) {
-                    var relVal = void 0,
-                        _nodes = void 0;
                     var gallery = element.getAttribute('data-gallery');
                     if (gallery && gallery !== '') {
-                        _nodes = document.querySelectorAll('[data-gallery="' + relVal + '"]');
+                        nodes = document.querySelectorAll('[data-gallery="' + gallery + '"]');
                     }
                 }
                 if (nodes == false) {
@@ -1694,7 +1700,12 @@
             value: function build() {
                 var _this9 = this;
 
+                if (this.built) {
+                    return false;
+                }
+
                 var content, contentHolder, docFrag;
+
                 var lightbox_html = createHTML(this.settings.lightboxHtml);
                 document.body.appendChild(lightbox_html);
 
@@ -1746,6 +1757,8 @@
                 if (isTouch) {
                     addClass(html, 'glightbox-touch');
                 }
+
+                this.built = true;
             }
         }, {
             key: 'close',
@@ -1759,6 +1772,7 @@
                     _this10.activeSlide = null;
                     _this10.prevActiveSlideIndex = null;
                     _this10.prevActiveSlide = null;
+                    _this10.built = false;
 
                     if (_this10.events) {
                         for (var key in _this10.events) {
