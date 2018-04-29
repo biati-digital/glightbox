@@ -1,5 +1,5 @@
 /**
- * GLightbox v1.0.4
+ * GLightbox v1.0.5
  * Awesome pure javascript lightbox
  * made by mcstudios.com.mx
  */
@@ -33,6 +33,9 @@ const defaults = {
     onOpen: null,
     onClose: null,
     loopAtEnd: false,
+    touchNavigation: true,
+    keyboardNavigation: true,
+    closeOnOutsideClick: true,
     jwplayer: {
         api: null,
         licenseKey: null,
@@ -58,9 +61,9 @@ const defaults = {
             showinfo: 0
         }
     },
-    openEffect: 'zoomIn', // fade, zoom
-    closeEffect: 'zoomOut', // fade, zoom
-    slideEffect: 'slide', // fade, slide, zoom,
+    openEffect: 'zoomIn', // fade, zoom, none
+    closeEffect: 'zoomOut', // fade, zoom, none
+    slideEffect: 'slide', // fade, slide, zoom, none
     moreText: 'See more',
     moreLength: 60,
     slideHtml: '',
@@ -359,7 +362,12 @@ function whichTransitionEvent() {
  * @param {function} callback
  */
 function animateElement(element, animation = '', callback = false) {
-    if (animation === '') {
+    if (!element || animation === '') {
+        return false;
+    }
+    if (animation == 'none') {
+        if (utils.isFunction(callback))
+            callback()
         return false;
     }
     const animationNames = animation.split(' ')
@@ -1313,7 +1321,7 @@ class GlightboxInit {
         }
 
         this.build()
-        animateElement(this.overlay, this.settings.cssEfects.fade.in)
+        animateElement(this.overlay, (this.settings.openEffect == 'none' ? 'none' : this.settings.cssEfects.fade.in))
 
         var bodyWidth = body.offsetWidth;
         body.style.width = `${bodyWidth}px`
@@ -1340,11 +1348,13 @@ class GlightboxInit {
             this.settings.onOpen();
         }
 
-        if (isMobile && isTouch) {
+        if (isMobile && isTouch && this.settings.touchNavigation) {
             touchNavigation.apply(this)
             return false
         }
-        keyboardNavigation.apply(this)
+        if (this.settings.keyboardNavigation) {
+            keyboardNavigation.apply(this)
+        }
     }
 
 
@@ -1512,7 +1522,7 @@ class GlightboxInit {
             });
         } else {
             let effect_name = this.settings.slideEffect;
-            let animIn = this.settings.cssEfects[effect_name].in;
+            let animIn = (effect_name !== 'none' ? this.settings.cssEfects[effect_name].in : effect_name);
             if (this.prevActiveSlideIndex > this.index) {
                 if (this.settings.slideEffect == 'slide') {
                     animIn = this.settings.cssEfects.slide_back.in;
@@ -1546,7 +1556,7 @@ class GlightboxInit {
         addClass(prevSlide, 'prev')
 
         let animation = this.settings.slideEffect;
-        let animOut = this.settings.cssEfects[animation].out;
+        let animOut = (animation !== 'none' ? this.settings.cssEfects[animation].out : animation);
 
         this.stopSlideVideo(prevSlide)
         if (utils.isFunction(this.settings.beforeSlideChange)) {
@@ -1581,7 +1591,7 @@ class GlightboxInit {
             slide = this.slidesContainer.querySelectorAll('.gslide')[slide]
         }
 
-        let slideVideo = slide.querySelector('.gvideo')
+        let slideVideo = (slide ? slide.querySelector('.gvideo') : null)
         if (!slideVideo) {
             return false
         }
@@ -1748,6 +1758,18 @@ class GlightboxInit {
                 }
             })
         }
+        if (this.settings.closeOnOutsideClick) {
+            this.events['outClose'] = addEvent('click', {
+                onElement: modal,
+                withCallback: (e, target) => {
+                    if (!getClosest(e.target, '.ginner-container')) {
+                        if (!hasClass(e.target, 'gnext') && !hasClass(e.target, 'gprev')) {
+                            this.close();
+                        }
+                    }
+                }
+            })
+        }
         each(this.elements, () => {
             let slide = createHTML(this.settings.slideHtml);
             this.slidesContainer.appendChild(slide);
@@ -1767,10 +1789,14 @@ class GlightboxInit {
      * and some classes
      */
     close() {
+        if (this.closing) {
+            return false;
+        }
+        this.closing = true;
         this.stopSlideVideo(this.activeSlide)
         addClass(this.modal, 'glightbox-closing')
-        animateElement(this.overlay, this.settings.cssEfects.fade.out)
-        animateElement(this.activeSlide, this.settings.cssEfects.zoom.out, () => {
+        animateElement(this.overlay, (this.settings.openEffect == 'none' ? 'none' : this.settings.cssEfects.fade.out))
+        animateElement(this.activeSlide, this.settings.closeEffect, () => {
             this.activeSlide = null;
             this.prevActiveSlideIndex = null;
             this.prevActiveSlide = null;
@@ -1793,11 +1819,12 @@ class GlightboxInit {
             if (utils.isFunction(this.settings.onClose)) {
                 this.settings.onClose();
             }
+            this.closing = null;
         });
     }
 
     destroy(){
-        this.close()
+        this.close();
         this.baseEvents.destroy();
     }
 }

@@ -26,7 +26,7 @@
           <li><a href="#examples">EXAMPLES</a></li>
           <li><a href="#options">OPTIONS</a></li>
           <li><a href="#api">API</a></li>
-          <li><a href="https://github.com/mcstudios/glightbox/releases/download/1.0/release.zip">DOWNLOAD</a></li>
+          <li><a href="https://github.com/mcstudios/glightbox/releases/download/1.0.5/glightbox-master.zip">DOWNLOAD</a></li>
         </ul>
       </div>
     </div>
@@ -36,7 +36,7 @@
         <p class="tagline">Code name <strong>"Gie"</strong> A touchable Pure Javascript <br />lightbox with mobile and video support.</p>
 
         <div class="download">
-          <a class="mcbutton" href="https://github.com/mcstudios/glightbox/releases/download/1.0/release.zip"><i class="fa fa-download" aria-hidden="true"></i>Download</a>
+          <a class="mcbutton" href="https://github.com/mcstudios/glightbox/releases/download/1.0.5/glightbox-master.zip"><i class="fa fa-download" aria-hidden="true"></i>Download</a>
           <a class="mcbutton" href="https://github.com/mcstudios/glightbox" target="_blank"><i class="fa fa-github" aria-hidden="true"></i>View Source</a>
         </div>
       </div>
@@ -203,17 +203,17 @@
 
         <div class="option">
           <div class="name">openEffect</div>
-          <div class="value">Name of the effect on lightbox open. <span class="type">Type: string</span> <strong>default: "zoomIn"</strong> // zoomIn, fade, zoom</div>
+          <div class="value">Name of the effect on lightbox open. <span class="type">Type: string</span> <strong>default: "zoomIn"</strong> // zoomIn, fade, zoom, none</div>
         </div>
 
         <div class="option">
           <div class="name">closeEffect</div>
-          <div class="value">Name of the effect on lightbox close. <span class="type">Type: string</span> <strong>default: "zoomOut"</strong> // zoomOut, fade, zoom</div>
+          <div class="value">Name of the effect on lightbox close. <span class="type">Type: string</span> <strong>default: "zoomOut"</strong> // zoomOut, fade, zoom, none</div>
         </div>
 
         <div class="option">
           <div class="name">slideEffect</div>
-          <div class="value">Name of the effect on slide change. <span class="type">Type: string</span> <strong>default: "slide"</strong> //fade, slide, zoom</div>
+          <div class="value">Name of the effect on slide change. <span class="type">Type: string</span> <strong>default: "slide"</strong> //fade, slide, zoom, none</div>
         </div>
 
         <div class="option">
@@ -222,6 +222,11 @@
         </div>
 
         <div class="option">
+          <div class="name">moreLength</div>
+          <div class="value">The number of characters to display on the description before adding the moreText link (only for mobiles), if 0 it will display the entire description. <span class="type">Type: int</span> <strong>default: 60</strong></div>
+        </div>
+
+        <div class="option">
           <div class="name">closeButton</div>
           <div class="value">Show or hide the close button. <span class="type">Type: boolean</span> <strong>default: true</strong></div>
         </div>
@@ -229,6 +234,21 @@
         <div class="option">
           <div class="name">closeButton</div>
           <div class="value">Show or hide the close button. <span class="type">Type: boolean</span> <strong>default: true</strong></div>
+        </div>
+
+        <div class="option">
+          <div class="name">touchNavigation</div>
+          <div class="value">Enebale or disable the touch navigation (swipe) <span class="type">Type: boolean</span> <strong>default: true</strong></div>
+        </div>
+
+        <div class="option">
+          <div class="name">keyboardNavigation</div>
+          <div class="value">Enebale or disable the keyboard navigation <span class="type">Type: boolean</span> <strong>default: true</strong></div>
+        </div>
+
+        <div class="option">
+          <div class="name">closeOnOutsideClick</div>
+          <div class="value">Close the lightbox when clicking outside the active slide <span class="type">Type: boolean</span> <strong>default: true</strong></div>
         </div>
 
         <div class="option">
@@ -429,7 +449,7 @@ myLightbox.close();
     <div class="wrap small-width">
       <div id="download"></div>
       <p>
-        <a class="mcbutton" href="https://github.com/mcstudios/glightbox/releases/download/1.0/release.zip">Download</a>
+        <a class="mcbutton" href="https://github.com/mcstudios/glightbox/releases/download/1.0.5/glightbox-master.zip">Download</a>
         <a class="mcbutton" href="https://github.com/mcstudios/glightbox" target="_blank">View Source</a>
       </p>
     </div>

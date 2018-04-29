@@ -44,7 +44,7 @@
     };
 
     /**
-     * GLightbox v1.0.4
+     * GLightbox v1.0.5
      * Awesome pure javascript lightbox
      * made by mcstudios.com.mx
      */
@@ -78,6 +78,9 @@
         onOpen: null,
         onClose: null,
         loopAtEnd: false,
+        touchNavigation: true,
+        keyboardNavigation: true,
+        closeOnOutsideClick: true,
         jwplayer: {
             api: null,
             licenseKey: null,
@@ -103,9 +106,9 @@
                 showinfo: 0
             }
         },
-        openEffect: 'zoomIn', // fade, zoom
-        closeEffect: 'zoomOut', // fade, zoom
-        slideEffect: 'slide', // fade, slide, zoom,
+        openEffect: 'zoomIn', // fade, zoom, none
+        closeEffect: 'zoomOut', // fade, zoom, none
+        slideEffect: 'slide', // fade, slide, zoom, none
         moreText: 'See more',
         moreLength: 60,
         slideHtml: '',
@@ -406,7 +409,11 @@
         var animation = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
         var callback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
-        if (animation === '') {
+        if (!element || animation === '') {
+            return false;
+        }
+        if (animation == 'none') {
+            if (utils.isFunction(callback)) callback();
             return false;
         }
         var animationNames = animation.split(' ');
@@ -1351,7 +1358,7 @@
                 }
 
                 this.build();
-                animateElement(this.overlay, this.settings.cssEfects.fade.in);
+                animateElement(this.overlay, this.settings.openEffect == 'none' ? 'none' : this.settings.cssEfects.fade.in);
 
                 var bodyWidth = body.offsetWidth;
                 body.style.width = bodyWidth + 'px';
@@ -1378,11 +1385,13 @@
                     this.settings.onOpen();
                 }
 
-                if (isMobile && isTouch) {
+                if (isMobile && isTouch && this.settings.touchNavigation) {
                     touchNavigation.apply(this);
                     return false;
                 }
-                keyboardNavigation.apply(this);
+                if (this.settings.keyboardNavigation) {
+                    keyboardNavigation.apply(this);
+                }
             }
         }, {
             key: 'showSlide',
@@ -1530,7 +1539,7 @@
                     });
                 } else {
                     var effect_name = this.settings.slideEffect;
-                    var animIn = this.settings.cssEfects[effect_name].in;
+                    var animIn = effect_name !== 'none' ? this.settings.cssEfects[effect_name].in : effect_name;
                     if (this.prevActiveSlideIndex > this.index) {
                         if (this.settings.slideEffect == 'slide') {
                             animIn = this.settings.cssEfects.slide_back.in;
@@ -1559,7 +1568,7 @@
                 addClass(prevSlide, 'prev');
 
                 var animation = this.settings.slideEffect;
-                var animOut = this.settings.cssEfects[animation].out;
+                var animOut = animation !== 'none' ? this.settings.cssEfects[animation].out : animation;
 
                 this.stopSlideVideo(prevSlide);
                 if (utils.isFunction(this.settings.beforeSlideChange)) {
@@ -1595,7 +1604,7 @@
                     slide = this.slidesContainer.querySelectorAll('.gslide')[slide];
                 }
 
-                var slideVideo = slide.querySelector('.gvideo');
+                var slideVideo = slide ? slide.querySelector('.gvideo') : null;
                 if (!slideVideo) {
                     return false;
                 }
@@ -1750,6 +1759,18 @@
                         }
                     });
                 }
+                if (this.settings.closeOnOutsideClick) {
+                    this.events['outClose'] = addEvent('click', {
+                        onElement: modal,
+                        withCallback: function withCallback(e, target) {
+                            if (!getClosest(e.target, '.ginner-container')) {
+                                if (!hasClass(e.target, 'gnext') && !hasClass(e.target, 'gprev')) {
+                                    _this9.close();
+                                }
+                            }
+                        }
+                    });
+                }
                 each(this.elements, function () {
                     var slide = createHTML(_this9.settings.slideHtml);
                     _this9.slidesContainer.appendChild(slide);
@@ -1765,10 +1786,14 @@
             value: function close() {
                 var _this10 = this;
 
+                if (this.closing) {
+                    return false;
+                }
+                this.closing = true;
                 this.stopSlideVideo(this.activeSlide);
                 addClass(this.modal, 'glightbox-closing');
-                animateElement(this.overlay, this.settings.cssEfects.fade.out);
-                animateElement(this.activeSlide, this.settings.cssEfects.zoom.out, function () {
+                animateElement(this.overlay, this.settings.openEffect == 'none' ? 'none' : this.settings.cssEfects.fade.out);
+                animateElement(this.activeSlide, this.settings.closeEffect, function () {
                     _this10.activeSlide = null;
                     _this10.prevActiveSlideIndex = null;
                     _this10.prevActiveSlide = null;
@@ -1791,6 +1816,7 @@
                     if (utils.isFunction(_this10.settings.onClose)) {
                         _this10.settings.onClose();
                     }
+                    _this10.closing = null;
                 });
             }
         }, {

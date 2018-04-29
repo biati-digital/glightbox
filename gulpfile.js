@@ -60,7 +60,7 @@ gulp.task('scripts', function() {
         }))
         .pipe(gulp.dest('dist/js'))
         .pipe(rename({ suffix: '.min' }))
-        .pipe(uglify())
+        // .pipe(uglify())
         .pipe(gulp.dest('dist/js'))
         .pipe(plumber.stop())
         .pipe(notify({ title: 'Scripts Task', message: 'Scripts compiled and minified' }));
