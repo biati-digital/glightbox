@@ -4,7 +4,8 @@
   "description": "Pure Javascript lightbox",
   "main": "index.js",
   "scripts": {
-    "start": "gulp watch"
+    "start": "gulp watch",
+    "release": "gulp release"
   },
   "author": "MC Studios",
   "license": "ISC",
@@ -23,6 +24,7 @@
     "gulp-postcss": "^7.0.0",
     "gulp-rename": "^1.2.2",
     "gulp-uglify": "^3.0.0",
+    "gulp-zip": "^4.1.0",
     "lost": "^8.2.0",
     "postcss-cssnext": "^3.0.2",
     "postcss-discard-empty": "^2.1.0",

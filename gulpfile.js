@@ -18,6 +18,7 @@ const csslost = require('lost');
 const rucksack = require('rucksack-css');
 const gulpbabel = require('gulp-babel');
 const uglify = require('gulp-uglify');
+const zip = require('gulp-zip');
 
 const postCSSPlugins = [
     cssimport(),
@@ -60,10 +61,18 @@ gulp.task('scripts', function() {
         }))
         .pipe(gulp.dest('dist/js'))
         .pipe(rename({ suffix: '.min' }))
-        // .pipe(uglify())
+        .pipe(uglify())
         .pipe(gulp.dest('dist/js'))
         .pipe(plumber.stop())
         .pipe(notify({ title: 'Scripts Task', message: 'Scripts compiled and minified' }));
+});
+
+// Release
+gulp.task('release', function() {
+    return gulp.src(['./**', '!node_modules', '!node_modules/**', '!package-lock.json', '!**/*.psd', '!**/.DS_Store'])
+        .pipe(zip('glightbox-master.zip'))
+        .pipe(gulp.dest('./'))
+        .pipe(notify({ title: 'Release Ready', message: 'Release file created' }));
 });
 
 // Watch
