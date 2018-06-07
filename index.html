@@ -26,7 +26,7 @@
           <li><a href="#examples">EXAMPLES</a></li>
           <li><a href="#options">OPTIONS</a></li>
           <li><a href="#api">API</a></li>
-          <li><a href="https://github.com/mcstudios/glightbox/releases/download/1.0.5/glightbox-master.zip">DOWNLOAD</a></li>
+          <li><a href="https://github.com/mcstudios/glightbox/releases/download/1.0.6/glightbox-master.zip">DOWNLOAD</a></li>
         </ul>
       </div>
     </div>
@@ -36,7 +36,7 @@
         <p class="tagline">Code name <strong>"Gie"</strong> A touchable Pure Javascript <br />lightbox with mobile and video support.</p>
 
         <div class="download">
-          <a class="mcbutton" href="https://github.com/mcstudios/glightbox/releases/download/1.0.5/glightbox-master.zip"><i class="fa fa-download" aria-hidden="true"></i>Download</a>
+          <a class="mcbutton" href="https://github.com/mcstudios/glightbox/releases/download/1.0.6/glightbox-master.zip"><i class="fa fa-download" aria-hidden="true"></i>Download</a>
           <a class="mcbutton" href="https://github.com/mcstudios/glightbox" target="_blank"><i class="fa fa-github" aria-hidden="true"></i>View Source</a>
         </div>
       </div>
@@ -166,7 +166,7 @@
 
       <ul class="box-container three-cols">
         <li class="box">
-          <a href="#inlineExample" class="glightbox4">
+          <a href="#inlineExample" class="glightbox4" data-glightbox="width: 900;">
 						<img src="demo/img/small/gm14.jpg" alt="image">
 					</a>
         </li>
@@ -224,11 +224,6 @@
         <div class="option">
           <div class="name">moreLength</div>
           <div class="value">The number of characters to display on the description before adding the moreText link (only for mobiles), if 0 it will display the entire description. <span class="type">Type: int</span> <strong>default: 60</strong></div>
-        </div>
-
-        <div class="option">
-          <div class="name">closeButton</div>
-          <div class="value">Show or hide the close button. <span class="type">Type: boolean</span> <strong>default: true</strong></div>
         </div>
 
         <div class="option">
@@ -416,20 +411,65 @@ var myLightbox = GLightbox({
   ......
 });
 
+
 // Go to a specific slide
 myLightbox.goToSlide(2);
+
 
 // Prev slide
 myLightbox.prevSlide();
 
+
 // Next slide
 myLightbox.nextSlide();
+
 
 // Get active slide. It will return the active node
 myLightbox.getActiveSlide();
 
+
+// Get active slide index
+myLightbox.getActiveSlideIndex();
+
+
+// Play slide video in specific slide
+myLightbox.playSlideVideo(2);
+
+
+// Stop slide video in specific slide
+myLightbox.stopSlideVideo(2);
+
+
+// Update the lightbox gallery elements
+myLightbox.setElements([
+  {
+    'href': 'https://picsum.photos/1200/800',
+    'type': 'image'
+  },
+  {
+    'href': 'https://www.youtube.com/watch?v=Ga6RYejo6Hk',
+    'type': 'video',
+    'source': 'youtube', //vimeo, youtube or local
+    'width': 900,
+    'height': 560
+  }
+]);
+
+
+// Open the lightbox
+// @param {node} optional node to open
+// if not provided it will find the gallery elements
+// by the provided selector name
+// or you can use setElements before the open method
+myLightbox.open(node);
+
+
 // Close the lightbox
 myLightbox.close();
+
+
+// Destroy the lightbox
+myLightbox.destroy();
       </textarea>
       </div>
     </div>
@@ -449,7 +489,7 @@ myLightbox.close();
     <div class="wrap small-width">
       <div id="download"></div>
       <p>
-        <a class="mcbutton" href="https://github.com/mcstudios/glightbox/releases/download/1.0.5/glightbox-master.zip">Download</a>
+        <a class="mcbutton" href="https://github.com/mcstudios/glightbox/releases/download/1.0.6/glightbox-master.zip">Download</a>
         <a class="mcbutton" href="https://github.com/mcstudios/glightbox" target="_blank">View Source</a>
       </p>
     </div>

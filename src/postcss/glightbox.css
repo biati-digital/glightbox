@@ -78,7 +78,7 @@
 
         &.desc-bottom,
         &.desc-top {
-            display: inline-block;
+            flex-direction: column;
         }
 
         &.desc-left,

@@ -1,14 +1,26 @@
 {
   "name": "glightbox",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Pure Javascript lightbox",
-  "main": "index.js",
+  "main": "dist/js/glightbox.min.js",
   "scripts": {
     "start": "gulp watch",
     "release": "gulp release"
   },
   "author": "MC Studios",
-  "license": "ISC",
+  "keywords": [
+    "lightbox",
+    "javascript",
+    "gallery",
+    "popup"
+  ],
+  "license": "MIT",
+  "homepage": "https://glightbox.mcstudios.com.mx",
+  "repository": {
+    "url": "https://github.com/mcstudios/glightbox",
+    "type": "git"
+  },
+  "bugs": "https://github.com/mcstudios/glightbox/issues",
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-plugin-transform-es2015-modules-umd": "^6.24.1",

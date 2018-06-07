@@ -1,0 +1,29 @@
+{
+    "name": "glightbox",
+    "description": "JavaScript animation engine",
+    "main": "dist/js/glightbox.min.js",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/mcstudios/glightbox"
+    },
+    "keywords": [
+        "lightbox",
+        "javascript",
+        "gallery",
+        "popup"
+    ],
+    "authors": [
+        "MC Studios <manuel@mcstudios.com.mx>"
+    ],
+    "license": "MIT",
+    "homepage": "https://glightbox.mcstudios.com.mx",
+    "ignore": [
+        "**/.*",
+        "node_modules",
+        "bower_components",
+        "*.psd",
+        "demo",
+        "test",
+        "tests"
+    ]
+}

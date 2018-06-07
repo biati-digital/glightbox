@@ -93,7 +93,10 @@
 
 .glightbox-container .ginner-container.desc-bottom,
         .glightbox-container .ginner-container.desc-top {
-  display: inline-block;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
 }
 
 .glightbox-container .ginner-container.desc-left,

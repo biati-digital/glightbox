@@ -21,3 +21,5 @@ Thumbs.db
 /dist/js/glightboxTest.min.js
 /dist/js/glightboxTest.js
 /src/js/glightboxTest.js
+sitepsd.psd
+package-lock.json

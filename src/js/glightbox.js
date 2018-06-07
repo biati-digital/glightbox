@@ -1,5 +1,5 @@
 /**
- * GLightbox v1.0.5
+ * GLightbox v1.0.6
  * Awesome pure javascript lightbox
  * made by mcstudios.com.mx
  */
@@ -240,7 +240,6 @@ function addEvent(eventName, {
     withCallback,
     once = false,
     useCapture = false} = { }, thisArg) {
-        let tstst = onElement;
     let element = onElement || []
     if (utils.isString(element)) {
         element =  document.querySelectorAll(element)
@@ -440,9 +439,19 @@ function hide(element) {
  *
  * @param {node} element
  */
-const getSlideData = function getSlideData(element = null) {
-    if (element === null)
-        return false;
+const getSlideData = function getSlideData(element = null, settings) {
+    let data = {
+        href: '',
+        title: '',
+        description: '',
+        descPosition: 'bottom',
+        effect: '',
+        node: element
+    };
+
+    if (utils.isObject(element) && !utils.isNode(element)){
+        return extend(data, element);
+    }
 
     let url = '';
     let config = element.getAttribute('data-glightbox')
@@ -452,16 +461,8 @@ const getSlideData = function getSlideData(element = null) {
     if (type === 'img')
         url = element.src;
 
-    let data = {
-        href: url,
-        title: '',
-        description: '',
-        descPosition: 'bottom',
-        effect: '',
-        node: element
-    };
-
-    let sourceType = getSourceType(url);
+    data.href = url;
+    const sourceType = getSourceType(url);
     data = extend(data, sourceType)
 
     if (!utils.isNil(config)) {
@@ -498,6 +499,16 @@ const getSlideData = function getSlideData(element = null) {
     if (nodeDesc) {
         data.description = nodeDesc.innerHTML;
     }
+
+    data.sourcetype = (data.hasOwnProperty('type') ? data.type : data.sourcetype);
+    data.type = data.sourcetype;
+
+    const defaultWith = (data.sourcetype == 'video' ? settings.videosWidth : settings.width);
+    const defaultHeight = (data.sourcetype == 'video' ? settings.videosHeight : settings.height);
+
+    data.width = (utils.has(data, 'width') ? data.width : defaultWith);
+    data.height = (utils.has(data, 'height') ? data.height : defaultHeight);
+
     return data;
 }
 
@@ -517,7 +528,7 @@ const setSlideContent = function setSlideContent(slide = null, data = { }, callb
         this.settings.beforeSlideLoad(slide, data);
     }
 
-    let type = data.sourcetype;
+    let type = data.type;
     let position = data.descPosition;
     let slideMedia = slide.querySelector('.gslide-media');
     let slideTitle = slide.querySelector('.gslide-title');
@@ -525,9 +536,9 @@ const setSlideContent = function setSlideContent(slide = null, data = { }, callb
     let slideDesc = slide.querySelector('.gslide-description');
     let finalCallback = callback
 
-    if (callback && utils.isFunction(this.settings.afterSlideLoad)) {
+    if (utils.isFunction(this.settings.afterSlideLoad)) {
         finalCallback = () => {
-            callback()
+            if (utils.isFunction(callback)) { callback() }
             this.settings.afterSlideLoad(slide, data);
         }
     }
@@ -567,7 +578,7 @@ const setSlideContent = function setSlideContent(slide = null, data = { }, callb
     }
 
     if (type === 'external') {
-        let iframe = createIframe(data.href, this.settings.width, this.settings.height, finalCallback)
+        let iframe = createIframe(data.href, data.width, data.height, finalCallback)
         slideMedia.appendChild(iframe);
         return
     }
@@ -605,6 +616,7 @@ function setSlideVideo(slide, data, callback) {
     const source = data.source;
     const video_id = 'gvideo' + data.index;
     const slideMedia = slide.querySelector('.gslide-media');
+
     let url = data.href;
     let protocol = location.protocol.replace(':', '');
 
@@ -617,7 +629,7 @@ function setSlideVideo(slide, data, callback) {
         const vimeo_id = /vimeo.*\/(\d+)/i.exec( url );
         const params = parseUrlParams(this.settings.vimeo.params);
         const video_url = `${protocol}://player.vimeo.com/video/${vimeo_id[1]}?${params}`
-        const iframe = createIframe(video_url, this.settings.videosWidth, this.settings.videosHeight, callback)
+        const iframe = createIframe(video_url, data.width, data.height, callback)
         iframe.id = video_id;
         iframe.className = 'vimeo-video gvideo';
 
@@ -640,7 +652,7 @@ function setSlideVideo(slide, data, callback) {
         const yparams = parseUrlParams(youtube_params)
         const youtube_id = getYoutubeID(url)
         const video_url = `${protocol}://www.youtube.com/embed/${youtube_id}?${yparams}`
-        const iframe = createIframe(video_url, this.settings.videosWidth, this.settings.videosHeight, callback)
+        const iframe = createIframe(video_url, data.width, data.height, callback)
         iframe.id = video_id
         iframe.className = 'youtube-video gvideo'
 
@@ -663,7 +675,7 @@ function setSlideVideo(slide, data, callback) {
 
     if ( source == 'local' ) {
         let html = '<video id="' + video_id + '" ';
-        html += `style="background:#000; width: ${this.settings.width}px; height: ${this.settings.height}px;" `;
+        html += `style="background:#000; width: ${data.width}px; height: ${data.height}px;" `;
         html += 'preload="metadata" ';
         html += 'x-webkit-airplay="allow" ';
         html += 'webkit-playsinline="" ';
@@ -873,8 +885,8 @@ function setInlineContent(slide, data, callback) {
     let div = document.getElementById(data.inlined.replace('#', ''));
     if (div) {
         let cloned = div.cloneNode(true)
-        cloned.style.height = `${this.settings.height}px`
-        cloned.style.maxWidth = `${this.settings.width}px`
+        cloned.style.height = `${data.height}px`
+        cloned.style.maxWidth = `${data.width}px`
         addClass(cloned, 'ginlined-content')
         slideMedia.appendChild(cloned)
 
@@ -1014,10 +1026,6 @@ function touchNavigation() {
             activeSlideMedia = activeSlide.querySelector('.gslide-media')
             activeSlideDesc = activeSlide.querySelector('.gslide-description')
 
-            /*if (e.targetTouches[0].target.className.indexOf('gslide-video') !== -1) {
-                playVideo(e.targetTouches[0])
-            }*/
-
             index = this.index;
             endCoords = e.targetTouches[0];
             startCoords.pageX = e.targetTouches[0].pageX;
@@ -1026,16 +1034,6 @@ function touchNavigation() {
             yDown = e.targetTouches[0].clientY;
         }
     })
-
-    /*function playVideo(e) {
-        addClass(e.target, 'playing')
-        let element = e.target
-        let iframe = element.querySelector('.gvideo')
-        var e = document.createEvent('TouchEvent');
-        e.initEvent('touchstart', true, true);
-        iframe.dispatchEvent(e);
-    }*/
-
 
     this.events['gestureStart'] = addEvent('gesturestart', {
         onElement: body,
@@ -1304,7 +1302,7 @@ class GlightboxInit {
         })
     }
 
-    open(element = false){
+    open(element = null){
         this.elements = this.getElements(element)
         if (this.elements.length == 0)
             return false;
@@ -1383,7 +1381,7 @@ class GlightboxInit {
         } else {
             // If not loaded add the slide content
             show(this.loader);
-            let slide_data = getSlideData(this.elements[index]);
+            let slide_data = getSlideData(this.elements[index], this.settings);
             slide_data.index = index;
             setSlideContent.apply(this, [slide, slide_data, () => {
                 hide(this.loader);
@@ -1426,7 +1424,7 @@ class GlightboxInit {
             return false;
         }
 
-        let slide_data = getSlideData(this.elements[index]);
+        let slide_data = getSlideData(this.elements[index], this.settings);
         slide_data.index = index;
         let type = slide_data.sourcetype;
         if (type == 'video' || type == 'external') {
@@ -1646,6 +1644,9 @@ class GlightboxInit {
         }
     }
 
+    setElements(elements) {
+        this.settings.elements = elements;
+    }
 
     getElements(element = null) {
         this.elements = [];

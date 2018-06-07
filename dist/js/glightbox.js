@@ -44,7 +44,7 @@
     };
 
     /**
-     * GLightbox v1.0.5
+     * GLightbox v1.0.6
      * Awesome pure javascript lightbox
      * made by mcstudios.com.mx
      */
@@ -286,7 +286,6 @@
 
         var thisArg = arguments[2];
 
-        var tstst = onElement;
         var element = onElement || [];
         if (utils.isString(element)) {
             element = document.querySelectorAll(element);
@@ -484,17 +483,10 @@
      */
     var getSlideData = function getSlideData() {
         var element = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-
-        if (element === null) return false;
-
-        var url = '';
-        var config = element.getAttribute('data-glightbox');
-        var type = element.nodeName.toLowerCase();
-        if (type === 'a') url = element.href;
-        if (type === 'img') url = element.src;
+        var settings = arguments[1];
 
         var data = {
-            href: url,
+            href: '',
             title: '',
             description: '',
             descPosition: 'bottom',
@@ -502,6 +494,17 @@
             node: element
         };
 
+        if (utils.isObject(element) && !utils.isNode(element)) {
+            return extend(data, element);
+        }
+
+        var url = '';
+        var config = element.getAttribute('data-glightbox');
+        var type = element.nodeName.toLowerCase();
+        if (type === 'a') url = element.href;
+        if (type === 'img') url = element.src;
+
+        data.href = url;
         var sourceType = getSourceType(url);
         data = extend(data, sourceType);
 
@@ -539,6 +542,16 @@
         if (nodeDesc) {
             data.description = nodeDesc.innerHTML;
         }
+
+        data.sourcetype = data.hasOwnProperty('type') ? data.type : data.sourcetype;
+        data.type = data.sourcetype;
+
+        var defaultWith = data.sourcetype == 'video' ? settings.videosWidth : settings.width;
+        var defaultHeight = data.sourcetype == 'video' ? settings.videosHeight : settings.height;
+
+        data.width = utils.has(data, 'width') ? data.width : defaultWith;
+        data.height = utils.has(data, 'height') ? data.height : defaultHeight;
+
         return data;
     };
 
@@ -565,7 +578,7 @@
             this.settings.beforeSlideLoad(slide, data);
         }
 
-        var type = data.sourcetype;
+        var type = data.type;
         var position = data.descPosition;
         var slideMedia = slide.querySelector('.gslide-media');
         var slideTitle = slide.querySelector('.gslide-title');
@@ -573,9 +586,11 @@
         var slideDesc = slide.querySelector('.gslide-description');
         var finalCallback = callback;
 
-        if (callback && utils.isFunction(this.settings.afterSlideLoad)) {
+        if (utils.isFunction(this.settings.afterSlideLoad)) {
             finalCallback = function finalCallback() {
-                callback();
+                if (utils.isFunction(callback)) {
+                    callback();
+                }
                 _this.settings.afterSlideLoad(slide, data);
             };
         }
@@ -614,7 +629,7 @@
         }
 
         if (type === 'external') {
-            var iframe = createIframe(data.href, this.settings.width, this.settings.height, finalCallback);
+            var iframe = createIframe(data.href, data.width, data.height, finalCallback);
             slideMedia.appendChild(iframe);
             return;
         }
@@ -652,6 +667,7 @@
         var source = data.source;
         var video_id = 'gvideo' + data.index;
         var slideMedia = slide.querySelector('.gslide-media');
+
         var url = data.href;
         var protocol = location.protocol.replace(':', '');
 
@@ -664,7 +680,7 @@
             var vimeo_id = /vimeo.*\/(\d+)/i.exec(url);
             var params = parseUrlParams(this.settings.vimeo.params);
             var video_url = protocol + '://player.vimeo.com/video/' + vimeo_id[1] + '?' + params;
-            var iframe = createIframe(video_url, this.settings.videosWidth, this.settings.videosHeight, callback);
+            var iframe = createIframe(video_url, data.width, data.height, callback);
             iframe.id = video_id;
             iframe.className = 'vimeo-video gvideo';
 
@@ -687,7 +703,7 @@
             var yparams = parseUrlParams(youtube_params);
             var youtube_id = getYoutubeID(url);
             var _video_url = protocol + '://www.youtube.com/embed/' + youtube_id + '?' + yparams;
-            var _iframe = createIframe(_video_url, this.settings.videosWidth, this.settings.videosHeight, callback);
+            var _iframe = createIframe(_video_url, data.width, data.height, callback);
             _iframe.id = video_id;
             _iframe.className = 'youtube-video gvideo';
 
@@ -708,7 +724,7 @@
 
         if (source == 'local') {
             var _html = '<video id="' + video_id + '" ';
-            _html += 'style="background:#000; width: ' + this.settings.width + 'px; height: ' + this.settings.height + 'px;" ';
+            _html += 'style="background:#000; width: ' + data.width + 'px; height: ' + data.height + 'px;" ';
             _html += 'preload="metadata" ';
             _html += 'x-webkit-airplay="allow" ';
             _html += 'webkit-playsinline="" ';
@@ -908,8 +924,8 @@
         var div = document.getElementById(data.inlined.replace('#', ''));
         if (div) {
             var cloned = div.cloneNode(true);
-            cloned.style.height = this.settings.height + 'px';
-            cloned.style.maxWidth = this.settings.width + 'px';
+            cloned.style.height = data.height + 'px';
+            cloned.style.maxWidth = data.width + 'px';
             addClass(cloned, 'ginlined-content');
             slideMedia.appendChild(cloned);
 
@@ -1048,10 +1064,6 @@
                 activeSlideMedia = activeSlide.querySelector('.gslide-media');
                 activeSlideDesc = activeSlide.querySelector('.gslide-description');
 
-                /*if (e.targetTouches[0].target.className.indexOf('gslide-video') !== -1) {
-                    playVideo(e.targetTouches[0])
-                }*/
-
                 index = _this4.index;
                 endCoords = e.targetTouches[0];
                 startCoords.pageX = e.targetTouches[0].pageX;
@@ -1060,15 +1072,6 @@
                 yDown = e.targetTouches[0].clientY;
             }
         });
-
-        /*function playVideo(e) {
-            addClass(e.target, 'playing')
-            let element = e.target
-            let iframe = element.querySelector('.gvideo')
-            var e = document.createEvent('TouchEvent');
-            e.initEvent('touchstart', true, true);
-            iframe.dispatchEvent(e);
-        }*/
 
         this.events['gestureStart'] = addEvent('gesturestart', {
             onElement: body,
@@ -1340,7 +1343,7 @@
         }, {
             key: 'open',
             value: function open() {
-                var element = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+                var element = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
 
                 this.elements = this.getElements(element);
                 if (this.elements.length == 0) return false;
@@ -1422,7 +1425,7 @@
                 } else {
                     // If not loaded add the slide content
                     show(this.loader);
-                    var slide_data = getSlideData(this.elements[index]);
+                    var slide_data = getSlideData(this.elements[index], this.settings);
                     slide_data.index = index;
                     setSlideContent.apply(this, [slide, slide_data, function () {
                         hide(_this6.loader);
@@ -1460,7 +1463,7 @@
                     return false;
                 }
 
-                var slide_data = getSlideData(this.elements[index]);
+                var slide_data = getSlideData(this.elements[index], this.settings);
                 slide_data.index = index;
                 var type = slide_data.sourcetype;
                 if (type == 'video' || type == 'external') {
@@ -1656,6 +1659,11 @@
                     }, 300);
                     return false;
                 }
+            }
+        }, {
+            key: 'setElements',
+            value: function setElements(elements) {
+                this.settings.elements = elements;
             }
         }, {
             key: 'getElements',
