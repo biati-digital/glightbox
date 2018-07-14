@@ -49,6 +49,8 @@
      * made by mcstudios.com.mx
      */
 
+    console.log("applesfera");
+
     var isMobile = navigator.userAgent.match(/(iPad)|(iPhone)|(iPod)|(Android)|(PlayBook)|(BB10)|(BlackBerry)|(Opera Mini)|(IEMobile)|(webOS)|(MeeGo)/i);
     var isTouch = isMobile !== null || document.createTouch !== undefined || 'ontouchstart' in window || 'onmsgesturechange' in window || navigator.msMaxTouchPoints;
     var html = document.getElementsByTagName('html')[0];
