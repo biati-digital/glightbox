@@ -589,8 +589,6 @@
         var defaultWith = data.sourcetype == 'video' ? settings.videosWidth : settings.width;
         var defaultHeight = data.sourcetype == 'video' ? settings.videosHeight : settings.height;
 
-        console.log("defaultHeight", defaultHeight);
-
         data.width = utils.has(data, 'width') ? data.width : defaultWith;
         data.height = utils.has(data, 'height') ? data.height : defaultHeight;
 
@@ -709,8 +707,6 @@
         var source = data.source;
         var video_id = 'gvideo' + data.index;
         var slideMedia = slide.querySelector('.gslide-media');
-
-        console.log("data", data);
 
         var url = data.href;
         var protocol = location.protocol.replace(':', '');

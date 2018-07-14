@@ -707,7 +707,6 @@ function setSlideVideo(slide, data, callback) {
     }
 
 
-
     if ( source == 'local' ) {
         let html = '<video id="' + video_id + '" ';
         html += `style="background:#000; width: ${data.width}px; height: ${data.height}px;" `;
