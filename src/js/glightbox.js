@@ -10,6 +10,7 @@ const html = document.getElementsByTagName('html')[0];
 const body = document.body;
 const transitionEnd = whichTransitionEvent();
 const animationEnd = whichAnimationEvent();
+const uid = Date.now();
 
 let YTTemp = [];
 let videoPlayers = { }
@@ -24,8 +25,8 @@ const defaults = {
     descPosition: 'bottom',
     width: 900,
     height: 506,
-    videosWidth: 900,
-    videosHeight: 506,
+    videosWidth: 960,
+    videosHeight: 540,
     beforeSlideChange: null,
     afterSlideChange: null,
     beforeSlideLoad: null,
@@ -229,6 +230,33 @@ function each(collection, callback) {
 }
 
 /**
+ * Get nde events
+ * return node events and optionally
+ * check if the node has already a specific event
+ * to avoid duplicated callbacks
+ *
+ * @param {node} node
+ * @param {string} name event name
+ * @param {object} fn callback
+ * @returns {object}
+ */
+function getNodeEvents(node, name = null, fn = null) {
+    const cache = (node[uid] = node[uid] || []);
+    const data = { all: cache, evt: null, found: null};
+    if (name && fn && utils.size(cache) > 0) {
+        each(cache, (cl, i) => {
+            if (cl.eventName == name && cl.fn.toString() == fn.toString()) {
+                data.found = true;
+                data.evt = i;
+                return false;
+            }
+        })
+    }
+    return data;
+}
+
+
+/**
  * Add Event
  * Add an event listener
  *
@@ -238,6 +266,7 @@ function each(collection, callback) {
 function addEvent(eventName, {
     onElement,
     withCallback,
+    avoidDuplicate = true,
     once = false,
     useCapture = false} = { }, thisArg) {
     let element = onElement || []
@@ -254,11 +283,17 @@ function addEvent(eventName, {
     }
     handler.destroy = function() {
         each(element, (el) => {
+            const events = getNodeEvents(el, eventName, handler);
+            if (events.found) { events.all.splice(events.evt, 1); }
             el.removeEventListener(eventName, handler, useCapture)
         })
     }
     each(element, (el) => {
-        el.addEventListener(eventName, handler, useCapture)
+        const events = getNodeEvents(el, eventName, handler);
+        if ((avoidDuplicate && !events.found) || !avoidDuplicate) {
+            el.addEventListener(eventName, handler, useCapture)
+            events.all.push({ eventName: eventName, fn: handler});
+        }
     })
     return handler
 }
@@ -361,7 +396,7 @@ function whichTransitionEvent() {
  * @param {function} callback
  */
 function animateElement(element, animation = '', callback = false) {
-    if (!element || animation === '') {
+    if (!element || animation === '') {
         return false;
     }
     if (animation == 'none') {
@@ -373,14 +408,14 @@ function animateElement(element, animation = '', callback = false) {
     each(animationNames, (name) => {
         addClass(element, 'g'+name)
     })
-    const animationEvent = addEvent(animationEnd, {
+    addEvent(animationEnd, {
         onElement: element,
+        avoidDuplicate: false,
         once: true,
         withCallback: (event, target) => {
             each(animationNames, (name) => {
                 removeClass(target, 'g' + name)
             })
-            // animation.destroy()
             if (utils.isFunction(callback))
                 callback()
         }
@@ -716,16 +751,16 @@ function setSlideVideo(slide, data, callback) {
 
             injectVideoApi(jwplayerApi, () => {
                 const jwconfig = extend(this.settings.jwplayer.params, {
-                    width: `${this.settings.width}px`,
-                    height: `${this.settings.height}px`,
+                    width: `${data.width}px`,
+                    height: `${data.height}px`,
                     file: url
                 })
 
                 jwplayer.key = this.settings.jwplayer.licenseKey;
 
-                const player = jwplayer(video_id)
+                const player = jwplayer(video_id);
 
-                player.setup(jwconfig)
+                player.setup(jwconfig);
 
                 videoPlayers[video_id] = player;
                 player.on('ready', () => {
@@ -1711,10 +1746,6 @@ class GlightboxInit {
             return false;
         }
 
-        var content,
-            contentHolder,
-            docFrag;
-
         const lightbox_html = createHTML(this.settings.lightboxHtml);
         document.body.appendChild(lightbox_html);
 
@@ -1782,6 +1813,13 @@ class GlightboxInit {
         this.built = true;
     }
 
+    /**
+     * Reload Lightbox
+     * reload and apply events to nodes
+     */
+    reload() {
+        this.init();
+    }
 
 
     /**

@@ -55,6 +55,7 @@
     var body = document.body;
     var transitionEnd = whichTransitionEvent();
     var animationEnd = whichAnimationEvent();
+    var uid = Date.now();
 
     var YTTemp = [];
     var videoPlayers = {};
@@ -69,8 +70,8 @@
         descPosition: 'bottom',
         width: 900,
         height: 506,
-        videosWidth: 900,
-        videosHeight: 506,
+        videosWidth: 960,
+        videosHeight: 540,
         beforeSlideChange: null,
         afterSlideChange: null,
         beforeSlideLoad: null,
@@ -269,6 +270,35 @@
     }
 
     /**
+     * Get nde events
+     * return node events and optionally
+     * check if the node has already a specific event
+     * to avoid duplicated callbacks
+     *
+     * @param {node} node
+     * @param {string} name event name
+     * @param {object} fn callback
+     * @returns {object}
+     */
+    function getNodeEvents(node) {
+        var name = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+        var fn = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+
+        var cache = node[uid] = node[uid] || [];
+        var data = { all: cache, evt: null, found: null };
+        if (name && fn && utils.size(cache) > 0) {
+            each(cache, function (cl, i) {
+                if (cl.eventName == name && cl.fn.toString() == fn.toString()) {
+                    data.found = true;
+                    data.evt = i;
+                    return false;
+                }
+            });
+        }
+        return data;
+    }
+
+    /**
      * Add Event
      * Add an event listener
      *
@@ -279,6 +309,8 @@
         var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
             onElement = _ref.onElement,
             withCallback = _ref.withCallback,
+            _ref$avoidDuplicate = _ref.avoidDuplicate,
+            avoidDuplicate = _ref$avoidDuplicate === undefined ? true : _ref$avoidDuplicate,
             _ref$once = _ref.once,
             once = _ref$once === undefined ? false : _ref$once,
             _ref$useCapture = _ref.useCapture,
@@ -300,11 +332,19 @@
         }
         handler.destroy = function () {
             each(element, function (el) {
+                var events = getNodeEvents(el, eventName, handler);
+                if (events.found) {
+                    events.all.splice(events.evt, 1);
+                }
                 el.removeEventListener(eventName, handler, useCapture);
             });
         };
         each(element, function (el) {
-            el.addEventListener(eventName, handler, useCapture);
+            var events = getNodeEvents(el, eventName, handler);
+            if (avoidDuplicate && !events.found || !avoidDuplicate) {
+                el.addEventListener(eventName, handler, useCapture);
+                events.all.push({ eventName: eventName, fn: handler });
+            }
         });
         return handler;
     }
@@ -419,14 +459,14 @@
         each(animationNames, function (name) {
             addClass(element, 'g' + name);
         });
-        var animationEvent = addEvent(animationEnd, {
+        addEvent(animationEnd, {
             onElement: element,
+            avoidDuplicate: false,
             once: true,
             withCallback: function withCallback(event, target) {
                 each(animationNames, function (name) {
                     removeClass(target, 'g' + name);
                 });
-                // animation.destroy()
                 if (utils.isFunction(callback)) callback();
             }
         });
@@ -549,6 +589,8 @@
         var defaultWith = data.sourcetype == 'video' ? settings.videosWidth : settings.width;
         var defaultHeight = data.sourcetype == 'video' ? settings.videosHeight : settings.height;
 
+        console.log("defaultHeight", defaultHeight);
+
         data.width = utils.has(data, 'width') ? data.width : defaultWith;
         data.height = utils.has(data, 'height') ? data.height : defaultHeight;
 
@@ -668,6 +710,8 @@
         var video_id = 'gvideo' + data.index;
         var slideMedia = slide.querySelector('.gslide-media');
 
+        console.log("data", data);
+
         var url = data.href;
         var protocol = location.protocol.replace(':', '');
 
@@ -765,8 +809,8 @@
 
                 injectVideoApi(jwplayerApi, function () {
                     var jwconfig = extend(_this2.settings.jwplayer.params, {
-                        width: _this2.settings.width + 'px',
-                        height: _this2.settings.height + 'px',
+                        width: data.width + 'px',
+                        height: data.height + 'px',
                         file: url
                     });
 
@@ -1721,8 +1765,6 @@
                     return false;
                 }
 
-                var content, contentHolder, docFrag;
-
                 var lightbox_html = createHTML(this.settings.lightboxHtml);
                 document.body.appendChild(lightbox_html);
 
@@ -1788,6 +1830,11 @@
                 }
 
                 this.built = true;
+            }
+        }, {
+            key: 'reload',
+            value: function reload() {
+                this.init();
             }
         }, {
             key: 'close',
