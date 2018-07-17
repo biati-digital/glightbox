@@ -1746,6 +1746,8 @@
                             _this9.close();
                         }
                     });
+                } else {
+                    closeButton.parentNode.removeChild(closeButton);
                 }
 
                 if (this.nextButton) {

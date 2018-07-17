@@ -1738,6 +1738,8 @@ class GlightboxInit {
                     this.close()
                 }
             })
+        } else {
+            closeButton.parentNode.removeChild(closeButton);
         }
 
         if (this.nextButton){
