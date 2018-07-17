@@ -1147,7 +1147,7 @@ function touchNavigation() {
             let slideWidth = activeSlide.querySelector('.gslide-inner-content').offsetWidth;
 
             // Swipe to top/bottom to close
-            if (vSwipe) {
+            if (vSwipe && this.settings.allowVerticalDrag) {
                 let onEnd = (slideHeight / 2)
                     vSwipe = false;
                 if (Math.abs(vDistance) >= onEnd) {

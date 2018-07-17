@@ -1184,7 +1184,7 @@
                 var slideWidth = activeSlide.querySelector('.gslide-inner-content').offsetWidth;
 
                 // Swipe to top/bottom to close
-                if (vSwipe) {
+                if (vSwipe && _this4.settings.allowVerticalDrag) {
                     var onEnd = slideHeight / 2;
                     vSwipe = false;
                     if (Math.abs(vDistance) >= onEnd) {
