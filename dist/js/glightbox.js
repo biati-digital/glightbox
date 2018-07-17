@@ -81,6 +81,7 @@
         touchNavigation: true,
         keyboardNavigation: true,
         closeOnOutsideClick: true,
+        allowVerticalDrag: true,
         jwplayer: {
             api: null,
             licenseKey: null,
@@ -1132,7 +1133,7 @@
                     vSwipe = true;
                 }
 
-                if (vSwipe) {
+                if (vSwipe && _this4.settings.allowVerticalDrag) {
                     vDistanceLast = vDistance;
                     vDistance = endCoords.pageY - startCoords.pageY;
                     if (Math.abs(vDistance) >= vSwipMinDistance || vSwipe) {

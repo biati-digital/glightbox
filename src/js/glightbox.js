@@ -36,6 +36,7 @@ const defaults = {
     touchNavigation: true,
     keyboardNavigation: true,
     closeOnOutsideClick: true,
+    allowVerticalDrag: true,
     jwplayer: {
         api: null,
         licenseKey: null,
@@ -1093,7 +1094,7 @@ function touchNavigation() {
                 vSwipe = true
             }
 
-            if (vSwipe) {
+            if (vSwipe && this.settings.allowVerticalDrag) {
                 vDistanceLast = vDistance;
                 vDistance = endCoords.pageY - startCoords.pageY;
                 if (Math.abs(vDistance) >= vSwipMinDistance || vSwipe) {
