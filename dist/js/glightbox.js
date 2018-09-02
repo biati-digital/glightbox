@@ -44,12 +44,10 @@
     };
 
     /**
-     * GLightbox v1.0.6
+     * GLightbox v1.0.7
      * Awesome pure javascript lightbox
      * made by mcstudios.com.mx
      */
-
-    console.log("applesfera");
 
     var isMobile = navigator.userAgent.match(/(iPad)|(iPhone)|(iPod)|(Android)|(PlayBook)|(BB10)|(BlackBerry)|(Opera Mini)|(IEMobile)|(webOS)|(MeeGo)/i);
     var isTouch = isMobile !== null || document.createTouch !== undefined || 'ontouchstart' in window || 'onmsgesturechange' in window || navigator.msMaxTouchPoints;
@@ -726,7 +724,7 @@
             iframe.id = video_id;
             iframe.className = 'vimeo-video gvideo';
 
-            if (this.settings.autoplayVideos) {
+            if (this.settings.autoplayVideos && !isMobile) {
                 iframe.className += ' wait-autoplay';
             }
 
@@ -749,7 +747,7 @@
             _iframe.id = video_id;
             _iframe.className = 'youtube-video gvideo';
 
-            if (this.settings.autoplayVideos) {
+            if (this.settings.autoplayVideos && !isMobile) {
                 _iframe.className += ' wait-autoplay';
             }
 
@@ -1786,6 +1784,9 @@
                             _this9.close();
                         }
                     });
+                }
+                if (closeButton && !this.settings.closeButton) {
+                    closeButton.parentNode.removeChild(closeButton);
                 }
 
                 if (this.nextButton) {

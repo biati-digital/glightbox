@@ -39,6 +39,10 @@ GLightbox was tested in the following browsers.
 It will work in any browser that supports css Flexbox
 
 ## Changelog
+### 1.0.7
+- Fixed closeButton setting not removing the element
+- Fixed video not displayed on mobile devices
+- New: Added reload method, useful when injecting content with ajax, cloning nodes, etc.
 ### 1.0.6
 - Fixed afterSlideLoad only triggered one time for all the slides
 - Fixed a small space between the image and description when is set to top or bottom
