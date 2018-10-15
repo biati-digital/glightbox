@@ -353,6 +353,7 @@
     overflow: hidden;
     -webkit-overflow-scrolling: touch;
     touch-action: auto;
+    height: auto;
 }
 
 .gloader {

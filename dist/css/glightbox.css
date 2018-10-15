@@ -335,6 +335,7 @@
   -webkit-overflow-scrolling: touch;
   -ms-touch-action: auto;
   touch-action: auto;
+  height: auto;
 }
 
 .gloader {

@@ -39,21 +39,27 @@ GLightbox was tested in the following browsers.
 It will work in any browser that supports css Flexbox
 
 ## Changelog
+### 1.0.8
+- New: You can define each slide option in a different data attribute (data-title="example" data-description="...")
+- Fixed youtube and vimeo autoplay when opened for the first time
+- Fixed global slide params not working
+- Fixed some issues on IE11
+- Fixed using characters : or ; in slide description
 ### 1.0.7
+- New: Added reload method, useful when injecting content with ajax, cloning nodes, etc.
 - Fixed closeButton setting not removing the element
 - Fixed video not displayed on mobile devices
-- New: Added reload method, useful when injecting content with ajax, cloning nodes, etc.
 ### 1.0.6
-- Fixed afterSlideLoad only triggered one time for all the slides
-- Fixed a small space between the image and description when is set to top or bottom
 - New: Now you can set individual width and height for each slide with inlines or iframes.
 - New: Now you can set individual source types for each slide ('type': 'image' | 'iframe' | 'video' | 'inline' | 'external).
 - New: Published on npm
 - New: Published on bower
+- Fixed afterSlideLoad only triggered one time for all the slides
+- Fixed a small space between the image and description when is set to top or bottom
 ### 1.0.5
-- Fixed open and close effect not taking a custom animation
 - New: Added none as a new option to disable open, close and slide animations
 - New: Added new options (touchNavigation, keyboardNavigation, closeOnOutsideClick) to enable or disable user interaction
+- Fixed open and close effect not taking a custom animation
 - Fixed an error when calling the destroy method and no videos were present in the slider
 ### 1.0.4
 - Improved the open method so it can be called without duplicating the structure and events

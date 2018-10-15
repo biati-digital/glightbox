@@ -413,7 +413,14 @@ header h1 {
     transition: opacity 0.3s ease-in;
 }
 
-
+h4 {
+    margin-bottom: 45px;
+   font-weight: 600;
+   text-transform: uppercase;
+   color: #000;
+   letter-spacing: 2px;
+   font-size: 1em;
+}
 
 .options-list {
    width: 700px;
@@ -451,6 +458,20 @@ header h1 {
 .options-list .option .type {
     color: #ed7205;
     font-weight: 600;
+}
+
+.params-list {
+   margin-bottom: 11em;
+}
+
+.option-code {
+    width: 700px;
+   margin: 0 auto;
+   border: 1px solid #ececec;
+   border-radius: 2px;
+   padding-left: 20px;
+   padding-top: 0;
+   margin-bottom: 48px;
 }
 
 .api-examples {
