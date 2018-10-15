@@ -1,6 +1,6 @@
 {
   "name": "glightbox",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Pure Javascript lightbox",
   "main": "dist/js/glightbox.min.js",
   "scripts": {
