@@ -1049,7 +1049,7 @@
         var origin = url;
         url = url.toLowerCase();
         var data = {};
-        if (url.match(/\.(jpeg|jpg|gif|png)$/) !== null) {
+        if (url.match(/\.(jpeg|jpg|gif|png|svg)$/) !== null) {
             data.sourcetype = 'image';
             return data;
         }
