@@ -1,5 +1,5 @@
 /**
- * GLightbox v1.0.8
+ * GLightbox v1.0.9
  * Awesome pure javascript lightbox
  * made by mcstudios.com.mx
  */
@@ -1007,7 +1007,7 @@ const getSourceType = function(url) {
     let origin = url;
     url = url.toLowerCase();
     var data = { };
-    if (url.match(/\.(jpeg|jpg|gif|png|svg)$/) !== null) {
+    if (url.match(/\.(jpeg|jpg|gif|png|apn|webp|svg)$/) !== null) {
         data.sourcetype = 'image';
         return data;
     }
