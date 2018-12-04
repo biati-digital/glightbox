@@ -3,12 +3,14 @@
 Glightbox is a pure javascript lightbox. It can display images, iframes, inline content and videos with optional autoplay for youtube, vimeo and even self hosted videos with JWPlayer support
 
 ## Demo
-You can check the live demo [clicking here](https://glightbox.mcstudios.com.mx/)
+You can check the live demo [right here](https://glightbox.mcstudios.com.mx/)
 
 ## Usage
 
 ```bash
 $ npm install glightbox
+# OR
+$ yarn add glightbox
 # OR
 $ bower install glightbox
 ```
@@ -38,7 +40,19 @@ GLightbox was tested in the following browsers.
 
 It will work in any browser that supports css Flexbox
 
+
+## Contributing
+
+Feel free to report any issues! If you wish to contribute by fixing a bug or implementing a new feature, please first read the [CONTRIBUTING](./CONTRIBUTING.md) guide.
+
+
 ## Changelog
+### 1.0.9
+- Added svg to source types so it can be displayed as an image [@tuomassalo](https://github.com/mcstudios/glightbox/pull/40)
+- Updated dependencies [@tuomassalo](https://github.com/mcstudios/glightbox/pull/40).
+- Removed demo folder from npm
+- Added contributing file
+
 ### 1.0.8
 - New: You can define each slide option in a different data attribute (data-title="example" data-description="...")
 - Fixed youtube and vimeo autoplay when opened for the first time
