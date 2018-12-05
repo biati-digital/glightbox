@@ -1,11 +1,9 @@
 (function() {
-    function addEvent(eventName, {
-        onElement,
-        withCallback,
-        once = false,
-        useCapture = false
-    } = {}, thisArg) {
-        var tstst = onElement;
+    function addEvent(eventName, data, thisArg) {
+        var onElement = (data.hasOwnProperty('onElement') ? data.onElement : null);
+        var withCallback = (data.hasOwnProperty('withCallback') ? data.withCallback : null);
+        var once = (data.hasOwnProperty('once') ? data.once : false);
+        var useCapture = (data.hasOwnProperty('useCapture') ? data.useCapture : false);
         var element = onElement || []
 
         function handler(event) {
@@ -14,17 +12,13 @@
                 handler.destroy();
             }
         }
-        handler.destroy = function() {
-            element.removeEventListener(eventName, handler, useCapture)
+        handler.destroy = function () {
+            if (element.removeEventListener) element.removeEventListener(eventName, handler, useCapture)
         }
-        element.addEventListener(eventName, handler, useCapture)
+        if (element.addEventListener) element.addEventListener(eventName, handler, useCapture)
         return handler
     }
 
-
-    function scrollPosition() {
-        return window.pageYOffset || document.documentElement.scrollTop
-    }
 
     function addClass(node, name) {
         if (hasClass(node, name)) {
@@ -95,7 +89,7 @@
 
 
     function showBox(elm, delay) {
-        setTimeout(() => {
+        setTimeout(function() {
             addClass(elm, 'visible');
         }, delay);
     }
@@ -113,7 +107,4 @@
         }
     }
     codeExamples();
-
-
-
 }());
