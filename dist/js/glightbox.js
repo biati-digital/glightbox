@@ -112,7 +112,6 @@
         slideEffect: 'slide', // fade, slide, zoom, none
         moreText: 'See more',
         moreLength: 60,
-        slideHtml: '',
         lightboxHtml: '',
         cssEfects: {
             fade: { in: 'fadeIn', out: 'fadeOut' },
