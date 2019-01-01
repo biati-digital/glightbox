@@ -36,6 +36,7 @@
     "gulp-postcss": "^7.0.0",
     "gulp-rename": "^1.2.2",
     "gulp-terser": "^1.1.6",
+    "gulp-uglify": "^3.0.1",
     "gulp-zip": "^4.1.0",
     "lost": "^8.2.0",
     "postcss-cssnext": "^3.0.2",
