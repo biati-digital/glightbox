@@ -478,6 +478,7 @@ function hide(element) {
 const getSlideData = function getSlideData(element = null, settings) {
     let data = {
         href: '',
+        type: '',
         title: '',
         description: '',
         descPosition: 'bottom',

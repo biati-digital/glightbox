@@ -528,6 +528,7 @@
 
         var data = {
             href: '',
+            type: '',
             title: '',
             description: '',
             descPosition: 'bottom',
