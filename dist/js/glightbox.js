@@ -557,8 +557,10 @@
             }
         });
 
-        var sourceType = getSourceType(url);
-        data = extend(data, sourceType);
+        if (!data.type) {
+            var sourceType = getSourceType(url);
+            data = extend(data, sourceType);
+        }
 
         if (!utils.isNil(config)) {
             var cleanKeys = [];

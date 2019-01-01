@@ -509,8 +509,10 @@ const getSlideData = function getSlideData(element = null, settings) {
         }
     });
 
-    const sourceType = getSourceType(url);
-    data = extend(data, sourceType)
+    if (!data.type) {
+        const sourceType = getSourceType(url);
+        data = extend(data, sourceType)
+    }
 
     if (!utils.isNil(config)) {
         let cleanKeys = [];
