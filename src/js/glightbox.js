@@ -1,5 +1,5 @@
 /**
- * GLightbox v1.0.9
+ * GLightbox v2.0.0
  * Awesome pure javascript lightbox
  * made by mcstudios.com.mx
  */
@@ -91,8 +91,10 @@ let lightboxSlideHtml = '<div class="gslide">\
                <div class="gslide-media">\
                </div>\
                <div class="gslide-description">\
-                  <h4 class="gslide-title"></h4>\
-                  <div class="gslide-desc"></div>\
+                    <div class="gdesc-inner">\
+                        <h4 class="gslide-title"></h4>\
+                        <div class="gslide-desc"></div>\
+                    </div>\
                </div>\
             </div>\
          </div>\
@@ -161,7 +163,7 @@ const utils = {
         return (ar && ar.length && isFinite(ar.length))
     },
     isObject: function(o) {
-        var type = typeof o;
+        let type = typeof o;
         return type === 'object' && (o != null && !utils.isFunction(o) && !utils.isArray(o))
     },
     isNil: function(o) {
@@ -176,7 +178,7 @@ const utils = {
                 return o.keys().length;
             }
             let l = 0;
-            for (var k in o){
+            for (let k in o){
                 if (utils.has(o, k)) {
                     l++
                 }
@@ -210,7 +212,7 @@ function each(collection, callback) {
     }
 
     if (utils.isArrayLike(collection) && !utils.isObject(collection)) {
-        var l = collection.length,
+        let l = collection.length,
             i = 0;
         for (; i < l; i++) {
             if (callback.call(collection[i], collection[i], i, collection) === false) {
@@ -218,7 +220,7 @@ function each(collection, callback) {
             }
         }
     } else if (utils.isObject(collection)) {
-        for (var key in collection) {
+        for (let key in collection) {
             if (utils.has(collection, key)) {
                 if (callback.call(collection[key], collection[key], key, collection) === false) {
                     break;
@@ -447,7 +449,7 @@ function createHTML(htmlStr) {
 function getClosest(elem, selector) {
     while (elem !== document.body) {
         elem = elem.parentElement;
-        var matches = typeof elem.matches == 'function' ? elem.matches(selector) : elem.msMatchesSelector(selector);
+        const matches = typeof elem.matches == 'function' ? elem.matches(selector) : elem.msMatchesSelector(selector);
 
         if (matches) return elem;
     }
@@ -479,6 +481,7 @@ const getSlideData = function getSlideData(element = null, settings) {
     let data = {
         href: '',
         title: '',
+        type: '',
         description: '',
         descPosition: 'bottom',
         effect: '',
@@ -491,10 +494,10 @@ const getSlideData = function getSlideData(element = null, settings) {
 
     let url = '';
     let config = element.getAttribute('data-glightbox')
-    let type = element.nodeName.toLowerCase();
-    if (type === 'a')
+    let nodeType = element.nodeName.toLowerCase();
+    if (nodeType === 'a')
         url = element.href;
-    if (type === 'img')
+    if (nodeType === 'img')
         url = element.src;
 
     data.href = url;
@@ -509,8 +512,9 @@ const getSlideData = function getSlideData(element = null, settings) {
         }
     });
 
-    const sourceType = getSourceType(url);
-    data = extend(data, sourceType)
+    if (!data.type) {
+        data.type = getSourceType(url);
+    }
 
     if (!utils.isNil(config)) {
         let cleanKeys = [];
@@ -532,11 +536,11 @@ const getSlideData = function getSlideData(element = null, settings) {
             });
         }
     } else {
-        if (type == 'a') {
+        if (nodeType == 'a') {
             let title = element.title
             if (!utils.isNil(title) && title !== '') data.title = title;
         }
-        if (type == 'img') {
+        if (nodeType == 'img') {
             let alt = element.alt
             if (!utils.isNil(alt) && alt !== '') data.title = alt;
         }
@@ -548,11 +552,8 @@ const getSlideData = function getSlideData(element = null, settings) {
         data.description = nodeDesc.innerHTML;
     }
 
-    data.sourcetype = (data.hasOwnProperty('type') ? data.type : data.sourcetype);
-    data.type = data.sourcetype;
-
-    const defaultWith = (data.sourcetype == 'video' ? settings.videosWidth : settings.width);
-    const defaultHeight = (data.sourcetype == 'video' ? settings.videosHeight : settings.height);
+    const defaultWith = (data.type == 'video' ? settings.videosWidth : settings.width);
+    const defaultHeight = (data.type == 'video' ? settings.videosHeight : settings.height);
 
     data.width = (utils.has(data, 'width') ? data.width : defaultWith);
     data.height = (utils.has(data, 'height') ? data.height : defaultHeight);
@@ -581,7 +582,7 @@ const setSlideContent = function setSlideContent(slide = null, data = { }, callb
     let slideMedia = slide.querySelector('.gslide-media');
     let slideTitle = slide.querySelector('.gslide-title');
     let slideText = slide.querySelector('.gslide-desc');
-    let slideDesc = slide.querySelector('.gslide-description');
+    let slideDesc = slide.querySelector('.gdesc-inner');
     let finalCallback = callback
 
     if (utils.isFunction(this.settings.afterSlideLoad)) {
@@ -614,13 +615,14 @@ const setSlideContent = function setSlideContent(slide = null, data = { }, callb
             slideText.parentNode.removeChild(slideText);
         }
         addClass(slideMedia.parentNode, `desc-${position}`);
-        addClass(slideDesc, `description-${position}`);
+        addClass(slideDesc.parentNode, `description-${position}`);
     }
 
     addClass(slideMedia, `gslide-${type}`)
     addClass(slide, 'loaded');
 
     if (type === 'video') {
+        slideMedia.innerHTML = '<div class="gvideo-wrapper"></div>';
         setSlideVideo.apply(this, [slide, data, finalCallback])
         return
     }
@@ -661,9 +663,9 @@ const setSlideContent = function setSlideContent(slide = null, data = { }, callb
  * @param {function} callback
  */
 function setSlideVideo(slide, data, callback) {
-    const source = data.source;
-    const video_id = 'gvideo' + data.index;
-    const slideMedia = slide.querySelector('.gslide-media');
+    const videoID = 'gvideo' + data.index;
+    // const slideMedia = slide.querySelector('.gslide-media');
+    const slideMedia = slide.querySelector('.gvideo-wrapper');
 
     let url = data.href;
     let protocol = location.protocol.replace(':', '');
@@ -673,10 +675,10 @@ function setSlideVideo(slide, data, callback) {
     }
 
     // Set vimeo videos
-    if ( source == 'vimeo' ) {
-        const vimeo_id = /vimeo.*\/(\d+)/i.exec( url );
+    if (url.match(/vimeo\.com\/([0-9]*)/)) {
+        const vimeoID = /vimeo.*\/(\d+)/i.exec( url );
         const params = parseUrlParams(this.settings.vimeo.params);
-        const video_url = `${protocol}://player.vimeo.com/video/${vimeo_id[1]}?${params}`
+        const video_url = `${protocol}://player.vimeo.com/video/${vimeoID[1]}?${params}`
 
         injectVideoApi(this.settings.vimeo.api);
 
@@ -685,7 +687,7 @@ function setSlideVideo(slide, data, callback) {
                 return typeof Vimeo !== 'undefined';
             }, () => {
                 const player = new Vimeo.Player(iframe)
-                videoPlayers[video_id] = player;
+                videoPlayers[videoID] = player;
 
                 if (utils.isFunction(callback)) {
                     callback()
@@ -693,8 +695,14 @@ function setSlideVideo(slide, data, callback) {
             });
         }
 
-        const iframe = createIframe(video_url, data.width, data.height, finalCallback, slideMedia);
-        iframe.id = video_id;
+        // const iframe = createIframe(video_url, data.width, data.height, finalCallback, slideMedia);
+
+        slideMedia.parentNode.style.maxWidth = `${data.width}px`;
+        slideMedia.style.width = `${data.width}px`;
+        slideMedia.style.maxHeight = `${data.height}px`;
+
+        const iframe = createIframe(video_url, null, '', finalCallback, slideMedia);
+        iframe.id = videoID;
         iframe.className = 'vimeo-video gvideo';
 
         if (this.settings.autoplayVideos && !isMobile) {
@@ -703,20 +711,20 @@ function setSlideVideo(slide, data, callback) {
     }
 
     // Set youtube videos
-    if ( source == 'youtube' ) {
-        const youtube_params = extend(this.settings.youtube.params, {
-            playerapiid: video_id
+    if (url.match(/(youtube\.com|youtube-nocookie\.com)\/watch\?v=([a-zA-Z0-9\-_]+)/) || url.match(/youtu\.be\/([a-zA-Z0-9\-_]+)/)) {
+        const youtubeParams = extend(this.settings.youtube.params, {
+            playerapiid: videoID
         })
-        const yparams = parseUrlParams(youtube_params)
-        const youtube_id = getYoutubeID(url)
-        const video_url = `${protocol}://www.youtube.com/embed/${youtube_id}?${yparams}`
+        const yparams = parseUrlParams(youtubeParams)
+        const youtubeID = getYoutubeID(url)
+        const videoUrl = `${protocol}://www.youtube.com/embed/${youtubeID}?${yparams}`
 
         injectVideoApi(this.settings.youtube.api);
 
         const finalCallback = function() {
             if (!utils.isNil(YT) && YT.loaded) {
                 const player = new YT.Player(iframe)
-                videoPlayers[video_id] = player
+                videoPlayers[videoID] = player
             } else {
                 YTTemp.push(iframe)
             }
@@ -725,8 +733,12 @@ function setSlideVideo(slide, data, callback) {
             }
         }
 
-        const iframe = createIframe(video_url, data.width, data.height, finalCallback, slideMedia)
-        iframe.id = video_id
+        slideMedia.parentNode.style.maxWidth = `${data.width}px`;
+        slideMedia.style.width = `${data.width}px`;
+        slideMedia.style.maxHeight = `${data.height}px`;
+
+        const iframe = createIframe(videoUrl, '', '', finalCallback, slideMedia)
+        iframe.id = videoID
         iframe.className = 'youtube-video gvideo';
 
         if (this.settings.autoplayVideos && !isMobile) {
@@ -735,8 +747,9 @@ function setSlideVideo(slide, data, callback) {
     }
 
 
-    if ( source == 'local' ) {
-        let html = '<video id="' + video_id + '" ';
+    // Set local videos
+    if (url.match(/\.(mp4|ogg|webm)$/) !== null) {
+        let html = '<video id="' + videoID + '" ';
         html += `style="background:#000; width: ${data.width}px; height: ${data.height}px;" `;
         html += 'preload="metadata" ';
         html += 'x-webkit-airplay="allow" ';
@@ -748,7 +761,7 @@ function setSlideVideo(slide, data, callback) {
         let sources = {'mp4': '', 'ogg': '', 'webm': ''}
         sources[format] = url;
 
-        for (var key in sources) {
+        for (let key in sources) {
             if (sources.hasOwnProperty(key)) {
                 let videoFile = sources[key]
                 if (data.hasOwnProperty(key)) {
@@ -765,7 +778,7 @@ function setSlideVideo(slide, data, callback) {
         let video = createHTML(html);
         slideMedia.appendChild(video)
 
-        let vnode = document.getElementById(video_id)
+        let vnode = document.getElementById(videoID)
         if (this.settings.jwplayer !== null && this.settings.jwplayer.api !== null) {
             let jwplayerConfig = this.settings.jwplayer
             let jwplayerApi = this.settings.jwplayer.api
@@ -785,21 +798,21 @@ function setSlideVideo(slide, data, callback) {
 
                 jwplayer.key = this.settings.jwplayer.licenseKey;
 
-                const player = jwplayer(video_id);
+                const player = jwplayer(videoID);
 
                 player.setup(jwconfig);
 
-                videoPlayers[video_id] = player;
+                videoPlayers[videoID] = player;
                 player.on('ready', () => {
                     vnode = slideMedia.querySelector('.jw-video')
                     addClass(vnode, 'gvideo')
-                    vnode.id = video_id
+                    vnode.id = videoID
                     if (utils.isFunction(callback)) callback()
                 })
             })
         } else{
             addClass(vnode, 'html5-video')
-            videoPlayers[video_id] = vnode
+            videoPlayers[videoID] = vnode
             if (utils.isFunction(callback)) callback()
         }
     }
@@ -814,17 +827,23 @@ function setSlideVideo(slide, data, callback) {
  * @param {numeric} height
  * @param {function} callback
  */
-function createIframe(url, width, height, callback, appendTo) {
+function createIframe(url, width = '', height = '', callback, appendTo) {
     let iframe = document.createElement('iframe');
     let winWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
     iframe.className = 'vimeo-video gvideo';
     iframe.src = url;
-    if (isMobile && winWidth < 767) {
-        iframe.style.height = ''
-    } else{
-        iframe.style.height = `${height}px`
+
+    if (height) {
+        if (isMobile && winWidth < 767) {
+            iframe.style.height = ''
+        } else {
+            iframe.style.height = `${height}px`
+        }
     }
-    iframe.style.width = `${width}px`
+
+    if (width) {
+        iframe.style.width = `${width}px`
+    }
     iframe.setAttribute('allowFullScreen', '')
     iframe.onload = function() {
         addClass(iframe, 'iframe-ready');
@@ -932,14 +951,13 @@ function waitUntil(check, onComplete, delay, timeout) {
 
     if (!delay) delay = 100;
 
-    var timeoutPointer;
-    var intervalPointer = setInterval(function () {
+    let intervalPointer = setInterval(() => {
         if (!check()) return;
         clearInterval(intervalPointer);
         if (timeoutPointer) clearTimeout(timeoutPointer);
         onComplete();
     }, delay);
-    if (timeout) timeoutPointer = setTimeout(function () {
+    if (timeout) timeoutPointer = setTimeout(() => {
         clearInterval(intervalPointer);
     }, timeout);
 }
@@ -978,20 +996,25 @@ function parseUrlParams(params) {
  * @param {function} callback
  */
 function setInlineContent(slide, data, callback) {
-    let slideMedia = slide.querySelector('.gslide-media');
-    let div = document.getElementById(data.inlined.replace('#', ''));
-    if (div) {
-        let cloned = div.cloneNode(true)
-        cloned.style.height = `${data.height}px`
-        cloned.style.maxWidth = `${data.width}px`
-        addClass(cloned, 'ginlined-content')
-        slideMedia.appendChild(cloned)
+    const slideMedia = slide.querySelector('.gslide-media');
+    const hash = data.href.split('#').pop().trim();
 
-        if (utils.isFunction(callback)) {
-            callback()
-        }
-        return;
+    let div = document.getElementById(hash);
+    if (!div) {
+        return false;
     }
+
+    const cloned = div.cloneNode(true)
+
+    cloned.style.height = `${data.height}px`
+    cloned.style.maxWidth = `${data.width}px`
+    addClass(cloned, 'ginlined-content')
+    slideMedia.appendChild(cloned)
+
+    if (utils.isFunction(callback)) {
+        callback()
+    }
+    return;
 }
 
 
@@ -1005,47 +1028,33 @@ function setInlineContent(slide, data, callback) {
 const getSourceType = function(url) {
     let origin = url;
     url = url.toLowerCase();
-    var data = { };
+
     if (url.match(/\.(jpeg|jpg|gif|png|apn|webp|svg)$/) !== null) {
-        data.sourcetype = 'image';
-        return data;
+        return 'image';
     }
     if (url.match(/(youtube\.com|youtube-nocookie\.com)\/watch\?v=([a-zA-Z0-9\-_]+)/) || url.match(/youtu\.be\/([a-zA-Z0-9\-_]+)/)) {
-        data.sourcetype = 'video';
-        data.source = 'youtube';
-        return data;
+        return 'video';
     }
     if (url.match(/vimeo\.com\/([0-9]*)/)) {
-        data.sourcetype = 'video';
-        data.source = 'vimeo';
-        return data;
+        return 'video';
     }
     if (url.match(/\.(mp4|ogg|webm)$/) !== null) {
-        data.sourcetype = 'video';
-        data.source = 'local';
-        return data;
+        return 'video';
     }
 
     // Check if inline content
     if (url.indexOf("#") > -1) {
         let hash = origin.split('#').pop()
         if (hash.trim() !== '') {
-            data.sourcetype = 'inline'
-            data.source = url
-            data.inlined = `#${hash}`
-            return data
+            return 'inline'
         }
     }
     // Ajax
     if (url.includes("gajax=true")) {
-        data.sourcetype = 'ajax';
-        data.source = url;
+        return 'ajax';
     }
 
-    // Any other url
-    data.sourcetype = 'external';
-    data.source = url;
-    return data;
+    return 'external';
 }
 
 
@@ -1061,7 +1070,7 @@ function keyboardNavigation() {
         onElement: window,
         withCallback: (event, target) => {
             event = event || window.event;
-            var key = event.keyCode;
+            const key = event.keyCode;
             if (key == 39) this.nextSlide();
             if (key == 37) this.prevSlide();
             if (key == 27) this.close();
@@ -1331,7 +1340,7 @@ function slideShortDesc(string, n = 50, wordBoundary = false) {
     if (string.length <= n) {
         return string;
     }
-    var subString = string.substr(0, n - 1);
+    let subString = string.substr(0, n - 1);
     if (!useWordBoundary) {
         return subString
     }
@@ -1418,8 +1427,7 @@ class GlightboxInit {
         this.build()
         animateElement(this.overlay, (this.settings.openEffect == 'none' ? 'none' : this.settings.cssEfects.fade.in))
 
-        var bodyWidth = body.offsetWidth;
-        body.style.width = `${bodyWidth}px`
+        body.style.width = `${body.offsetWidth}px`
 
         addClass(body, 'glightbox-open')
         addClass(html, 'glightbox-open')
@@ -1791,7 +1799,7 @@ class GlightboxInit {
      */
     getAnimationClasses() {
         let effects = []
-        for (var key in this.settings.cssEfects ){
+        for (let key in this.settings.cssEfects ){
             if (this.settings.cssEfects.hasOwnProperty(key)) {
                 let effect = this.settings.cssEfects[key]
                 effects.push(`g${effect.in}`)

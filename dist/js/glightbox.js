@@ -44,7 +44,7 @@
     };
 
     /**
-     * GLightbox v1.0.9
+     * GLightbox v2.0.0
      * Awesome pure javascript lightbox
      * made by mcstudios.com.mx
      */
@@ -135,8 +135,10 @@
                <div class="gslide-media">\
                </div>\
                <div class="gslide-description">\
-                  <h4 class="gslide-title"></h4>\
-                  <div class="gslide-desc"></div>\
+                    <div class="gdesc-inner">\
+                        <h4 class="gslide-title"></h4>\
+                        <div class="gslide-desc"></div>\
+                    </div>\
                </div>\
             </div>\
          </div>\
@@ -529,6 +531,7 @@
         var data = {
             href: '',
             title: '',
+            type: '',
             description: '',
             descPosition: 'bottom',
             effect: '',
@@ -541,9 +544,9 @@
 
         var url = '';
         var config = element.getAttribute('data-glightbox');
-        var type = element.nodeName.toLowerCase();
-        if (type === 'a') url = element.href;
-        if (type === 'img') url = element.src;
+        var nodeType = element.nodeName.toLowerCase();
+        if (nodeType === 'a') url = element.href;
+        if (nodeType === 'img') url = element.src;
 
         data.href = url;
 
@@ -557,8 +560,9 @@
             }
         });
 
-        var sourceType = getSourceType(url);
-        data = extend(data, sourceType);
+        if (!data.type) {
+            data.type = getSourceType(url);
+        }
 
         if (!utils.isNil(config)) {
             var cleanKeys = [];
@@ -580,11 +584,11 @@
                 });
             }
         } else {
-            if (type == 'a') {
+            if (nodeType == 'a') {
                 var title = element.title;
                 if (!utils.isNil(title) && title !== '') data.title = title;
             }
-            if (type == 'img') {
+            if (nodeType == 'img') {
                 var alt = element.alt;
                 if (!utils.isNil(alt) && alt !== '') data.title = alt;
             }
@@ -596,11 +600,8 @@
             data.description = nodeDesc.innerHTML;
         }
 
-        data.sourcetype = data.hasOwnProperty('type') ? data.type : data.sourcetype;
-        data.type = data.sourcetype;
-
-        var defaultWith = data.sourcetype == 'video' ? settings.videosWidth : settings.width;
-        var defaultHeight = data.sourcetype == 'video' ? settings.videosHeight : settings.height;
+        var defaultWith = data.type == 'video' ? settings.videosWidth : settings.width;
+        var defaultHeight = data.type == 'video' ? settings.videosHeight : settings.height;
 
         data.width = utils.has(data, 'width') ? data.width : defaultWith;
         data.height = utils.has(data, 'height') ? data.height : defaultHeight;
@@ -636,7 +637,7 @@
         var slideMedia = slide.querySelector('.gslide-media');
         var slideTitle = slide.querySelector('.gslide-title');
         var slideText = slide.querySelector('.gslide-desc');
-        var slideDesc = slide.querySelector('.gslide-description');
+        var slideDesc = slide.querySelector('.gdesc-inner');
         var finalCallback = callback;
 
         if (utils.isFunction(this.settings.afterSlideLoad)) {
@@ -670,13 +671,14 @@
                 slideText.parentNode.removeChild(slideText);
             }
             addClass(slideMedia.parentNode, 'desc-' + position);
-            addClass(slideDesc, 'description-' + position);
+            addClass(slideDesc.parentNode, 'description-' + position);
         }
 
         addClass(slideMedia, 'gslide-' + type);
         addClass(slide, 'loaded');
 
         if (type === 'video') {
+            slideMedia.innerHTML = '<div class="gvideo-wrapper"></div>';
             setSlideVideo.apply(this, [slide, data, finalCallback]);
             return;
         }
@@ -717,9 +719,9 @@
     function setSlideVideo(slide, data, callback) {
         var _this2 = this;
 
-        var source = data.source;
-        var video_id = 'gvideo' + data.index;
-        var slideMedia = slide.querySelector('.gslide-media');
+        var videoID = 'gvideo' + data.index;
+        // const slideMedia = slide.querySelector('.gslide-media');
+        var slideMedia = slide.querySelector('.gvideo-wrapper');
 
         var url = data.href;
         var protocol = location.protocol.replace(':', '');
@@ -729,10 +731,10 @@
         }
 
         // Set vimeo videos
-        if (source == 'vimeo') {
-            var vimeo_id = /vimeo.*\/(\d+)/i.exec(url);
+        if (url.match(/vimeo\.com\/([0-9]*)/)) {
+            var vimeoID = /vimeo.*\/(\d+)/i.exec(url);
             var params = parseUrlParams(this.settings.vimeo.params);
-            var video_url = protocol + '://player.vimeo.com/video/' + vimeo_id[1] + '?' + params;
+            var video_url = protocol + '://player.vimeo.com/video/' + vimeoID[1] + '?' + params;
 
             injectVideoApi(this.settings.vimeo.api);
 
@@ -741,7 +743,7 @@
                     return typeof Vimeo !== 'undefined';
                 }, function () {
                     var player = new Vimeo.Player(iframe);
-                    videoPlayers[video_id] = player;
+                    videoPlayers[videoID] = player;
 
                     if (utils.isFunction(callback)) {
                         callback();
@@ -749,8 +751,14 @@
                 });
             };
 
-            var iframe = createIframe(video_url, data.width, data.height, finalCallback, slideMedia);
-            iframe.id = video_id;
+            // const iframe = createIframe(video_url, data.width, data.height, finalCallback, slideMedia);
+
+            slideMedia.parentNode.style.maxWidth = data.width + 'px';
+            slideMedia.style.width = data.width + 'px';
+            slideMedia.style.maxHeight = data.height + 'px';
+
+            var iframe = createIframe(video_url, null, '', finalCallback, slideMedia);
+            iframe.id = videoID;
             iframe.className = 'vimeo-video gvideo';
 
             if (this.settings.autoplayVideos && !isMobile) {
@@ -759,20 +767,20 @@
         }
 
         // Set youtube videos
-        if (source == 'youtube') {
-            var youtube_params = extend(this.settings.youtube.params, {
-                playerapiid: video_id
+        if (url.match(/(youtube\.com|youtube-nocookie\.com)\/watch\?v=([a-zA-Z0-9\-_]+)/) || url.match(/youtu\.be\/([a-zA-Z0-9\-_]+)/)) {
+            var youtubeParams = extend(this.settings.youtube.params, {
+                playerapiid: videoID
             });
-            var yparams = parseUrlParams(youtube_params);
-            var youtube_id = getYoutubeID(url);
-            var _video_url = protocol + '://www.youtube.com/embed/' + youtube_id + '?' + yparams;
+            var yparams = parseUrlParams(youtubeParams);
+            var youtubeID = getYoutubeID(url);
+            var videoUrl = protocol + '://www.youtube.com/embed/' + youtubeID + '?' + yparams;
 
             injectVideoApi(this.settings.youtube.api);
 
             var _finalCallback = function _finalCallback() {
                 if (!utils.isNil(YT) && YT.loaded) {
                     var player = new YT.Player(_iframe);
-                    videoPlayers[video_id] = player;
+                    videoPlayers[videoID] = player;
                 } else {
                     YTTemp.push(_iframe);
                 }
@@ -781,8 +789,12 @@
                 }
             };
 
-            var _iframe = createIframe(_video_url, data.width, data.height, _finalCallback, slideMedia);
-            _iframe.id = video_id;
+            slideMedia.parentNode.style.maxWidth = data.width + 'px';
+            slideMedia.style.width = data.width + 'px';
+            slideMedia.style.maxHeight = data.height + 'px';
+
+            var _iframe = createIframe(videoUrl, '', '', _finalCallback, slideMedia);
+            _iframe.id = videoID;
             _iframe.className = 'youtube-video gvideo';
 
             if (this.settings.autoplayVideos && !isMobile) {
@@ -790,8 +802,9 @@
             }
         }
 
-        if (source == 'local') {
-            var _html = '<video id="' + video_id + '" ';
+        // Set local videos
+        if (url.match(/\.(mp4|ogg|webm)$/) !== null) {
+            var _html = '<video id="' + videoID + '" ';
             _html += 'style="background:#000; width: ' + data.width + 'px; height: ' + data.height + 'px;" ';
             _html += 'preload="metadata" ';
             _html += 'x-webkit-airplay="allow" ';
@@ -820,7 +833,7 @@
             var video = createHTML(_html);
             slideMedia.appendChild(video);
 
-            var vnode = document.getElementById(video_id);
+            var vnode = document.getElementById(videoID);
             if (this.settings.jwplayer !== null && this.settings.jwplayer.api !== null) {
                 var jwplayerConfig = this.settings.jwplayer;
                 var jwplayerApi = this.settings.jwplayer.api;
@@ -840,21 +853,21 @@
 
                     jwplayer.key = _this2.settings.jwplayer.licenseKey;
 
-                    var player = jwplayer(video_id);
+                    var player = jwplayer(videoID);
 
                     player.setup(jwconfig);
 
-                    videoPlayers[video_id] = player;
+                    videoPlayers[videoID] = player;
                     player.on('ready', function () {
                         vnode = slideMedia.querySelector('.jw-video');
                         addClass(vnode, 'gvideo');
-                        vnode.id = video_id;
+                        vnode.id = videoID;
                         if (utils.isFunction(callback)) callback();
                     });
                 });
             } else {
                 addClass(vnode, 'html5-video');
-                videoPlayers[video_id] = vnode;
+                videoPlayers[videoID] = vnode;
                 if (utils.isFunction(callback)) callback();
             }
         }
@@ -868,17 +881,28 @@
      * @param {numeric} height
      * @param {function} callback
      */
-    function createIframe(url, width, height, callback, appendTo) {
+    function createIframe(url) {
+        var width = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+        var height = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
+        var callback = arguments[3];
+        var appendTo = arguments[4];
+
         var iframe = document.createElement('iframe');
         var winWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
         iframe.className = 'vimeo-video gvideo';
         iframe.src = url;
-        if (isMobile && winWidth < 767) {
-            iframe.style.height = '';
-        } else {
-            iframe.style.height = height + 'px';
+
+        if (height) {
+            if (isMobile && winWidth < 767) {
+                iframe.style.height = '';
+            } else {
+                iframe.style.height = height + 'px';
+            }
         }
-        iframe.style.width = width + 'px';
+
+        if (width) {
+            iframe.style.width = width + 'px';
+        }
         iframe.setAttribute('allowFullScreen', '');
         iframe.onload = function () {
             addClass(iframe, 'iframe-ready');
@@ -979,7 +1003,6 @@
 
         if (!delay) delay = 100;
 
-        var timeoutPointer;
         var intervalPointer = setInterval(function () {
             if (!check()) return;
             clearInterval(intervalPointer);
@@ -1023,19 +1046,24 @@
      */
     function setInlineContent(slide, data, callback) {
         var slideMedia = slide.querySelector('.gslide-media');
-        var div = document.getElementById(data.inlined.replace('#', ''));
-        if (div) {
-            var cloned = div.cloneNode(true);
-            cloned.style.height = data.height + 'px';
-            cloned.style.maxWidth = data.width + 'px';
-            addClass(cloned, 'ginlined-content');
-            slideMedia.appendChild(cloned);
+        var hash = data.href.split('#').pop().trim();
 
-            if (utils.isFunction(callback)) {
-                callback();
-            }
-            return;
+        var div = document.getElementById(hash);
+        if (!div) {
+            return false;
         }
+
+        var cloned = div.cloneNode(true);
+
+        cloned.style.height = data.height + 'px';
+        cloned.style.maxWidth = data.width + 'px';
+        addClass(cloned, 'ginlined-content');
+        slideMedia.appendChild(cloned);
+
+        if (utils.isFunction(callback)) {
+            callback();
+        }
+        return;
     }
 
     /**
@@ -1047,47 +1075,33 @@
     var getSourceType = function getSourceType(url) {
         var origin = url;
         url = url.toLowerCase();
-        var data = {};
+
         if (url.match(/\.(jpeg|jpg|gif|png|apn|webp|svg)$/) !== null) {
-            data.sourcetype = 'image';
-            return data;
+            return 'image';
         }
         if (url.match(/(youtube\.com|youtube-nocookie\.com)\/watch\?v=([a-zA-Z0-9\-_]+)/) || url.match(/youtu\.be\/([a-zA-Z0-9\-_]+)/)) {
-            data.sourcetype = 'video';
-            data.source = 'youtube';
-            return data;
+            return 'video';
         }
         if (url.match(/vimeo\.com\/([0-9]*)/)) {
-            data.sourcetype = 'video';
-            data.source = 'vimeo';
-            return data;
+            return 'video';
         }
         if (url.match(/\.(mp4|ogg|webm)$/) !== null) {
-            data.sourcetype = 'video';
-            data.source = 'local';
-            return data;
+            return 'video';
         }
 
         // Check if inline content
         if (url.indexOf("#") > -1) {
             var hash = origin.split('#').pop();
             if (hash.trim() !== '') {
-                data.sourcetype = 'inline';
-                data.source = url;
-                data.inlined = '#' + hash;
-                return data;
+                return 'inline';
             }
         }
         // Ajax
         if (url.includes("gajax=true")) {
-            data.sourcetype = 'ajax';
-            data.source = url;
+            return 'ajax';
         }
 
-        // Any other url
-        data.sourcetype = 'external';
-        data.source = url;
-        return data;
+        return 'external';
     };
 
     /**
@@ -1465,8 +1479,7 @@
                 this.build();
                 animateElement(this.overlay, this.settings.openEffect == 'none' ? 'none' : this.settings.cssEfects.fade.in);
 
-                var bodyWidth = body.offsetWidth;
-                body.style.width = bodyWidth + 'px';
+                body.style.width = body.offsetWidth + 'px';
 
                 addClass(body, 'glightbox-open');
                 addClass(html, 'glightbox-open');

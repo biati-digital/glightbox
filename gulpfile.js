@@ -17,7 +17,6 @@ const cssmin = require('gulp-cssmin');
 const csslost = require('lost');
 const rucksack = require('rucksack-css');
 const gulpbabel = require('gulp-babel');
-const uglify = require('gulp-uglify');
 const terser = require('gulp-terser');
 const zip = require('gulp-zip');
 

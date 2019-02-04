@@ -67,10 +67,12 @@
 
     .ginner-container {
         width: auto;
+        width: 100%;
         display: flex;
         justify-content: center;
         flex-direction: column;
         max-width: 100%;
+        max-height: 100vh;
 
         @media (--medium-small-viewport) {
             flex-direction: row;
@@ -104,19 +106,12 @@
 .gslide {
     iframe,
     video {
-        width: 100vw;
-        max-width: 100vw;
-        min-width: 100vw;
         outline: none !important;
         border: none;
         min-height: 165px;
         -webkit-overflow-scrolling: touch;
         overflow-scrolling: touch;
         touch-action: auto;
-
-        @media (--small-viewport) {
-            min-width: 0;
-        }
     }
 }
 
@@ -135,29 +130,68 @@
         outline: none;
         border: none;
         user-select: none;
-        width: initial;
+        /* width: initial; */
+        max-width: 100vw;
+        width: auto;
+        height: auto;
+        object-fit: cover;
 
         @media (--medium-small-viewport) {
-            width: initial;
+            /* width: initial; */
             max-height: 97vh;
         }
+
+        .desc-top &,
+        .desc-bottom & {
+            width: 100%;
+        }
+
     }
 }
 
 .gslide-video {
     width: 100%;
-    height: auto;
-    min-width: 100%;
     max-width: 100%;
-    min-height: auto;
-    max-height: auto;
     position: relative;
+    width: 100vh;
+    max-width: 100vh;
 
     @media (--medium-small-viewport) {
-        display: flex;
+        /* display: flex;
         min-height: 100px;
+        height: 100%; */
+        /* max-height: 95vh !important; */
+    }
+
+    .gvideo-wrapper {
+        position: relative;
+        padding-top: 0;
+        height: 100vh;
+        overflow: hidden;
+        width: 100%;
+        height: 0;
+        padding-top: 56.25%;
+
+        /* @media (--medium-small-viewport) {
+            height: 0;
+            padding-top: 56.25%;
+        } */
+
+        @media screen and (max-height: 480px) {
+            padding-top: 0;
+            height: 100vh;
+        }
+    }
+
+    iframe,
+    object {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        min-width: 100%;
         height: 100%;
-        max-height: 95vh !important;
+        border: 0;
     }
 
     &::before {
@@ -241,33 +275,23 @@
 
 .gslide-media {
     display: block;
+    display: inline-flex;
     width: auto;
 
-    @media (--medium-small-viewport) {
+    .desc-top &,
+    .desc-bottom & {
+        margin: 0 auto;
+    }
+
+    /* @media (--medium-small-viewport) {
         display: block;
         display: inline-flex;
         justify-content: center;
-    }
+    } */
 }
 
 .gslide-description {
-
-    &.left-position,
-    &.right-position {
-        padding: 30px;
-        background: #fff;
-        max-width: 300px;
-        min-width: 190px;
-    }
-
-    .bottom-position,
-    .top-position{
-        padding: 30px;
-        background: #fff;
-        width: 100%;
-        display: inline-block;
-        min-width: 190px;
-    }
+    float: left;
 
     &.description-left,
     &.description-right {
@@ -330,7 +354,7 @@
         transition: opacity .5s ease;
         opacity: .4;
     }
-    .gslide-description {
+    .gdesc-inner {
         padding-bottom: 30px;
     }
 }
@@ -383,6 +407,10 @@
     @media (--medium-small-viewport) {
         background: rgba(0, 0, 0, .92);
     }
+
+    @media screen and (max-height: 420px) {
+        background: #000;
+    }
 }
 
 
@@ -430,6 +458,9 @@ iframe.wait-autoplay {
 
     .gslide-description {
         background: #fff;
+    }
+
+    .gdesc-inner {
         padding: 22px 20px;
     }
 
