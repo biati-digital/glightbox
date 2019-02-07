@@ -721,10 +721,10 @@ function setSlideVideo(slide, data, callback) {
 
         injectVideoApi(this.settings.youtube.api);
 
-        const finalCallback = function() {
+        const finalCallback = () => {
             if (!utils.isNil(YT) && YT.loaded) {
-                const player = new YT.Player(iframe)
-                videoPlayers[videoID] = player
+                const player = new YT.Player(iframe);
+                videoPlayers[videoID] = player;
             } else {
                 YTTemp.push(iframe)
             }
@@ -950,7 +950,7 @@ function waitUntil(check, onComplete, delay, timeout) {
     }
 
     if (!delay) delay = 100;
-
+    let timeoutPointer;
     let intervalPointer = setInterval(() => {
         if (!check()) return;
         clearInterval(intervalPointer);
@@ -1723,32 +1723,42 @@ class GlightboxInit {
 
     playSlideVideo(slide){
         if (utils.isNumber(slide)) {
-            slide = this.slidesContainer.querySelectorAll('.gslide')[slide]
+            slide = this.slidesContainer.querySelectorAll('.gslide')[slide];
         }
-        let slideVideo = slide.querySelector('.gvideo')
+        const slideVideo = slide.querySelector('.gvideo');
         if (!slideVideo) {
-            return false
+            return false;
         }
 
-        let videoID = slideVideo.id
-        if (videoPlayers && videoPlayers.hasOwnProperty(videoID)) {
-            let player = videoPlayers[videoID]
-            if (hasClass(slideVideo, 'vimeo-video')) {
-                player.play()
-            }
-            if (hasClass(slideVideo, 'youtube-video')) {
-                player.playVideo()
-            }
-            if (hasClass(slideVideo, 'jw-video')) {
-                player.play()
-            }
-            if (hasClass(slideVideo, 'html5-video')) {
-                player.play()
-            }
-            setTimeout(() => {
-                removeClass(slideVideo, 'wait-autoplay')
-            }, 300);
-            return false
+        let videoID = slideVideo.id;
+        if (videoPlayers && (videoPlayers.hasOwnProperty(videoID) || hasClass(slideVideo, 'wait-autoplay'))) {
+            waitUntil(() => {
+                return hasClass(slideVideo, 'iframe-ready') && utils.has(videoPlayers, videoID);
+            }, () => {
+                let player = videoPlayers[videoID]
+
+                if (hasClass(slideVideo, 'vimeo-video')) {
+                    waitUntil(() => { return player.play;
+                    }, () => { player.play(); })
+                }
+                if (hasClass(slideVideo, 'youtube-video')) {
+                    waitUntil(() => { return player.playVideo;
+                    }, () => { player.playVideo(); })
+                }
+                if (hasClass(slideVideo, 'jw-video')) {
+                    waitUntil(() => { return player.play;
+                    }, () => { player.play(); })
+                }
+                if (hasClass(slideVideo, 'html5-video')) {
+                    player.play();
+                }
+                setTimeout(() => {
+                    removeClass(slideVideo, 'wait-autoplay')
+                }, 300);
+
+            }, 50, 4000);
+
+            return false;
         }
     }
 

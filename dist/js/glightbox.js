@@ -1002,7 +1002,7 @@
         }
 
         if (!delay) delay = 100;
-
+        var timeoutPointer = void 0;
         var intervalPointer = setInterval(function () {
             if (!check()) return;
             clearInterval(intervalPointer);
@@ -1758,23 +1758,41 @@
                 }
 
                 var videoID = slideVideo.id;
-                if (videoPlayers && videoPlayers.hasOwnProperty(videoID)) {
-                    var player = videoPlayers[videoID];
-                    if (hasClass(slideVideo, 'vimeo-video')) {
-                        player.play();
-                    }
-                    if (hasClass(slideVideo, 'youtube-video')) {
-                        player.playVideo();
-                    }
-                    if (hasClass(slideVideo, 'jw-video')) {
-                        player.play();
-                    }
-                    if (hasClass(slideVideo, 'html5-video')) {
-                        player.play();
-                    }
-                    setTimeout(function () {
-                        removeClass(slideVideo, 'wait-autoplay');
-                    }, 300);
+                if (videoPlayers && (videoPlayers.hasOwnProperty(videoID) || hasClass(slideVideo, 'wait-autoplay'))) {
+                    waitUntil(function () {
+                        return hasClass(slideVideo, 'iframe-ready') && utils.has(videoPlayers, videoID);
+                    }, function () {
+                        var player = videoPlayers[videoID];
+
+                        if (hasClass(slideVideo, 'vimeo-video')) {
+                            waitUntil(function () {
+                                return player.play;
+                            }, function () {
+                                player.play();
+                            });
+                        }
+                        if (hasClass(slideVideo, 'youtube-video')) {
+                            waitUntil(function () {
+                                return player.playVideo;
+                            }, function () {
+                                player.playVideo();
+                            });
+                        }
+                        if (hasClass(slideVideo, 'jw-video')) {
+                            waitUntil(function () {
+                                return player.play;
+                            }, function () {
+                                player.play();
+                            });
+                        }
+                        if (hasClass(slideVideo, 'html5-video')) {
+                            player.play();
+                        }
+                        setTimeout(function () {
+                            removeClass(slideVideo, 'wait-autoplay');
+                        }, 300);
+                    }, 50, 4000);
+
                     return false;
                 }
             }
