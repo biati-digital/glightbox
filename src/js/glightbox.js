@@ -628,7 +628,12 @@ const setSlideContent = function setSlideContent(slide = null, data = { }, callb
     }
 
     if (type === 'external') {
-        let iframe = createIframe(data.href, data.width, data.height, finalCallback)
+        let iframe = createIframe({
+            url: data.href,
+            width: data.width,
+            height: data.height,
+            callback: finalCallback,
+        })
         slideMedia.appendChild(iframe);
         return
     }
@@ -678,7 +683,7 @@ function setSlideVideo(slide, data, callback) {
     if (url.match(/vimeo\.com\/([0-9]*)/)) {
         const vimeoID = /vimeo.*\/(\d+)/i.exec( url );
         const params = parseUrlParams(this.settings.vimeo.params);
-        const video_url = `${protocol}://player.vimeo.com/video/${vimeoID[1]}?${params}`
+        const videoUrl = `${protocol}://player.vimeo.com/video/${vimeoID[1]}?${params}`
 
         injectVideoApi(this.settings.vimeo.api);
 
@@ -695,13 +700,16 @@ function setSlideVideo(slide, data, callback) {
             });
         }
 
-        // const iframe = createIframe(video_url, data.width, data.height, finalCallback, slideMedia);
-
         slideMedia.parentNode.style.maxWidth = `${data.width}px`;
         slideMedia.style.width = `${data.width}px`;
         slideMedia.style.maxHeight = `${data.height}px`;
 
-        const iframe = createIframe(video_url, null, '', finalCallback, slideMedia);
+        const iframe = createIframe({
+            url: videoUrl,
+            callback: finalCallback,
+            allow: 'autoplay; fullscreen',
+            appendTo: slideMedia
+        });
         iframe.id = videoID;
         iframe.className = 'vimeo-video gvideo';
 
@@ -737,7 +745,12 @@ function setSlideVideo(slide, data, callback) {
         slideMedia.style.width = `${data.width}px`;
         slideMedia.style.maxHeight = `${data.height}px`;
 
-        const iframe = createIframe(videoUrl, '', '', finalCallback, slideMedia)
+        const iframe = createIframe({
+            url: videoUrl,
+            callback: finalCallback,
+            allow: 'autoplay; fullscreen',
+            appendTo: slideMedia
+        })
         iframe.id = videoID
         iframe.className = 'youtube-video gvideo';
 
@@ -827,7 +840,8 @@ function setSlideVideo(slide, data, callback) {
  * @param {numeric} height
  * @param {function} callback
  */
-function createIframe(url, width = '', height = '', callback, appendTo) {
+function createIframe(config) {
+    let { url, width, height, allow, callback, appendTo } = config;
     let iframe = document.createElement('iframe');
     let winWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
     iframe.className = 'vimeo-video gvideo';
@@ -840,11 +854,12 @@ function createIframe(url, width = '', height = '', callback, appendTo) {
             iframe.style.height = `${height}px`
         }
     }
-
     if (width) {
         iframe.style.width = `${width}px`
     }
-    iframe.setAttribute('allowFullScreen', '')
+    if (allow) {
+        iframe.setAttribute('allow', allow)
+    }
     iframe.onload = function() {
         addClass(iframe, 'iframe-ready');
         if (utils.isFunction(callback)) {
@@ -1731,7 +1746,7 @@ class GlightboxInit {
         }
 
         let videoID = slideVideo.id;
-        if (videoPlayers && (videoPlayers.hasOwnProperty(videoID) || hasClass(slideVideo, 'wait-autoplay'))) {
+        if (videoPlayers && (utils.has(videoPlayers, videoID) || hasClass(slideVideo, 'wait-autoplay'))) {
             waitUntil(() => {
                 return hasClass(slideVideo, 'iframe-ready') && utils.has(videoPlayers, videoID);
             }, () => {

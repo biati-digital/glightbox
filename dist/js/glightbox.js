@@ -684,7 +684,12 @@
         }
 
         if (type === 'external') {
-            var iframe = createIframe(data.href, data.width, data.height, finalCallback);
+            var iframe = createIframe({
+                url: data.href,
+                width: data.width,
+                height: data.height,
+                callback: finalCallback
+            });
             slideMedia.appendChild(iframe);
             return;
         }
@@ -734,7 +739,7 @@
         if (url.match(/vimeo\.com\/([0-9]*)/)) {
             var vimeoID = /vimeo.*\/(\d+)/i.exec(url);
             var params = parseUrlParams(this.settings.vimeo.params);
-            var video_url = protocol + '://player.vimeo.com/video/' + vimeoID[1] + '?' + params;
+            var videoUrl = protocol + '://player.vimeo.com/video/' + vimeoID[1] + '?' + params;
 
             injectVideoApi(this.settings.vimeo.api);
 
@@ -751,13 +756,16 @@
                 });
             };
 
-            // const iframe = createIframe(video_url, data.width, data.height, finalCallback, slideMedia);
-
             slideMedia.parentNode.style.maxWidth = data.width + 'px';
             slideMedia.style.width = data.width + 'px';
             slideMedia.style.maxHeight = data.height + 'px';
 
-            var iframe = createIframe(video_url, null, '', finalCallback, slideMedia);
+            var iframe = createIframe({
+                url: videoUrl,
+                callback: finalCallback,
+                allow: 'autoplay; fullscreen',
+                appendTo: slideMedia
+            });
             iframe.id = videoID;
             iframe.className = 'vimeo-video gvideo';
 
@@ -773,7 +781,7 @@
             });
             var yparams = parseUrlParams(youtubeParams);
             var youtubeID = getYoutubeID(url);
-            var videoUrl = protocol + '://www.youtube.com/embed/' + youtubeID + '?' + yparams;
+            var _videoUrl = protocol + '://www.youtube.com/embed/' + youtubeID + '?' + yparams;
 
             injectVideoApi(this.settings.youtube.api);
 
@@ -793,7 +801,12 @@
             slideMedia.style.width = data.width + 'px';
             slideMedia.style.maxHeight = data.height + 'px';
 
-            var _iframe = createIframe(videoUrl, '', '', _finalCallback, slideMedia);
+            var _iframe = createIframe({
+                url: _videoUrl,
+                callback: _finalCallback,
+                allow: 'autoplay; fullscreen',
+                appendTo: slideMedia
+            });
             _iframe.id = videoID;
             _iframe.className = 'youtube-video gvideo';
 
@@ -881,11 +894,13 @@
      * @param {numeric} height
      * @param {function} callback
      */
-    function createIframe(url) {
-        var width = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
-        var height = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
-        var callback = arguments[3];
-        var appendTo = arguments[4];
+    function createIframe(config) {
+        var url = config.url,
+            width = config.width,
+            height = config.height,
+            allow = config.allow,
+            callback = config.callback,
+            appendTo = config.appendTo;
 
         var iframe = document.createElement('iframe');
         var winWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
@@ -899,11 +914,12 @@
                 iframe.style.height = height + 'px';
             }
         }
-
         if (width) {
             iframe.style.width = width + 'px';
         }
-        iframe.setAttribute('allowFullScreen', '');
+        if (allow) {
+            iframe.setAttribute('allow', allow);
+        }
         iframe.onload = function () {
             addClass(iframe, 'iframe-ready');
             if (utils.isFunction(callback)) {
@@ -1758,7 +1774,7 @@
                 }
 
                 var videoID = slideVideo.id;
-                if (videoPlayers && (videoPlayers.hasOwnProperty(videoID) || hasClass(slideVideo, 'wait-autoplay'))) {
+                if (videoPlayers && (utils.has(videoPlayers, videoID) || hasClass(slideVideo, 'wait-autoplay'))) {
                     waitUntil(function () {
                         return hasClass(slideVideo, 'iframe-ready') && utils.has(videoPlayers, videoID);
                     }, function () {
