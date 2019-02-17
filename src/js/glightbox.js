@@ -7,7 +7,6 @@
 const isMobile = navigator.userAgent.match(/(iPad)|(iPhone)|(iPod)|(Android)|(PlayBook)|(BB10)|(BlackBerry)|(Opera Mini)|(IEMobile)|(webOS)|(MeeGo)/i);
 const isTouch = isMobile !== null || document.createTouch !== undefined || ('ontouchstart' in window) || ('onmsgesturechange' in window) || navigator.msMaxTouchPoints;
 const html = document.getElementsByTagName('html')[0];
-const body = document.body;
 const transitionEnd = whichTransitionEvent();
 const animationEnd = whichAnimationEvent();
 const uid = Date.now();
@@ -1442,6 +1441,7 @@ class GlightboxInit {
         this.build()
         animateElement(this.overlay, (this.settings.openEffect == 'none' ? 'none' : this.settings.cssEfects.fade.in))
 
+        const body = document.body;
         body.style.width = `${body.offsetWidth}px`
 
         addClass(body, 'glightbox-open')
@@ -1950,6 +1950,7 @@ class GlightboxInit {
                 }
             }
 
+            const body = document.body;
             removeClass(body, 'glightbox-open')
             removeClass(html, 'glightbox-open')
             removeClass(body, 'touching')

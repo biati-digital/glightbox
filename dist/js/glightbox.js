@@ -52,7 +52,6 @@
     var isMobile = navigator.userAgent.match(/(iPad)|(iPhone)|(iPod)|(Android)|(PlayBook)|(BB10)|(BlackBerry)|(Opera Mini)|(IEMobile)|(webOS)|(MeeGo)/i);
     var isTouch = isMobile !== null || document.createTouch !== undefined || 'ontouchstart' in window || 'onmsgesturechange' in window || navigator.msMaxTouchPoints;
     var html = document.getElementsByTagName('html')[0];
-    var body = document.body;
     var transitionEnd = whichTransitionEvent();
     var animationEnd = whichAnimationEvent();
     var uid = Date.now();
@@ -1495,6 +1494,7 @@
                 this.build();
                 animateElement(this.overlay, this.settings.openEffect == 'none' ? 'none' : this.settings.cssEfects.fade.in);
 
+                var body = document.body;
                 body.style.width = body.offsetWidth + 'px';
 
                 addClass(body, 'glightbox-open');
@@ -1973,6 +1973,7 @@
                         }
                     }
 
+                    var body = document.body;
                     removeClass(body, 'glightbox-open');
                     removeClass(html, 'glightbox-open');
                     removeClass(body, 'touching');
