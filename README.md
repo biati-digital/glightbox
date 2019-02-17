@@ -47,11 +47,17 @@ Feel free to report any issues! If you wish to contribute by fixing a bug or imp
 
 
 ## Changelog
+### 2.0.0
+- Fixed youtube, vimeo autoplay when changing slides
+- Fixed lightbox won't fit screen with description
+- Fixed Removed global body variable that was causing some problems
+- New: Delegated permissions to cross-origin iframes (for the new browsers autoplay restrictions)
+
 ### 1.0.9
 - Added svg to source types so it can be displayed as an image [@tuomassalo](https://github.com/mcstudios/glightbox/pull/40)
+- Added contributing file
 - Updated dependencies [@tuomassalo](https://github.com/mcstudios/glightbox/pull/40).
 - Removed demo folder from npm
-- Added contributing file
 
 ### 1.0.8
 - New: You can define each slide option in a different data attribute (data-title="example" data-description="...")
