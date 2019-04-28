@@ -689,6 +689,7 @@
                 height: data.height,
                 callback: finalCallback
             });
+            slideMedia.parentNode.style.maxWidth = data.width + 'px';
             slideMedia.appendChild(iframe);
             return;
         }
@@ -1173,6 +1174,8 @@
 
         var winWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
         var winHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+        var body = document.body;
+
         this.events['doctouchmove'] = addEvent('touchmove', {
             onElement: document,
             withCallback: function withCallback(e, target) {
@@ -1180,7 +1183,7 @@
                     e.preventDefault();
                     return false;
                 }
-            }
+            }, useCapture: { passive: false }
         });
 
         this.events['touchStart'] = addEvent('touchstart', {
@@ -1298,7 +1301,7 @@
                     }
                     slideCSSTransform(activeSlideMedia, 'translate3d(' + hDistancePercent + '%, 0, 0)');
                 }
-            }
+            }, useCapture: { passive: false }
         });
 
         this.events['touchEnd'] = addEvent('touchend', {
@@ -1417,6 +1420,8 @@
             onElement: moreLink,
             withCallback: function withCallback(event, target) {
                 event.preventDefault();
+                var body = document.body;
+
                 var desc = getClosest(target, '.gslide-desc');
                 if (!desc) {
                     return false;

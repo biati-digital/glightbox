@@ -633,6 +633,7 @@ const setSlideContent = function setSlideContent(slide = null, data = { }, callb
             height: data.height,
             callback: finalCallback,
         })
+        slideMedia.parentNode.style.maxWidth = `${data.width}px`;
         slideMedia.appendChild(iframe);
         return
     }
@@ -1123,6 +1124,8 @@ function touchNavigation() {
 
     let winWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
     let winHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+    let body = document.body;
+
     this.events['doctouchmove'] = addEvent('touchmove', {
         onElement: document,
         withCallback: (e, target) => {
@@ -1130,7 +1133,7 @@ function touchNavigation() {
                 e.preventDefault()
                 return false
             }
-        }
+        }, useCapture: { passive: false }
     })
 
 
@@ -1248,7 +1251,7 @@ function touchNavigation() {
                 }
                 slideCSSTransform(activeSlideMedia, `translate3d(${hDistancePercent}%, 0, 0)`)
             }
-        }
+        }, useCapture: { passive: false }
     })
 
 
@@ -1371,6 +1374,8 @@ function slideDescriptionEvents(desc, data) {
         onElement: moreLink,
         withCallback: (event, target) => {
             event.preventDefault();
+            const body = document.body
+
             let desc = getClosest(target, '.gslide-desc')
             if (!desc) {
                 return false
