@@ -47,6 +47,10 @@ Feel free to report any issues! If you wish to contribute by fixing a bug or imp
 
 
 ## Changelog
+### 2.0.1
+- Fixed Mobile navigation
+- Fixed slide width for external sources
+
 ### 2.0.0
 - Fixed youtube, vimeo autoplay when changing slides
 - Fixed lightbox won't fit screen with description
