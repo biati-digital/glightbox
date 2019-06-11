@@ -28,6 +28,14 @@ Or manually download and link `glightbox.min.js` in your HTML:
 
 For more information please check the demo site.
 
+## Development
+
+```bash
+$ npm install
+$ npx gulp watch
+$ npx http-server .
+```
+
 ## Browser Support
 
 GLightbox was tested in the following browsers.
