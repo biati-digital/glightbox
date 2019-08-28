@@ -284,17 +284,6 @@ GLightbox was tested in the following browsers.
 
 It will work in any browser that supports css Flexbox
 
-
-## Development
-
-Just run the following commands and that's it. make sure to modify the files inside the src folder, they will be automatically processed and copied to the dist folder.
-
-```bash
-$ npm install
-$ npm run watch
-```
-
-
 ## Contributing
 
 Feel free to report any issues! If you wish to contribute by fixing a bug or implementing a new feature, please first read the [CONTRIBUTING](./CONTRIBUTING.md) guide.
