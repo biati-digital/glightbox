@@ -269,8 +269,7 @@ lightbox.open();
 
 ```bash
 $ npm install
-$ npx gulp watch
-$ npx http-server .
+$ npm run watch
 ```
 
 ## Browser Support
