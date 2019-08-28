@@ -3,7 +3,7 @@
 Glightbox is a pure javascript lightbox. It can display images, iframes, inline content and videos with optional autoplay for youtube, vimeo and even self hosted videos.
 
 ## Features
-- **Small** - only 9kb Gzipped
+- **Small** - only 9KB Gzipped
 - **Responsive** - works with any screen size
 - **Gallery Support** - Create multiple galleries
 - **Video Support** - Youtube, Vimeo and self hosted videos with autoplay
