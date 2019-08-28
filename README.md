@@ -185,7 +185,7 @@ afterSlideLoad       | Trigger a function after a slide is loaded for the first 
 
 ## Video player
 
-Starting from version 2.0.3 glightbox droped support of JWPlayer because that player implemented new restrictions for the free edition, it was replaced with an awesome new player "[Plyr](https://plyr.io/)" that also includes support for youtube and vimeo. So instead of mainating 3 different apis now we only can focus on one. You can pass any Plyr option to the player, view all available options here [Plyr options](https://github.com/sampotts/plyr).
+Starting from version 2.0.2 glightbox droped support of JWPlayer because that player implemented new restrictions for the free edition, it was replaced with an awesome new player "[Plyr](https://plyr.io/)" that also includes support for youtube and vimeo. So instead of mainating 3 different apis now we only can focus on one. You can pass any Plyr option to the player, view all available options here [Plyr options](https://github.com/sampotts/plyr).
 
 Please note that GLightbox will only inject the video player library if required and only when the lightbox is opened.
 
