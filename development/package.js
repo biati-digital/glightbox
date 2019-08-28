@@ -15,7 +15,7 @@ async function createFolder() {
     jetpack.copy(folder, tmpfolder, {
         matching: ['!node_modules', '!node_modules/**/*', '!.git', '!.git/**/*', '!.github', '!.github/**/*', '!.vscode', '!.vscode/**/*', '!*.psd', '!.DS_Store']
     });
-    notify('Created folder', `Created end folder correctly`);
+    notify('Created folder', `Created folder correctly`);
 
     const zip = await createZip(tmpfolder).catch(error => {
         jetpack.remove(tmpfolder);
