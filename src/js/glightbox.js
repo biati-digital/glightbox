@@ -1,8 +1,10 @@
 /**
- * GLightbox v2.0.0
+ * GLightbox v2.0.2
  * Awesome pure javascript lightbox
- * made by mcstudios.com.mx
+ * made by https://www.biati.digital
  */
+
+import TouchEvents from './touch-events';
 
 const isMobile = navigator.userAgent.match(/(iPad)|(iPhone)|(iPod)|(Android)|(PlayBook)|(BB10)|(BlackBerry)|(Opera Mini)|(IEMobile)|(webOS)|(MeeGo)/i);
 const isTouch = isMobile !== null || document.createTouch !== undefined || ('ontouchstart' in window) || ('onmsgesturechange' in window) || navigator.msMaxTouchPoints;
@@ -11,21 +13,20 @@ const transitionEnd = whichTransitionEvent();
 const animationEnd = whichAnimationEvent();
 const uid = Date.now();
 
-let YTTemp = [];
 let videoPlayers = { }
 
 // Default settings
 const defaults = {
     selector: 'glightbox',
+    elements: null,
     skin: 'clean',
     closeButton: true,
-    startAt: 0,
+    startAt: null,
     autoplayVideos: true,
     descPosition: 'bottom',
     width: 900,
     height: 506,
     videosWidth: 960,
-    videosHeight: 540,
     beforeSlideChange: null,
     afterSlideChange: null,
     beforeSlideLoad: null,
@@ -36,29 +37,22 @@ const defaults = {
     touchNavigation: true,
     keyboardNavigation: true,
     closeOnOutsideClick: true,
-    jwplayer: {
-        api: null,
-        licenseKey: null,
-        params: {
-            width: '100%',
-            aspectratio: '16:9',
-            stretching: 'uniform',
-        }
-    },
-    vimeo: {
-        api: 'https://player.vimeo.com/api/player.js',
-        params: {
-            api: 1,
-            title: 0,
-            byline: 0,
-            portrait: 0
-        }
-    },
-    youtube: {
-        api: 'https://www.youtube.com/iframe_api',
-        params: {
-            enablejsapi: 1,
-            showinfo: 0
+    plyr: {
+        css: 'https://cdn.plyr.io/3.5.6/plyr.css',
+        js: 'https://cdn.plyr.io/3.5.6/plyr.js',
+        config: {
+            youtube: {
+                noCookie: true,
+                rel: 0,
+                showinfo: 0,
+                iv_load_policy: 3
+            },
+            vimeo: {
+                byline: false,
+                portrait: false,
+                title: false,
+                transparent: false
+            }
         }
     },
     openEffect: 'zoomIn', // fade, zoom, none
@@ -105,9 +99,9 @@ const lightboxHtml = '<div id="glightbox-body" class="glightbox-container">\
             <div class="goverlay"></div>\
             <div class="gcontainer">\
                <div id="glightbox-slider" class="gslider"></div>\
-               <a class="gnext"></a>\
-               <a class="gprev"></a>\
-               <a class="gclose"></a>\
+               <button class="gnext gbtn" tabindex="0"></button>\
+               <button class="gprev gbtn" tabindex="1"></button>\
+               <button class="gclose gbtn" tabindex="2"></button>\
             </div>\
    </div>';
 defaults.lightboxHtml = lightboxHtml;
@@ -196,7 +190,7 @@ const utils = {
 /**
  * Each
  *
- * @param {mixed} node lisy, array, object
+ * @param {mixed} node list, array, object
  * @param {function} callback
  */
 function each(collection, callback) {
@@ -306,14 +300,7 @@ function addEvent(eventName, {
  * @param {string} class name
  */
 function addClass(node, name) {
-    if (hasClass(node, name)) {
-        return;
-    }
-    if (node.classList) {
-        node.classList.add(name)
-    } else {
-        node.className += " " + name
-    }
+    each(name.split(' '), cl => node.classList.add(cl))
 }
 
 /**
@@ -323,16 +310,7 @@ function addClass(node, name) {
  * @param {string} class name
  */
 function removeClass(node, name) {
-    let c = name.split(' ')
-    if (c.length > 1) {
-        each(c, (cl) => { removeClass(node, cl) })
-        return;
-    }
-    if (node.classList) {
-        node.classList.remove(name)
-    } else {
-        node.className = node.className.replace(name, "")
-    }
+    each(name.split(' '), cl => node.classList.remove(cl) )
 }
 
 /**
@@ -342,7 +320,7 @@ function removeClass(node, name) {
  * @param {string} class name
  */
 function hasClass(node, name) {
-    return (node.classList ? node.classList.contains(name) : new RegExp("(^| )" + name + "( |$)", "gi").test(node.className));
+    return node.classList.contains(name);
 }
 
 
@@ -484,6 +462,8 @@ const getSlideData = function getSlideData(element = null, settings) {
         description: '',
         descPosition: 'bottom',
         effect: '',
+        width: '',
+        height: '',
         node: element
     };
 
@@ -552,7 +532,7 @@ const getSlideData = function getSlideData(element = null, settings) {
     }
 
     const defaultWith = (data.type == 'video' ? settings.videosWidth : settings.width);
-    const defaultHeight = (data.type == 'video' ? settings.videosHeight : settings.height);
+    const defaultHeight = settings.height;
 
     data.width = (utils.has(data, 'width') ? data.width : defaultWith);
     data.height = (utils.has(data, 'height') ? data.height : defaultHeight);
@@ -669,166 +649,85 @@ const setSlideContent = function setSlideContent(slide = null, data = { }, callb
  */
 function setSlideVideo(slide, data, callback) {
     const videoID = 'gvideo' + data.index;
-    // const slideMedia = slide.querySelector('.gslide-media');
     const slideMedia = slide.querySelector('.gvideo-wrapper');
+
+    injectVideoApi(this.settings.plyr.css);
 
     let url = data.href;
     let protocol = location.protocol.replace(':', '');
+    let videoSource = '';
+    let embedID = '';
+    let customPlaceholder = false;
 
     if (protocol == 'file') {
         protocol = 'http'
     }
 
-    // Set vimeo videos
-    if (url.match(/vimeo\.com\/([0-9]*)/)) {
-        const vimeoID = /vimeo.*\/(\d+)/i.exec( url );
-        const params = parseUrlParams(this.settings.vimeo.params);
-        const videoUrl = `${protocol}://player.vimeo.com/video/${vimeoID[1]}?${params}`
+    slideMedia.parentNode.style.maxWidth = `${data.width}px`;
 
-        injectVideoApi(this.settings.vimeo.api);
+    injectVideoApi(this.settings.plyr.js, 'Plyr', () => {
 
-        const finalCallback = function () {
-            waitUntil(() => {
-                return typeof Vimeo !== 'undefined';
-            }, () => {
-                const player = new Vimeo.Player(iframe)
-                videoPlayers[videoID] = player;
+        // Set vimeo videos
+        if (url.match(/vimeo\.com\/([0-9]*)/)) {
+            const vimeoID = /vimeo.*\/(\d+)/i.exec(url);
+            videoSource = 'vimeo';
+            embedID = vimeoID[1];
+        }
 
-                if (utils.isFunction(callback)) {
-                    callback()
+        // Set youtube videos
+        if (url.match(/(youtube\.com|youtube-nocookie\.com)\/watch\?v=([a-zA-Z0-9\-_]+)/) || url.match(/youtu\.be\/([a-zA-Z0-9\-_]+)/)) {
+            const youtubeID = getYoutubeID(url)
+            videoSource = 'youtube';
+            embedID = youtubeID;
+        }
+
+        // Set local videos
+        if (url.match(/\.(mp4|ogg|webm)$/) !== null) {
+            videoSource = 'local'
+            let html = '<video id="' + videoID + '" ';
+            html += `style="background:#000; max-width: ${data.width}px;" `;
+            html += 'preload="metadata" ';
+            html += 'x-webkit-airplay="allow" ';
+            html += 'webkit-playsinline="" ';
+            html += 'controls ';
+            html += 'class="gvideo-local">';
+
+            let format = url.toLowerCase().split('.').pop()
+            let sources = {'mp4': '', 'ogg': '', 'webm': ''}
+            sources[format] = url;
+
+            for (let key in sources) {
+                if (sources.hasOwnProperty(key)) {
+                    let videoFile = sources[key]
+                    if (data.hasOwnProperty(key)) {
+                        videoFile = data[key]
+                    }
+                    if (videoFile !== '') {
+                        html += `<source src="${videoFile}" type="video/${key}">`;
+                    }
                 }
-            });
-        }
-
-        slideMedia.parentNode.style.maxWidth = `${data.width}px`;
-        slideMedia.style.width = `${data.width}px`;
-        slideMedia.style.maxHeight = `${data.height}px`;
-
-        const iframe = createIframe({
-            url: videoUrl,
-            callback: finalCallback,
-            allow: 'autoplay; fullscreen',
-            appendTo: slideMedia
-        });
-        iframe.id = videoID;
-        iframe.className = 'vimeo-video gvideo';
-
-        if (this.settings.autoplayVideos && !isMobile) {
-            iframe.className += ' wait-autoplay';
-        }
-    }
-
-    // Set youtube videos
-    if (url.match(/(youtube\.com|youtube-nocookie\.com)\/watch\?v=([a-zA-Z0-9\-_]+)/) || url.match(/youtu\.be\/([a-zA-Z0-9\-_]+)/)) {
-        const youtubeParams = extend(this.settings.youtube.params, {
-            playerapiid: videoID
-        })
-        const yparams = parseUrlParams(youtubeParams)
-        const youtubeID = getYoutubeID(url)
-        const videoUrl = `${protocol}://www.youtube.com/embed/${youtubeID}?${yparams}`
-
-        injectVideoApi(this.settings.youtube.api);
-
-        const finalCallback = () => {
-            if (!utils.isNil(YT) && YT.loaded) {
-                const player = new YT.Player(iframe);
-                videoPlayers[videoID] = player;
-            } else {
-                YTTemp.push(iframe)
             }
+            html += '</video>';
+            customPlaceholder = createHTML(html);
+        }
+
+        const placeholder = customPlaceholder ? customPlaceholder : createHTML(`<div id="${videoID}" data-plyr-provider="${videoSource}" data-plyr-embed-id="${embedID}"></div>`)
+
+        addClass(slideMedia, `${videoSource}-video gvideo`)
+        slideMedia.appendChild(placeholder)
+        slideMedia.setAttribute('data-id', videoID)
+
+        const playerConfig = utils.has(this.settings.plyr, 'config') ? this.settings.plyr.config : {};
+        const player = new Plyr('#' + videoID, playerConfig);
+
+        player.on('ready', event => {
+            const instance = event.detail.plyr;
+            videoPlayers[videoID] = instance;
             if (utils.isFunction(callback)) {
                 callback()
             }
-        }
-
-        slideMedia.parentNode.style.maxWidth = `${data.width}px`;
-        slideMedia.style.width = `${data.width}px`;
-        slideMedia.style.maxHeight = `${data.height}px`;
-
-        const iframe = createIframe({
-            url: videoUrl,
-            callback: finalCallback,
-            allow: 'autoplay; fullscreen',
-            appendTo: slideMedia
-        })
-        iframe.id = videoID
-        iframe.className = 'youtube-video gvideo';
-
-        if (this.settings.autoplayVideos && !isMobile) {
-            iframe.className += ' wait-autoplay';
-        }
-    }
-
-
-    // Set local videos
-    if (url.match(/\.(mp4|ogg|webm)$/) !== null) {
-        let html = '<video id="' + videoID + '" ';
-        html += `style="background:#000; width: ${data.width}px; height: ${data.height}px;" `;
-        html += 'preload="metadata" ';
-        html += 'x-webkit-airplay="allow" ';
-        html += 'webkit-playsinline="" ';
-        html += 'controls ';
-        html += 'class="gvideo">';
-
-        let format = url.toLowerCase().split('.').pop()
-        let sources = {'mp4': '', 'ogg': '', 'webm': ''}
-        sources[format] = url;
-
-        for (let key in sources) {
-            if (sources.hasOwnProperty(key)) {
-                let videoFile = sources[key]
-                if (data.hasOwnProperty(key)) {
-                    videoFile = data[key]
-                }
-                if (videoFile !== '') {
-                    html += `<source src="${videoFile}" type="video/${key}">`;
-                }
-            }
-        }
-
-        html += '</video>';
-
-        let video = createHTML(html);
-        slideMedia.appendChild(video)
-
-        let vnode = document.getElementById(videoID)
-        if (this.settings.jwplayer !== null && this.settings.jwplayer.api !== null) {
-            let jwplayerConfig = this.settings.jwplayer
-            let jwplayerApi = this.settings.jwplayer.api
-
-            if (!jwplayerApi) {
-                console.warn('Missing jwplayer api file');
-                if (utils.isFunction(callback)) callback()
-                return false
-            }
-
-            injectVideoApi(jwplayerApi, () => {
-                const jwconfig = extend(this.settings.jwplayer.params, {
-                    width: `${data.width}px`,
-                    height: `${data.height}px`,
-                    file: url
-                })
-
-                jwplayer.key = this.settings.jwplayer.licenseKey;
-
-                const player = jwplayer(videoID);
-
-                player.setup(jwconfig);
-
-                videoPlayers[videoID] = player;
-                player.on('ready', () => {
-                    vnode = slideMedia.querySelector('.jw-video')
-                    addClass(vnode, 'gvideo')
-                    vnode.id = videoID
-                    if (utils.isFunction(callback)) callback()
-                })
-            })
-        } else{
-            addClass(vnode, 'html5-video')
-            videoPlayers[videoID] = vnode
-            if (utils.isFunction(callback)) callback()
-        }
-    }
+        });
+    })
 }
 
 
@@ -861,7 +760,7 @@ function createIframe(config) {
         iframe.setAttribute('allow', allow)
     }
     iframe.onload = function() {
-        addClass(iframe, 'iframe-ready');
+        addClass(iframe, 'node-ready');
         if (utils.isFunction(callback)) {
             callback()
         }
@@ -872,9 +771,6 @@ function createIframe(config) {
     }
     return iframe;
 }
-
-
-
 
 
 /**
@@ -898,53 +794,82 @@ function getYoutubeID(url) {
 
 /**
  * Inject videos api
- * used for youtube, vimeo and jwplayer
+ * used for video player
  *
  * @param {string} url
  * @param {function} callback
  */
-function injectVideoApi(url, callback) {
+function injectVideoApi(url, waitFor, callback) {
     if (utils.isNil(url)) {
         console.error('Inject videos api error');
         return;
     }
-    let found = document.querySelectorAll('script[src="' + url + '"]')
-    if (utils.isNil(found) || found.length == 0) {
-        let script = document.createElement('script');
-        script.type = 'text/javascript';
-        script.src = url;
-        script.onload = () => {
+    if (utils.isFunction(waitFor)) {
+        callback = waitFor;
+        waitFor = false;
+    }
+
+    let found;
+
+    if (url.indexOf('.css') !== -1) {
+        found = document.querySelectorAll('link[href="' + url + '"]')
+        if (found && found.length > 0) {
             if (utils.isFunction(callback)) callback();
-        };
-        document.body.appendChild(script);
-        return false;
-    }
-    if (utils.isFunction(callback)) callback();
-}
+            return;
+        }
 
+        const head = document.getElementsByTagName("head")[0];
+        const headStyles = head.querySelectorAll('link[rel="stylesheet"]');
+        const link = document.createElement('link');
 
-/**
- * Handle youtube Api
- * This is a simple fix, when the video
- * is ready sometimes the youtube api is still
- * loading so we can not autoplay or pause
- * we need to listen onYouTubeIframeAPIReady and
- * register the videos if required
- */
-function youtubeApiHandle() {
-    for (let i = 0; i < YTTemp.length; i++) {
-        const iframe = YTTemp[i];
-        const player = new YT.Player(iframe);
-        videoPlayers[iframe.id] = player
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = url;
+        link.media = 'all';
+
+        if (headStyles) {
+            head.insertBefore(link, headStyles[0]);
+        } else {
+            head.appendChild(link);
+        }
+        if (utils.isFunction(callback)) callback();
+        return;
     }
-}
-if (typeof window.onYouTubeIframeAPIReady !== 'undefined') {
-    window.onYouTubeIframeAPIReady = function(){
-        window.onYouTubeIframeAPIReady()
-        youtubeApiHandle()
+
+    found = document.querySelectorAll('script[src="' + url + '"]')
+    if (found && found.length > 0) {
+        if (utils.isFunction(callback)) {
+            if (utils.isString(waitFor)) {
+                waitUntil(() => {
+                    return typeof window[waitFor] !== 'undefined';
+                }, () => {
+                    callback();
+                })
+                return false;
+            }
+            callback();
+        }
+        return;
     }
-} else{
-    window.onYouTubeIframeAPIReady = youtubeApiHandle
+
+    let script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = url;
+    script.onload = () => {
+        if (utils.isFunction(callback)) {
+            if (utils.isString(waitFor)) {
+                waitUntil(() => {
+                    return typeof window[waitFor] !== 'undefined';
+                }, () => {
+                    callback();
+                })
+                return false;
+            }
+            callback();
+        }
+    };
+    document.body.appendChild(script);
+    return;
 }
 
 
@@ -977,29 +902,6 @@ function waitUntil(check, onComplete, delay, timeout) {
     }, timeout);
 }
 
-
-/**
- * Parse url params
- * convert an object in to a
- * url query string parameters
- *
- * @param {object} params
- */
-function parseUrlParams(params) {
-    let qs = '';
-    let i = 0;
-    each(params, (val, key) => {
-        if (i > 0) {
-            qs += '&amp;';
-        }
-        qs += key + '=' + val;
-        i += 1;
-    })
-    return qs;
-}
-
-
-
 /**
  * Set slide inline content
  * we'll extend this to make http
@@ -1018,13 +920,20 @@ function setInlineContent(slide, data, callback) {
     if (!div) {
         return false;
     }
-
     const cloned = div.cloneNode(true)
 
-    cloned.style.height = `${data.height}px`
-    cloned.style.maxWidth = `${data.width}px`
+    cloned.style.height = (utils.isNumber(data.height) ? `${data.height}px` : data.height);
+    cloned.style.maxWidth = (utils.isNumber(data.width) ? `${data.width}px` : data.width);
     addClass(cloned, 'ginlined-content')
     slideMedia.appendChild(cloned)
+
+    this.events['inlineclose' + hash] = addEvent('click', {
+        onElement: slideMedia.querySelectorAll('.gtrigger-close'),
+        withCallback: e => {
+            e.preventDefault();
+            this.close();
+        }
+    });
 
     if (utils.isFunction(callback)) {
         callback()
@@ -1086,6 +995,37 @@ function keyboardNavigation() {
         withCallback: (event, target) => {
             event = event || window.event;
             const key = event.keyCode;
+            if (key == 9) {
+                event.preventDefault();
+                const btns = document.querySelectorAll('.gbtn');
+                if (!btns || btns.length <= 0) {
+                    return;
+                }
+
+                const focused = [...btns].filter(item => hasClass(item, 'focused'))
+                if (!focused.length) {
+                    const first = document.querySelector('.gbtn[tabindex="0"]');
+                    if (first) {
+                        first.focus();
+                        addClass(first, 'focused')
+                    }
+                    return;
+                }
+
+                btns.forEach(element => removeClass(element, 'focused'))
+
+                let tabindex = focused[0].getAttribute('tabindex');
+                tabindex = tabindex ? tabindex : '0';
+                let newIndex = parseInt(tabindex) + 1;
+                if (newIndex > (btns.length - 1)) {
+                    newIndex = '0';
+                }
+                let next = document.querySelector(`.gbtn[tabindex="${newIndex}"]`);
+                if (next) {
+                    next.focus();
+                    addClass(next, 'focused')
+                }
+            }
             if (key == 39) this.nextSlide();
             if (key == 37) this.prevSlide();
             if (key == 27) this.close();
@@ -1097,118 +1037,72 @@ function keyboardNavigation() {
  * Touch navigation
  */
 function touchNavigation() {
-    if (this.events.hasOwnProperty('touchStart')) {
+    if (this.events.hasOwnProperty('touch')) {
         return false;
     }
-    let index,
-        hDistance,
-        vDistance,
-        hDistanceLast,
-        vDistanceLast,
-        hDistancePercent,
-        vSwipe = false,
-        hSwipe = false,
-        hSwipMinDistance = 0,
-        vSwipMinDistance = 0,
-        doingPinch = false,
-        pinchBigger = false,
-        startCoords = { },
-        endCoords = { },
-        slider = this.slidesContainer,
-        activeSlide = null,
-        xDown = 0,
-        yDown = 0,
-        activeSlideImage = null,
-        activeSlideMedia = null,
-        activeSlideDesc = null;
 
     let winWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
     let winHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-    let body = document.body;
+    let currentSlide = null;
+    let media = null;
+    let mediaImage = null;
+    let doingMove = false;
+    let initScale = 1;
+    let maxScale = 4.5;
+    let currentScale = 1;
+    let doingZoom = false;
+    let imageZoomed = false;
+    let zoomedPosX = null;
+    let zoomedPosY = null;
+    let lastZoomedPosX = null;
+    let lastZoomedPosY = null;
+    let hDistance;
+    let vDistance;
+    let hDistancePercent = 0;
+    let vDistancePercent = 0;
+    let vSwipe = false;
+    let hSwipe = false;
+    let startCoords = {};
+    let endCoords = {};
+    let xDown = 0;
+    let yDown = 0;
 
-    this.events['doctouchmove'] = addEvent('touchmove', {
-        onElement: document,
-        withCallback: (e, target) => {
-            if (hasClass(body, 'gdesc-open')) {
-                e.preventDefault()
-                return false
-            }
-        }, useCapture: { passive: false }
-    })
+    const instance = this;
+    const sliderWrapper = document.getElementById('glightbox-slider');
+    const overlay = document.querySelector('.goverlay')
 
-
-    this.events['touchStart'] = addEvent('touchstart', {
-        onElement: body,
-        withCallback: (e, target) => {
-            if (hasClass(body, 'gdesc-open')) {
-                return;
-            }
-            addClass(body, 'touching');
-            activeSlide = this.getActiveSlide()
-            activeSlideImage = activeSlide.querySelector('.gslide-image')
-            activeSlideMedia = activeSlide.querySelector('.gslide-media')
-            activeSlideDesc = activeSlide.querySelector('.gslide-description')
-
-            index = this.index;
+    const touchInstance = new TouchEvents(sliderWrapper, {
+        touchStart: (e) => {
             endCoords = e.targetTouches[0];
             startCoords.pageX = e.targetTouches[0].pageX;
             startCoords.pageY = e.targetTouches[0].pageY;
             xDown = e.targetTouches[0].clientX;
             yDown = e.targetTouches[0].clientY;
-        }
-    })
 
-    this.events['gestureStart'] = addEvent('gesturestart', {
-        onElement: body,
-        withCallback: (e, target) => {
-            if (activeSlideImage) {
-                e.preventDefault()
-                doingPinch = true
-            }
-        }
-    })
+            currentSlide = instance.activeSlide;
+            media = currentSlide.querySelector('.gslide-media');
 
-    this.events['gestureChange'] = addEvent('gesturechange', {
-        onElement: body,
-        withCallback: (e, target) => {
-            e.preventDefault()
-            slideCSSTransform(activeSlideImage, `scale(${e.scale})`)
-        }
-    })
+            mediaImage = null;
+            if (hasClass(media, 'gslide-image')) {
+                mediaImage = media.querySelector('img');
+            }
 
-    this.events['gesturEend'] = addEvent('gestureend', {
-        onElement: body,
-        withCallback: (e, target) => {
-            doingPinch = false
-            if (e.scale < 1) {
-                pinchBigger = false
-                slideCSSTransform(activeSlideImage, `scale(1)`)
-            } else{
-                pinchBigger = true
-            }
-        }
-    })
-
-    this.events['touchMove'] = addEvent('touchmove', {
-        onElement: body,
-        withCallback: (e, target) => {
-            if (!hasClass(body, 'touching')) {
-                return;
-            }
-            if (hasClass(body, 'gdesc-open') || doingPinch || pinchBigger) {
-                return;
-            }
-            e.preventDefault();
+            removeClass(overlay, 'greset')
+        },
+        touchMove: (e) => {
             endCoords = e.targetTouches[0];
-            let slideHeight = activeSlide.querySelector('.gslide-inner-content').offsetHeight;
-            let slideWidth = activeSlide.querySelector('.gslide-inner-content').offsetWidth;
 
+            if (doingZoom || imageZoomed) {
+                return;
+            }
+
+            doingMove = true;
             let xUp = e.targetTouches[0].clientX;
             let yUp = e.targetTouches[0].clientY;
             let xDiff = xDown - xUp;
             let yDiff = yDown - yUp;
 
-            if (Math.abs(xDiff) > Math.abs(yDiff)) { /*most significant*/
+            if (Math.abs(xDiff) > Math.abs(yDiff)) {
                 vSwipe = false
                 hSwipe = true
             } else {
@@ -1216,101 +1110,124 @@ function touchNavigation() {
                 vSwipe = true
             }
 
+            hDistance = endCoords.pageX - startCoords.pageX;
+            hDistancePercent = hDistance * 100 / winWidth;
+
+            vDistance = endCoords.pageY - startCoords.pageY;
+            vDistancePercent = vDistance * 100 / winHeight;
+
+            let opacity;
             if (vSwipe) {
-                vDistanceLast = vDistance;
-                vDistance = endCoords.pageY - startCoords.pageY;
-                if (Math.abs(vDistance) >= vSwipMinDistance || vSwipe) {
-                    let opacity = 0.75 - Math.abs(vDistance) / slideHeight;
-                    activeSlideMedia.style.opacity = opacity;
-                    if (activeSlideDesc) {
-                        activeSlideDesc.style.opacity = opacity;
-                    }
-                    slideCSSTransform(activeSlideMedia, `translate3d(0, ${vDistance}px, 0)`)
-                }
+                opacity = 1 - Math.abs(vDistance) / winHeight;
+                overlay.style.opacity = opacity;
+            }
+            if (hSwipe) {
+                opacity = 1 - Math.abs(hDistance) / winWidth;
+                media.style.opacity = opacity;
+            }
+
+            slideCSSTransform(media, `translate3d(${hDistancePercent}%, ${vDistancePercent}%, 0)`)
+        },
+        touchEnd: () => {
+            doingMove = false;
+            if (imageZoomed || doingZoom) {
+                lastZoomedPosX = zoomedPosX;
+                lastZoomedPosY = zoomedPosY;
                 return;
             }
+            const v = Math.abs(parseInt(vDistancePercent));
+            const h = Math.abs(parseInt(hDistancePercent));
 
-            hDistanceLast = hDistance;
-            hDistance = endCoords.pageX - startCoords.pageX;
-            hDistancePercent = hDistance * 100 / winWidth;
-
-            if (hSwipe) {
-                if (this.index + 1 == this.elements.length && hDistance < -60) {
-                    resetSlideMove(activeSlide)
-                    return false;
-                }
-                if (this.index - 1 < 0 && hDistance > 60) {
-                    resetSlideMove(activeSlide)
-                    return false;
-                }
-
-                let opacity = 0.75 - Math.abs(hDistance) / slideWidth;
-                activeSlideMedia.style.opacity = opacity;
-                if (activeSlideDesc) {
-                    activeSlideDesc.style.opacity = opacity;
-                }
-                slideCSSTransform(activeSlideMedia, `translate3d(${hDistancePercent}%, 0, 0)`)
+            if (v > 35) {
+                this.close();
+                return;
             }
-        }, useCapture: { passive: false }
-    })
-
-
-
-    this.events['touchEnd'] = addEvent('touchend', {
-        onElement: body,
-        withCallback: (e, target) => {
-            vDistance = endCoords.pageY - startCoords.pageY;
-            hDistance = endCoords.pageX - startCoords.pageX;
-            hDistancePercent = hDistance * 100 / winWidth;
-
-            removeClass(body, 'touching')
-
-            let slideHeight = activeSlide.querySelector('.gslide-inner-content').offsetHeight;
-            let slideWidth = activeSlide.querySelector('.gslide-inner-content').offsetWidth;
-
-            // Swipe to top/bottom to close
-            if (vSwipe) {
-                let onEnd = (slideHeight / 2)
-                    vSwipe = false;
-                if (Math.abs(vDistance) >= onEnd) {
-                    this.close()
-                    return;
-                }
-                resetSlideMove(activeSlide)
-                return
+            if (v < 35 && h < 25) {
+                addClass(overlay, 'greset')
+                overlay.style.opacity = 1;
+                return resetSlideMove(media)
+            }
+        },
+        multipointEnd: () => {
+            setTimeout(() => { doingZoom = false }, 50);
+        },
+        multipointStart: () => {
+            doingZoom = true;
+            initScale = currentScale ? currentScale : 1;
+        },
+        pinch: (evt) => {
+            if (!mediaImage || doingMove) {
+                return false;
             }
 
-            if (hSwipe) {
-                hSwipe = false;
-                let where = 'prev'
-                let asideExist = true
-                if(hDistance < 0){
-                    where = 'next'
-                    hDistance = Math.abs(hDistance)
+            doingZoom = true;
+            mediaImage.scaleX = mediaImage.scaleY = initScale * evt.zoom;
+
+            let scale = initScale * evt.zoom;
+            imageZoomed = true;
+
+            if (scale <= 1) {
+                imageZoomed = false;
+                scale = 1;
+                lastZoomedPosY = null;
+                lastZoomedPosX = null;
+                zoomedPosX = null;
+                zoomedPosY = null;
+                mediaImage.setAttribute('style', '')
+                return;
+            }
+            if (scale > maxScale) { // max scale zoom
+                scale = maxScale;
+            }
+
+            mediaImage.style.transform = `scale3d(${scale}, ${scale}, 1)`
+            currentScale = scale;
+        },
+        pressMove: (e) => {
+            if (imageZoomed && !doingZoom) {
+                var mhDistance = endCoords.pageX - startCoords.pageX;
+                var mvDistance = endCoords.pageY - startCoords.pageY;
+
+                if (lastZoomedPosX) {
+                    mhDistance = mhDistance + lastZoomedPosX;
                 }
-                if (where == 'prev' && this.index - 1 < 0) {
-                    asideExist = false
+                if (lastZoomedPosY) {
+                    mvDistance = mvDistance + lastZoomedPosY;
                 }
-                if (where == 'next' && this.index + 1 >= this.elements.length) {
-                    asideExist = false
+
+                zoomedPosX = mhDistance;
+                zoomedPosY = mvDistance;
+
+                let style = `translate3d(${mhDistance}px, ${mvDistance}px, 0)`;
+                if (currentScale) {
+                    style += ` scale3d(${currentScale}, ${currentScale}, 1)`
                 }
-                if (asideExist && hDistance >= (slideWidth / 2) - 90) {
-                    if (where == 'next') {
-                       this.nextSlide();
-                    }
-                    else{
-                       this.prevSlide();
-                    }
-                    return;
+
+                slideCSSTransform(mediaImage, style)
+            }
+        },
+        swipe: (evt) => {
+            if (imageZoomed) {
+                return;
+            }
+            if (doingZoom) {
+                doingZoom = false;
+                return;
+            }
+            if (evt.direction == 'Left') {
+                this.nextSlide();
+            }
+            if (evt.direction == 'Right') {
+                if (this.index == 0) {
+                    return resetSlideMove(media)
                 }
-                resetSlideMove(activeSlide)
+                this.prevSlide();
             }
         }
-    })
+    });
+
+    this.events['touch'] = touchInstance;
 }
-
-
-
 
 function slideCSSTransform(slide, translate = '') {
     if (translate == '') {
@@ -1330,7 +1247,7 @@ function slideCSSTransform(slide, translate = '') {
 
 
 function resetSlideMove(slide) {
-    let media = slide.querySelector('.gslide-media')
+    let media = (hasClass(slide, 'gslide-media') ? slide : slide.querySelector('.gslide-media'))
     let desc = slide.querySelector('.gslide-description')
 
     addClass(media, 'greset')
@@ -1348,8 +1265,6 @@ function resetSlideMove(slide) {
         desc.style.opacity = '';
     }
 }
-
-
 
 function slideShortDesc(string, n = 50, wordBoundary = false) {
     let useWordBoundary = wordBoundary
@@ -1436,11 +1351,16 @@ class GlightboxInit {
         this.prevActiveSlideIndex = null
         this.prevActiveSlide = null
         let index = this.settings.startAt
-        if (element) { // if element passed, get the index
+
+        if (element && utils.isNil(index)) { // if element passed and startAt is null, get the index
             index = this.elements.indexOf(element)
             if (index < 0) {
                 index = 0
             }
+        }
+
+        if (utils.isNil(index)) {
+            index = 0
         }
 
         this.build()
@@ -1486,7 +1406,7 @@ class GlightboxInit {
      */
     showSlide(index = 0, first = false) {
         show(this.loader)
-        this.index = index
+        this.index = parseInt(index)
 
         let current = this.slidesContainer.querySelector('.current')
         if (current) {
@@ -1506,9 +1426,7 @@ class GlightboxInit {
         } else {
             // If not loaded add the slide content
             show(this.loader);
-            // console.log("a", this.settings);
             let slide_data = getSlideData(this.elements[index], this.settings);
-            // console.log(slide_data);
             slide_data.index = index;
             setSlideContent.apply(this, [slide, slide_data, () => {
                 hide(this.loader);
@@ -1721,20 +1639,11 @@ class GlightboxInit {
             return false
         }
 
-        let videoID = slideVideo.id
-        if (videoPlayers && videoPlayers.hasOwnProperty(videoID)) {
-            let player = videoPlayers[videoID]
-            if (hasClass(slideVideo, 'vimeo-video')) {
-                player.pause()
-            }
-            if (hasClass(slideVideo, 'youtube-video')) {
-                player.pauseVideo()
-            }
-            if (hasClass(slideVideo, 'jw-video')) {
-                player.pause(true)
-            }
-            if (hasClass(slideVideo, 'html5-video')) {
-                player.pause()
+        const videoID = slideVideo.getAttribute('data-id');
+        if (videoPlayers && utils.has(videoPlayers, videoID)) {
+            const api = videoPlayers[videoID]
+            if (api && api.play) {
+                api.pause();
             }
         }
     }
@@ -1750,35 +1659,13 @@ class GlightboxInit {
             return false;
         }
 
-        let videoID = slideVideo.id;
-        if (videoPlayers && (utils.has(videoPlayers, videoID) || hasClass(slideVideo, 'wait-autoplay'))) {
-            waitUntil(() => {
-                return hasClass(slideVideo, 'iframe-ready') && utils.has(videoPlayers, videoID);
-            }, () => {
-                let player = videoPlayers[videoID]
+        const videoID = slideVideo.getAttribute('data-id');
+        if (videoPlayers && utils.has(videoPlayers, videoID)) {
+            const api = videoPlayers[videoID]
 
-                if (hasClass(slideVideo, 'vimeo-video')) {
-                    waitUntil(() => { return player.play;
-                    }, () => { player.play(); })
-                }
-                if (hasClass(slideVideo, 'youtube-video')) {
-                    waitUntil(() => { return player.playVideo;
-                    }, () => { player.playVideo(); })
-                }
-                if (hasClass(slideVideo, 'jw-video')) {
-                    waitUntil(() => { return player.play;
-                    }, () => { player.play(); })
-                }
-                if (hasClass(slideVideo, 'html5-video')) {
-                    player.play();
-                }
-                setTimeout(() => {
-                    removeClass(slideVideo, 'wait-autoplay')
-                }, 300);
-
-            }, 50, 4000);
-
-            return false;
+            if (api && api.play) {
+                api.play();
+            }
         }
     }
 
@@ -1953,6 +1840,7 @@ class GlightboxInit {
                         this.events[key].destroy()
                     }
                 }
+                this.events = null;
             }
 
             const body = document.body;
@@ -1975,7 +1863,14 @@ class GlightboxInit {
     }
 }
 
-module.exports = (options = { }) => {
+/* module.exports = (options = { }) => {
+    const instance = new GlightboxInit(options);
+    instance.init()
+
+    return instance;
+} */
+
+export default function(options = {}) {
     const instance = new GlightboxInit(options);
     instance.init()
 
