@@ -66,15 +66,21 @@
 
 
 
-    var codeExamples = function(){
-        var codes = document.querySelectorAll('.code');
-        for (let i = 0; i < codes.length; i++) {
-            var code = codes[i];
-            var editor = CodeMirror.fromTextArea(code, {
-                lineNumbers: false,
-                viewportMargin: Infinity
-            });
-        }
+    var specifics = function(params) {
+        var scrollerDesc = mctracker();
+        scrollerDesc.setup({
+            element: _('.especifications ul').toArray(),
+            bottom: '300',
+            once: true,
+        }).onStepEnter(function(response) {
+            var list = _(response.element).find('li');
+            list.forEach(function(item, i) {
+                var delay = i * 100 / 1000;
+                item = _(item);
+                item.attr('style', 'transition-delay: ' + delay + 's;');
+            })
+            list.addClass('show')
+        });
     }
-    codeExamples();
+    specifics();
 }());
