@@ -601,6 +601,7 @@ const setSlideContent = function setSlideContent(slide = null, data = { }, callb
     addClass(slide, 'loaded');
 
     if (type === 'video') {
+        addClass(slideMedia.parentNode, `gvideo-container`);
         slideMedia.innerHTML = '<div class="gvideo-wrapper"></div>';
         setSlideVideo.apply(this, [slide, data, finalCallback])
         return

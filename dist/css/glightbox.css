@@ -82,7 +82,6 @@
 }
 
 .glightbox-container .ginner-container {
-  width: auto;
   width: 100%;
   display: -webkit-box;
   display: -ms-flexbox;
@@ -96,6 +95,10 @@
   flex-direction: column;
   max-width: 100%;
   max-height: 100vh;
+}
+
+.glightbox-container .ginner-container.gvideo-container {
+  width: 100%;
 }
 
 .glightbox-container .ginner-container.desc-bottom,
@@ -720,6 +723,7 @@ iframe.wait-autoplay {
 
 @media (min-width: 48em) {
   .glightbox-container .ginner-container {
+    width: auto;
     -webkit-box-orient: horizontal;
     -webkit-box-direction: normal;
     -ms-flex-direction: row;
