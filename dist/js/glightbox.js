@@ -946,7 +946,7 @@
 
     if (data.title == '' && data.description == '') {
       if (slideDesc) {
-        slideDesc.parentNode.removeChild(slideDesc);
+        slideDesc.parentNode.parentNode.removeChild(slideDesc.parentNode);
       }
     } else {
       if (slideTitle && data.title !== '') {
@@ -1414,6 +1414,7 @@
     var endCoords = {};
     var xDown = 0;
     var yDown = 0;
+    var isInlined;
     var instance = this;
     var sliderWrapper = document.getElementById('glightbox-slider');
     var overlay = document.querySelector('.goverlay');
@@ -1426,6 +1427,7 @@
         yDown = e.targetTouches[0].clientY;
         currentSlide = instance.activeSlide;
         media = currentSlide.querySelector('.gslide-media');
+        isInlined = currentSlide.querySelector('.gslide-inline');
         mediaImage = null;
 
         if (hasClass(media, 'gslide-image')) {
@@ -1439,6 +1441,14 @@
 
         if (doingZoom || imageZoomed) {
           return;
+        }
+
+        if (isInlined && isInlined.offsetHeight > winHeight) {
+          var moved = startCoords.pageX - endCoords.pageX;
+
+          if (Math.abs(moved) <= 13) {
+            return false;
+          }
         }
 
         doingMove = true;
@@ -1461,7 +1471,7 @@
         vDistancePercent = vDistance * 100 / winHeight;
         var opacity;
 
-        if (vSwipe) {
+        if (vSwipe && mediaImage) {
           opacity = 1 - Math.abs(vDistance) / winHeight;
           overlay.style.opacity = opacity;
         }
@@ -1469,6 +1479,10 @@
         if (hSwipe) {
           opacity = 1 - Math.abs(hDistance) / winWidth;
           media.style.opacity = opacity;
+        }
+
+        if (!mediaImage) {
+          return slideCSSTransform(media, "translate3d(".concat(hDistancePercent, "%, 0, 0)"));
         }
 
         slideCSSTransform(media, "translate3d(".concat(hDistancePercent, "%, ").concat(vDistancePercent, "%, 0)"));
@@ -1485,7 +1499,7 @@
         var v = Math.abs(parseInt(vDistancePercent));
         var h = Math.abs(parseInt(hDistancePercent));
 
-        if (v > 35) {
+        if (v > 35 && mediaImage) {
           _this5.close();
 
           return;
@@ -1569,6 +1583,10 @@
         }
 
         if (evt.direction == 'Left') {
+          if (_this5.index == _this5.elements.length - 1) {
+            return resetSlideMove(media);
+          }
+
           _this5.nextSlide();
         }
 

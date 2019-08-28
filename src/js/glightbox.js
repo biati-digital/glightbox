@@ -573,7 +573,7 @@ const setSlideContent = function setSlideContent(slide = null, data = { }, callb
 
     if (data.title == '' && data.description == '') {
         if (slideDesc) {
-            slideDesc.parentNode.removeChild(slideDesc);
+            slideDesc.parentNode.parentNode.removeChild(slideDesc.parentNode);
         }
     } else{
         if (slideTitle && data.title !== '') {
@@ -1066,6 +1066,7 @@ function touchNavigation() {
     let endCoords = {};
     let xDown = 0;
     let yDown = 0;
+    let isInlined;
 
     const instance = this;
     const sliderWrapper = document.getElementById('glightbox-slider');
@@ -1081,6 +1082,7 @@ function touchNavigation() {
 
             currentSlide = instance.activeSlide;
             media = currentSlide.querySelector('.gslide-media');
+            isInlined = currentSlide.querySelector('.gslide-inline');
 
             mediaImage = null;
             if (hasClass(media, 'gslide-image')) {
@@ -1094,6 +1096,12 @@ function touchNavigation() {
 
             if (doingZoom || imageZoomed) {
                 return;
+            }
+            if (isInlined && isInlined.offsetHeight > winHeight) { // Allow scroll without moving the slide
+                const moved = startCoords.pageX - endCoords.pageX;
+                if (Math.abs(moved) <= 13) {
+                    return false;
+                }
             }
 
             doingMove = true;
@@ -1117,13 +1125,17 @@ function touchNavigation() {
             vDistancePercent = vDistance * 100 / winHeight;
 
             let opacity;
-            if (vSwipe) {
+            if (vSwipe && mediaImage) {
                 opacity = 1 - Math.abs(vDistance) / winHeight;
                 overlay.style.opacity = opacity;
             }
             if (hSwipe) {
                 opacity = 1 - Math.abs(hDistance) / winWidth;
                 media.style.opacity = opacity;
+            }
+
+            if (!mediaImage) {
+                return slideCSSTransform(media, `translate3d(${hDistancePercent}%, 0, 0)`)
             }
 
             slideCSSTransform(media, `translate3d(${hDistancePercent}%, ${vDistancePercent}%, 0)`)
@@ -1138,7 +1150,7 @@ function touchNavigation() {
             const v = Math.abs(parseInt(vDistancePercent));
             const h = Math.abs(parseInt(hDistancePercent));
 
-            if (v > 35) {
+            if (v > 35 && mediaImage) {
                 this.close();
                 return;
             }
@@ -1215,6 +1227,9 @@ function touchNavigation() {
                 return;
             }
             if (evt.direction == 'Left') {
+                if (this.index == this.elements.length - 1) {
+                    return resetSlideMove(media)
+                }
                 this.nextSlide();
             }
             if (evt.direction == 'Right') {

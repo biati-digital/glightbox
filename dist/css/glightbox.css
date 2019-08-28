@@ -188,7 +188,7 @@
   background: #fff;
   padding: 20px;
   text-align: left;
-  max-height: 62vh;
+  max-height: calc(100vh - 40px);
   overflow: auto;
 }
 
