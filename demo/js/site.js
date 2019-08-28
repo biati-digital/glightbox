@@ -1,98 +1,68 @@
 (function() {
-    function addEvent(eventName, data, thisArg) {
-        var onElement = (data.hasOwnProperty('onElement') ? data.onElement : null);
-        var withCallback = (data.hasOwnProperty('withCallback') ? data.withCallback : null);
-        var once = (data.hasOwnProperty('once') ? data.once : false);
-        var useCapture = (data.hasOwnProperty('useCapture') ? data.useCapture : false);
-        var element = onElement || []
+    var _ = v;
 
-        function handler(event) {
-            withCallback.call(thisArg, event, this)
-            if (once) {
-                handler.destroy();
+    var scrollerDesc = mctracker();
+    scrollerDesc.setup({
+        element: _('.box-container').toArray(),
+        offsetBottom: '20%',
+        once: true,
+    }).onStepEnter(function(response) {
+        var list = _(response.element).find('li');
+        list.forEach(function(item, i) {
+            var delay = i * 150 / 1000;
+            item = _(item);
+            item.attr('style', 'transition-delay: ' + delay + 's;');
+        })
+
+        list.addClass('show')
+    });
+
+
+    var header = function() {
+        var lastKnownScrollY = 0;
+        var currentScrollY = 0;
+        var eleHeader = null;
+        const classes = {
+            pinned: 'header-pin',
+            unpinned: 'header-unpin',
+        };
+
+        function onScroll() {
+            currentScrollY = window.pageYOffset;
+
+            if (currentScrollY <= 0) {
+                restore();
+                return;
             }
-        }
-        handler.destroy = function () {
-            if (element.removeEventListener) element.removeEventListener(eventName, handler, useCapture)
-        }
-        if (element.addEventListener) element.addEventListener(eventName, handler, useCapture)
-        return handler
-    }
-
-
-    function addClass(node, name) {
-        if (hasClass(node, name)) {
-            return;
-        }
-        if (node.classList) {
-            node.classList.add(name)
-        } else {
-            node.className += " " + name
-        }
-    }
-
-    function removeClass(node, name) {
-        var c = name.split(' ')
-        if (node.classList) {
-            node.classList.remove(name)
-        } else {
-            node.className = node.className.replace(name, "")
-        }
-    }
-
-    function hasClass(node, name) {
-        return (node.classList ? node.classList.contains(name) : new RegExp("(^| )" + name + "( |$)", "gi").test(node.className));
-    }
-
-    var nav = document.getElementById('fixed');
-    var fixedheader = addEvent('scroll', {
-        onElement: window,
-        withCallback: function(event, target){
-            var scroll = window.pageYOffset || document.documentElement.scrollTop;
-
-            if (scroll > 100 ) {
-                addClass(nav, 'below');
+            if (currentScrollY < lastKnownScrollY) {
+                pin();
+            } else if (currentScrollY > lastKnownScrollY) {
+                unpin();
             }
-            if (scroll < 100) {
-                removeClass(nav, 'below');
-            }
+            lastKnownScrollY = currentScrollY;
         }
-    })
 
-    if (window.IntersectionObserver) {
-        var sections = document.querySelectorAll('.box-container');
-        var intersectionObserver = new IntersectionObserver(
-            function(entries) {
-                if (!entries.length) {
-                    return;
-                }
-                var element = entries[0].target;
-                if (entries[0].isIntersecting) {
-                    var boxes = element.querySelectorAll('.box');
-                    for (let i = 0; i < boxes.length; i++) {
-                        var box = boxes[i];
-                        showBox(box, i * 100);
-                    }
-                }
-            }, {
-                threshold: [0.1, 1],
-                // rootMargin: ['100px', '0px', '0px', '0px']
-            }
-        );
-
-        for (let i = 0; i < sections.length; i++) {
-          const element = sections[i];
-          addClass(element, 'inviewport');
-          intersectionObserver.observe(element);
+        function pin() {
+            eleHeader.removeClass(classes.unpinned);
+            eleHeader.addClass(classes.pinned);
+        }
+        function unpin() {
+            eleHeader.removeClass(classes.pinned);
+            eleHeader.addClass(classes.unpinned);
+        }
+        function restore() {
+            eleHeader.removeClass(classes.pinned);
+            eleHeader.removeClass(classes.unpinned);
+        }
+        eleHeader = _('.main-header');
+        headerHeaight = eleHeader.height();
+        onScroll();
+        window.onload = function() {
+            document.addEventListener('scroll', onScroll, false);
         }
     }
+    header();
 
-
-    function showBox(elm, delay) {
-        setTimeout(function() {
-            addClass(elm, 'visible');
-        }, delay);
-    }
 
 
 
