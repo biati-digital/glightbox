@@ -145,7 +145,7 @@ const myGallery = GLightbox({
 });
 myGallery.open();
 
-// If later you need to modify the elemnts you can use setElements
+// If later you need to modify the elements you can use setElements
 myGallery.setElements([...]);
 ```
 
