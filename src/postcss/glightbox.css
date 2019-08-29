@@ -233,6 +233,7 @@
 
 .gslide-description {
     float: left;
+    position: relative;
 
     &.description-left,
     &.description-right {
@@ -392,7 +393,7 @@ iframe.wait-autoplay {
 /*Skin */
 .glightbox-clean {
 
-    .ginner-container {
+    .gslide-media {
         @media (--medium-small-viewport) {
             box-shadow: 1px 2px 9px 0px rgba(0, 0, 0, 0.65);
         }
