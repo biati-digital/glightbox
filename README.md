@@ -295,7 +295,7 @@ Feel free to report any issues! If you wish to contribute by fixing a bug or imp
 - Removed JWPlayer because that player implemented some restrictions unless you pay for a license
 - Improved mobile touch events, swipe, move, zoom, etc.
 - Changed: Youtube now by default uses youtube-nocookie.com, you can enable cookies in the config with youtube.nocookie to false
-- New: [Plyr player](https://plyr.io/), we have changed to this player so that wey only one api is managed instead of 3
+- New: [Plyr player](https://plyr.io/), we have changed to this player so that way only one api is managed instead of 3
 - New: Added tabindex accesibility to loop the controls with the tab key
 - New: Inside inline content you can close the lightbox by adding the class **gtrigger-close** to any element
 - Removed option videosHeight. The height is automatic depending the video width and ratio.
