@@ -251,17 +251,6 @@ header ul li:hover a {
     color: #000000;
 }
 
-.intro {
-    width: 100%;
-    margin: 0 auto;
-    background: url(../img/head.jpg);
-    background-size: cover;
-    margin-bottom: 0px;
-    height: 100vh;
-    width: 100%;
-    display: flex;
-    align-items: center;
-}
 
 h3 {
     font-family: 'Gilroy', sans-serif;
@@ -305,6 +294,8 @@ p {
     text-transform: uppercase;
     font-size: .7em;
     position: relative;
+    width: 100%;
+    text-align: center;
 }
 
 .mcbutton::before,
@@ -409,18 +400,36 @@ strong {
     color: #1f1f1f;
 }
 
+.intro {
+    width: 100%;
+    margin: 0 auto;
+    background: url(../img/head.jpg);
+    background-size: cover;
+    margin-bottom: 0px;
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding-top: 80px;
+    min-height: 579px;
+    max-height: 579px;
+}
+
 .intro h1 {
     margin-top: 0;
     font-size: 3.3em;
     color: #000;
     font-weight: 100;
     margin-bottom: 35px;
+    text-align: center;
 }
 
 .tagline {
     color: #3a3a3a;
     margin-bottom: 30px;
     font-weight: 600;
+    text-align: center;
+    font-size: 17px;
 }
 
 .lead {
@@ -603,6 +612,7 @@ strong {
     font-size: 16px;
     color: #2b2b2b;
     opacity: 0;
+    line-height: 1.7em;
     transform: translate3d(-10px, 0, 0);
 }
 
@@ -648,6 +658,21 @@ footer a {
         font-size: 4.3em;
     }
 
+    .intro {
+        max-height: 70vh;
+        min-height: 640px;
+        padding-top: 0px;
+    }
+
+    .intro h1,
+    .tagline {
+        text-align: left;
+    }
+
+    .tagline {
+        font-size: 100%;
+    }
+
     .three-cols .box {
         width: 33.3%;
     }
@@ -658,6 +683,10 @@ footer a {
 
     .three-cols .box:nth-child(3n+1) {
         margin-left: 0;
+    }
+
+    .mcbutton {
+        width: auto;
     }
 }
 
@@ -672,98 +701,4 @@ footer a {
         opacity: 0.3;
         transition: opacity 0.5s;
     }
-}
-
-/* @media (max-width: 767px) {
-    .wrap {
-        width: 100%;
-        overflow: hidden;
-        max-width: 100%;
-    }
-
-    .options-list,
-    .api-examples {
-        width: 100%;
-    }
-
-    .options-list .option .value,
-    .options-list .option .name {
-        width: 87%;
-    }
-
-    .three-cols .box,
-    .four-cols .box {
-        width: 45%;
-    }
-
-    .three-cols .box:nth-child(2n+0) {
-        margin-right: 0;
-    }
-
-    .three-cols .box:nth-child(3n+0) {
-        margin-right: 1%;
-    }
-
-    .three-cols .box:nth-child(2n+1) {
-        margin-right: 1%;
-    }
-
-    .three-cols .box:nth-child(3n+1),
-    .four-cols .box:nth-child(4n+1) {
-        clear: none;
-        margin-left: 0;
-    }
-
-    .lead {
-        padding: 0 27px;
-        margin-bottom: 0;
-    }
-
-    .logo {
-        margin-left: 16px;
-    }
-
-    header h1 {
-        font-size: 6rem;
-    }
-
-    .fixed-nav ul {
-        display: none;
-    }
-
-    .box {
-        width: 100%;
-        margin: 0;
-        margin-bottom: 15px;
-    }
-
-    .mcbutton {
-        text-align: center;
-    }
-}
-
-@media screen and (max-width: 410px) {
-    header h1 {
-        font-size: 5rem;
-    }
-
-    .box {
-        width: 100%;
-        margin-left: 0;
-        margin-right: 0;
-    }
-} */
-
-.CodeMirror {
-    clear: both;
-    text-align: left;
-    margin-top: 25px;
-    height: auto !important;
-    font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, BlinkMacSystemFont, '.SFNSText-Regular', sans-serif !important;
-}
-
-.CodeMirror pre {
-    font-size: 16px !important;
-    line-height: 1.7em !important;
-    color: #3a3a3a !important;
 }
