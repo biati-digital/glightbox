@@ -83,4 +83,33 @@
         });
     }
     specifics();
+
+
+    const letters = _('svg').children('g');
+    function animateLetter(index = 0) {
+        if (index > letters.length - 1) {
+            return false;
+        }
+
+        let nextIndex = index + 1;
+        let paths = _(letters[index]).find('path');
+        let duration = (index > 0 ? 390 : 1000);
+
+        anime({
+            targets: paths.toArray(),
+            strokeDashoffset: [anime.setDashoffset, 0],
+            easing: 'easeInOutSine',
+            duration: duration,
+            begin: () => {
+                paths.addClass('hw');
+            },
+            complete: () => {
+                animateLetter(nextIndex);
+            }
+        });
+    }
+    animateLetter(0);
+
+
+
 }());
