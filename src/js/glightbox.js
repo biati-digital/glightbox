@@ -1,10 +1,11 @@
 /**
- * GLightbox v2.0.2
+ * GLightbox v2.0.3
  * Awesome pure javascript lightbox
  * made by https://www.biati.digital
  */
 
 import TouchEvents from './touch-events';
+import ZoomImages from './zoom';
 
 const isMobile = navigator.userAgent.match(/(iPad)|(iPhone)|(iPod)|(Android)|(PlayBook)|(BB10)|(BlackBerry)|(Opera Mini)|(IEMobile)|(webOS)|(MeeGo)/i);
 const isTouch = isMobile !== null || document.createTouch !== undefined || ('ontouchstart' in window) || ('onmsgesturechange' in window) || navigator.msMaxTouchPoints;
@@ -40,6 +41,7 @@ const defaults = {
     plyr: {
         css: 'https://cdn.plyr.io/3.5.6/plyr.css',
         js: 'https://cdn.plyr.io/3.5.6/plyr.js',
+        ratio: '16:9', // or '4:3'
         config: {
             youtube: {
                 noCookie: true,
@@ -66,6 +68,11 @@ const defaults = {
         zoom: { in: 'zoomIn', out: 'zoomOut' },
         slide: { in: 'slideInRight', out: 'slideOutLeft' },
         slide_back: { in: 'slideInLeft', out: 'slideOutRight' }
+    },
+    svg: {
+        close: '<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" xml:space="preserve"><g><g><path d="M505.943,6.058c-8.077-8.077-21.172-8.077-29.249,0L6.058,476.693c-8.077,8.077-8.077,21.172,0,29.249C10.096,509.982,15.39,512,20.683,512c5.293,0,10.586-2.019,14.625-6.059L505.943,35.306C514.019,27.23,514.019,14.135,505.943,6.058z"/></g></g><g><g><path d="M505.942,476.694L35.306,6.059c-8.076-8.077-21.172-8.077-29.248,0c-8.077,8.076-8.077,21.171,0,29.248l470.636,470.636c4.038,4.039,9.332,6.058,14.625,6.058c5.293,0,10.587-2.019,14.624-6.057C514.018,497.866,514.018,484.771,505.942,476.694z"/></g></g></svg>',
+        next: '<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 477.175 477.175" xml:space="preserve"> <g><path d="M360.731,229.075l-225.1-225.1c-5.3-5.3-13.8-5.3-19.1,0s-5.3,13.8,0,19.1l215.5,215.5l-215.5,215.5c-5.3,5.3-5.3,13.8,0,19.1c2.6,2.6,6.1,4,9.5,4c3.4,0,6.9-1.3,9.5-4l225.1-225.1C365.931,242.875,365.931,234.275,360.731,229.075z"/></g></svg>',
+        prev: '<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 477.175 477.175" xml:space="preserve"><g><path d="M145.188,238.575l215.5-215.5c5.3-5.3,5.3-13.8,0-19.1s-13.8-5.3-19.1,0l-225.1,225.1c-5.3,5.3-5.3,13.8,0,19.1l225.1,225c2.6,2.6,6.1,4,9.5,4s6.9-1.3,9.5-4c5.3-5.3,5.3-13.8,0-19.1L145.188,238.575z"/></g></svg>'
     }
 };
 
@@ -78,32 +85,33 @@ const defaults = {
 // prev arrow class = gnext
 // next arrow id = gprev
 // close id = gclose
-let lightboxSlideHtml = '<div class="gslide">\
-         <div class="gslide-inner-content">\
-            <div class="ginner-container">\
-               <div class="gslide-media">\
-               </div>\
-               <div class="gslide-description">\
-                    <div class="gdesc-inner">\
-                        <h4 class="gslide-title"></h4>\
-                        <div class="gslide-desc"></div>\
-                    </div>\
-               </div>\
-            </div>\
-         </div>\
-       </div>';
+let lightboxSlideHtml = `<div class="gslide">
+    <div class="gslide-inner-content">
+        <div class="ginner-container">
+            <div class="gslide-media">
+            </div>
+            <div class="gslide-description">
+                <div class="gdesc-inner">
+                    <h4 class="gslide-title"></h4>
+                    <div class="gslide-desc"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>`;
+
 defaults.slideHtml = lightboxSlideHtml;
 
-const lightboxHtml = '<div id="glightbox-body" class="glightbox-container">\
-            <div class="gloader visible"></div>\
-            <div class="goverlay"></div>\
-            <div class="gcontainer">\
-               <div id="glightbox-slider" class="gslider"></div>\
-               <button class="gnext gbtn" tabindex="0"></button>\
-               <button class="gprev gbtn" tabindex="1"></button>\
-               <button class="gclose gbtn" tabindex="2"></button>\
-            </div>\
-   </div>';
+const lightboxHtml = `<div id="glightbox-body" class="glightbox-container">
+    <div class="gloader visible"></div>
+    <div class="goverlay"></div>
+    <div class="gcontainer">
+    <div id="glightbox-slider" class="gslider"></div>
+    <button class="gnext gbtn" tabindex="0">{nextSVG}</button>
+    <button class="gprev gbtn" tabindex="1">{prevSVG}</button>
+    <button class="gclose gbtn" tabindex="2">{closeSVG}</button>
+</div>
+</div>`;
 defaults.lightboxHtml = lightboxHtml;
 
 
@@ -450,6 +458,19 @@ function hide(element) {
 }
 
 /**
+ * Return screen size
+ * return the current screen dimensions
+ *
+ * @returns {object}
+ */
+function windowSize() {
+    return {
+        width: window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
+        height: window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight,
+    }
+}
+
+/**
  * Get slide data
  *
  * @param {node} element
@@ -482,7 +503,7 @@ const getSlideData = function getSlideData(element = null, settings) {
     data.href = url;
 
     each(data, (val, key) => {
-        if (utils.has(settings, key)) {
+        if (utils.has(settings, key) && key !== 'width') {
             data[key] = settings[key];
         }
         const nodeData = element.dataset[key];
@@ -526,16 +547,22 @@ const getSlideData = function getSlideData(element = null, settings) {
         let desc = element.getAttribute('data-description')
         if (!utils.isNil(desc) && desc !== '') data.description = desc;
     }
-    let nodeDesc = element.querySelector('.glightbox-desc')
-    if (nodeDesc) {
-        data.description = nodeDesc.innerHTML;
+
+    if (data.description && data.description.substring(0, 1) == '.' && document.querySelector(data.description)) {
+        data.description = document.querySelector(data.description).innerHTML;
+    }
+    else {
+        let nodeDesc = element.querySelector('.glightbox-desc')
+        if (nodeDesc) {
+            data.description = nodeDesc.innerHTML;
+        }
     }
 
     const defaultWith = (data.type == 'video' ? settings.videosWidth : settings.width);
     const defaultHeight = settings.height;
 
-    data.width = (utils.has(data, 'width') ? data.width : defaultWith);
-    data.height = (utils.has(data, 'height') ? data.height : defaultHeight);
+    data.width = (utils.has(data, 'width') && data.width !== '' ? data.width : defaultWith);
+    data.height = (utils.has(data, 'height') && data.height !== '' ? data.height : defaultHeight);
 
     return data;
 }
@@ -602,7 +629,7 @@ const setSlideContent = function setSlideContent(slide = null, data = { }, callb
 
     if (type === 'video') {
         addClass(slideMedia.parentNode, `gvideo-container`);
-        slideMedia.innerHTML = '<div class="gvideo-wrapper"></div>';
+        slideMedia.insertBefore(createHTML('<div class="gvideo-wrapper"></div>'), slideMedia.firstChild);
         setSlideVideo.apply(this, [slide, data, finalCallback])
         return
     }
@@ -626,13 +653,19 @@ const setSlideContent = function setSlideContent(slide = null, data = { }, callb
 
     if (type === 'image') {
         let img = new Image();
-        img.addEventListener('load', function() {
+        img.addEventListener('load', () => {
+            if (!isMobile && img.naturalWidth > img.offsetWidth) {
+                addClass(img, 'zoomable')
+                new ZoomImages(img, slide, () => {
+                    this.resize(slide);
+                });
+            }
             if (utils.isFunction(finalCallback)){
                 finalCallback()
             }
         }, false);
         img.src = data.href;
-        slideMedia.appendChild(img);
+        slideMedia.insertBefore(img, slideMedia.firstChild);
         return
     }
 
@@ -663,7 +696,6 @@ function setSlideVideo(slide, data, callback) {
     if (protocol == 'file') {
         protocol = 'http'
     }
-
     slideMedia.parentNode.style.maxWidth = `${data.width}px`;
 
     injectVideoApi(this.settings.plyr.js, 'Plyr', () => {
@@ -676,7 +708,7 @@ function setSlideVideo(slide, data, callback) {
         }
 
         // Set youtube videos
-        if (url.match(/(youtube\.com|youtube-nocookie\.com)\/watch\?v=([a-zA-Z0-9\-_]+)/) || url.match(/youtu\.be\/([a-zA-Z0-9\-_]+)/)) {
+        if (url.match(/(youtube\.com|youtube-nocookie\.com)\/watch\?v=([a-zA-Z0-9\-_]+)/) || url.match(/youtu\.be\/([a-zA-Z0-9\-_]+)/) || url.match(/(youtube\.com|youtube-nocookie\.com)\/embed\/([a-zA-Z0-9\-_]+)/)) {
             const youtubeID = getYoutubeID(url)
             videoSource = 'youtube';
             embedID = youtubeID;
@@ -957,7 +989,7 @@ const getSourceType = function(url) {
     if (url.match(/\.(jpeg|jpg|gif|png|apn|webp|svg)$/) !== null) {
         return 'image';
     }
-    if (url.match(/(youtube\.com|youtube-nocookie\.com)\/watch\?v=([a-zA-Z0-9\-_]+)/) || url.match(/youtu\.be\/([a-zA-Z0-9\-_]+)/)) {
+    if (url.match(/(youtube\.com|youtube-nocookie\.com)\/watch\?v=([a-zA-Z0-9\-_]+)/) || url.match(/youtu\.be\/([a-zA-Z0-9\-_]+)/) || url.match(/(youtube\.com|youtube-nocookie\.com)\/embed\/([a-zA-Z0-9\-_]+)/)) {
         return 'video';
     }
     if (url.match(/vimeo\.com\/([0-9]*)/)) {
@@ -1042,8 +1074,10 @@ function touchNavigation() {
         return false;
     }
 
-    let winWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-    let winHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+    let winSize = windowSize();
+    let winWidth = winSize.width;
+    let winHeight = winSize.height;
+    let process = false;
     let currentSlide = null;
     let media = null;
     let mediaImage = null;
@@ -1075,6 +1109,12 @@ function touchNavigation() {
 
     const touchInstance = new TouchEvents(sliderWrapper, {
         touchStart: (e) => {
+            if (hasClass(e.targetTouches[0].target, 'ginner-container')) {
+                process = false;
+                return false;
+            }
+
+            process = true;
             endCoords = e.targetTouches[0];
             startCoords.pageX = e.targetTouches[0].pageX;
             startCoords.pageY = e.targetTouches[0].pageY;
@@ -1093,6 +1133,9 @@ function touchNavigation() {
             removeClass(overlay, 'greset')
         },
         touchMove: (e) => {
+            if (!process) {
+                return;
+            }
             endCoords = e.targetTouches[0];
 
             if (doingZoom || imageZoomed) {
@@ -1142,6 +1185,9 @@ function touchNavigation() {
             slideCSSTransform(media, `translate3d(${hDistancePercent}%, ${vDistancePercent}%, 0)`)
         },
         touchEnd: () => {
+            if (!process) {
+                return;
+            }
             doingMove = false;
             if (imageZoomed || doingZoom) {
                 lastZoomedPosX = zoomedPosX;
@@ -1346,6 +1392,7 @@ class GlightboxInit {
     constructor(options) {
         this.settings = extend(defaults, options || { })
         this.effectsClasses = this.getAnimationClasses()
+        this.slidesData = {};
     }
 
     init(){
@@ -1388,7 +1435,7 @@ class GlightboxInit {
         addClass(body, 'glightbox-open')
         addClass(html, 'glightbox-open')
         if (isMobile) {
-            addClass(html, 'glightbox-mobile')
+            addClass(document.body, 'glightbox-mobile')
             this.settings.slideEffect = 'slide'
         }
 
@@ -1433,7 +1480,6 @@ class GlightboxInit {
         this.slideAnimateOut();
 
         let slide = this.slidesContainer.querySelectorAll('.gslide')[index];
-        show(this.slidesContainer);
 
         // Check if slide's content is alreay loaded
         if (hasClass(slide, 'loaded')) {
@@ -1442,13 +1488,18 @@ class GlightboxInit {
         } else {
             // If not loaded add the slide content
             show(this.loader);
-            let slide_data = getSlideData(this.elements[index], this.settings);
-            slide_data.index = index;
-            setSlideContent.apply(this, [slide, slide_data, () => {
+            let slideData = getSlideData(this.elements[index], this.settings);
+            slideData.index = index;
+            this.slidesData[index] = slideData;
+            setSlideContent.apply(this, [slide, slideData, () => {
                 hide(this.loader);
+                this.resize();
                 this.slideAnimateIn(slide, first);
             }]);
         }
+
+        this.slideDescription = slide.querySelector('.gslide-description');
+        this.slideDescriptionContained = this.slideDescription && hasClass(this.slideDescription.parentNode, 'gslide-media');
 
         // Preload subsequent slides
         this.preloadSlide(index + 1);
@@ -1485,19 +1536,18 @@ class GlightboxInit {
             return false;
         }
 
-        let slide_data = getSlideData(this.elements[index], this.settings);
-        slide_data.index = index;
-        let type = slide_data.sourcetype;
+        let slideData = getSlideData(this.elements[index], this.settings);
+        slideData.index = index;
+        this.slidesData[index] = slideData;
+        let type = slideData.sourcetype;
         if (type == 'video' || type == 'external') {
             setTimeout(() => {
-                setSlideContent.apply(this, [slide, slide_data]);
+                setSlideContent.apply(this, [slide, slideData]);
             }, 200);
         } else {
-            setSlideContent.apply(this, [slide, slide_data]);
+            setSlideContent.apply(this, [slide, slideData]);
         }
     }
-
-
 
 
     /**
@@ -1511,7 +1561,6 @@ class GlightboxInit {
         }
         this.goToSlide(prev);
     }
-
 
 
     /**
@@ -1530,7 +1579,7 @@ class GlightboxInit {
     /**
      * Go to sldei
      * calls set slide
-     * @param [Int] - index
+     * @param {Int} - index
      */
     goToSlide(index = false) {
         if (index > -1) {
@@ -1566,7 +1615,6 @@ class GlightboxInit {
         };
         if (slideMedia.offsetWidth > 0 && slideDesc) {
             hide(slideDesc)
-            slide.querySelector('.ginner-container').style.maxWidth = `${slideMedia.offsetWidth}px`
             slideDesc.style.display = ''
         }
         removeClass(slide, this.effectsClasses)
@@ -1596,6 +1644,8 @@ class GlightboxInit {
                 }
             });
         }
+
+        setTimeout(() => { this.resize(slide) }, 100);
         addClass(slide, 'current');
     }
 
@@ -1752,8 +1802,17 @@ class GlightboxInit {
             return false;
         }
 
-        const lightbox_html = createHTML(this.settings.lightboxHtml);
-        document.body.appendChild(lightbox_html);
+        const nextSVG = utils.has(this.settings.svg, 'next') ? this.settings.svg.next : '';
+        const prevSVG = utils.has(this.settings.svg, 'prev') ? this.settings.svg.prev : '';
+        const closeSVG = utils.has(this.settings.svg, 'close') ? this.settings.svg.close : '';
+
+        let lightboxHTML = this.settings.lightboxHtml;
+        lightboxHTML = lightboxHTML.replace(/{nextSVG}/g, nextSVG);
+        lightboxHTML = lightboxHTML.replace(/{prevSVG}/g, prevSVG);
+        lightboxHTML = lightboxHTML.replace(/{closeSVG}/g, closeSVG);
+
+        lightboxHTML = createHTML(lightboxHTML);
+        document.body.appendChild(lightboxHTML);
 
         const modal = document.getElementById('glightbox-body');
         this.modal = modal;
@@ -1803,8 +1862,8 @@ class GlightboxInit {
             this.events['outClose'] = addEvent('click', {
                 onElement: modal,
                 withCallback: (e, target) => {
-                    if (!getClosest(e.target, '.ginner-container')) {
-                        if (!hasClass(e.target, 'gnext') && !hasClass(e.target, 'gprev')) {
+                    if (!hasClass(document.body, 'glightbox-mobile') && !getClosest(e.target, '.ginner-container')) {
+                        if (!getClosest(e.target, '.gbtn') && !hasClass(e.target, 'gnext') && !hasClass(e.target, 'gprev')) {
                             this.close();
                         }
                     }
@@ -1816,11 +1875,101 @@ class GlightboxInit {
             this.slidesContainer.appendChild(slide);
         })
         if (isTouch) {
-            addClass(html, 'glightbox-touch');
+            addClass(document.body, 'glightbox-touch');
         }
+
+        this.events['resize'] = addEvent('resize', {
+            onElement: window,
+            withCallback: () => {
+                this.resize();
+            }
+        })
 
         this.built = true;
     }
+
+
+    /**
+     * Handle resize
+     * Create only to handle
+     * when the height of the screen
+     * is lower than the slide content
+     * this helps to resize videos vertically
+     * and images with description
+     */
+    resize(slide = null) {
+        slide = (!slide ? this.activeSlide : slide);
+        if (!slide || hasClass(slide, 'zoomed')) {
+            return;
+        }
+
+        const winSize = windowSize();
+        const video = slide.querySelector('.gvideo-wrapper');
+        const image = slide.querySelector('.gslide-image');
+        const description = this.slideDescription;
+
+        let winWidth = winSize.width;
+        let winHeight = winSize.height;
+
+        if (winWidth <= 768) {
+            addClass(document.body, 'glightbox-mobile');
+        } else {
+            removeClass(document.body, 'glightbox-mobile');
+        }
+
+        if (!video && !image) {
+            return;
+        }
+
+        let descriptionResize = false;
+        if (description && (hasClass(description, 'description-bottom') || hasClass(description, 'description-top')) && !hasClass(description, 'gabsolute')) {
+            descriptionResize = true;
+        }
+
+        if (image) {
+            if (winWidth <= 768) {
+                let imgNode = image.querySelector('img');
+                imgNode.setAttribute('style', '')
+            } else if (descriptionResize) {
+                let descHeight = description.offsetHeight;
+                let maxWidth = this.slidesData[this.index].width;
+                maxWidth = (maxWidth <= winWidth ? maxWidth + 'px' : '100%')
+
+                let imgNode = image.querySelector('img');
+                imgNode.setAttribute('style', `max-height: calc(100vh - ${descHeight}px)`)
+                description.setAttribute('style', `max-width: ${imgNode.offsetWidth}px;`)
+            }
+        }
+
+        if (video) {
+            let videoRatio = this.settings.plyr.ratio.split(':');
+            let maxWidth = this.slidesData[this.index].width;
+            let maxHeight = maxWidth / (parseInt(videoRatio[0]) / parseInt(videoRatio[1]));
+                maxHeight = Math.floor(maxHeight);
+
+            if (descriptionResize) {
+                winHeight = winHeight - description.offsetHeight;
+            }
+
+            if (winHeight < maxHeight && winWidth > maxWidth) {
+                let vwidth = video.offsetWidth;
+                let vheight = video.offsetHeight;
+                let ratio = winHeight / vheight;
+                let vsize = { width: vwidth * ratio, height: vheight * ratio };
+                video.parentNode.setAttribute('style', `max-width: ${vsize.width}px`)
+
+                if (descriptionResize) {
+                    description.setAttribute('style', `max-width: ${vsize.width}px;`)
+                }
+            } else {
+                video.parentNode.style.maxWidth = `${maxWidth}px`;
+                if (descriptionResize) {
+                    description.setAttribute('style', `max-width: ${maxWidth}px;`)
+                }
+            }
+        }
+    }
+
 
     /**
      * Reload Lightbox
@@ -1860,10 +2009,8 @@ class GlightboxInit {
             }
 
             const body = document.body;
-            removeClass(body, 'glightbox-open')
             removeClass(html, 'glightbox-open')
-            removeClass(body, 'touching')
-            removeClass(body, 'gdesc-open')
+            removeClass(body, 'glightbox-open touching gdesc-open glightbox-touch glightbox-mobile')
             body.style.width = '';
             this.modal.parentNode.removeChild(this.modal)
             if (utils.isFunction(this.settings.onClose)) {

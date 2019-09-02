@@ -424,6 +424,175 @@
     return TouchEvents;
   }();
 
+  var ZoomImages = function () {
+    function ZoomImages(el, slide) {
+      var _this = this;
+
+      var onclose = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+
+      _classCallCheck(this, ZoomImages);
+
+      this.img = el;
+      this.slide = slide;
+      this.onclose = onclose;
+
+      if (this.img.setZoomEvents) {
+        return false;
+      }
+
+      this.active = false;
+      this.zoomedIn = false;
+      this.dragging = false;
+      this.currentX = null;
+      this.currentY = null;
+      this.initialX = null;
+      this.initialY = null;
+      this.xOffset = 0;
+      this.yOffset = 0;
+      this.img.addEventListener('mousedown', function (e) {
+        return _this.dragStart(e);
+      }, false);
+      this.img.addEventListener('mouseup', function (e) {
+        return _this.dragEnd(e);
+      }, false);
+      this.img.addEventListener('mousemove', function (e) {
+        return _this.drag(e);
+      }, false);
+      this.img.addEventListener('click', function (e) {
+        if (!_this.zoomedIn) {
+          return _this.zoomIn();
+        }
+
+        if (_this.zoomedIn && !_this.dragging) {
+          _this.zoomOut();
+        }
+      }, false);
+      this.img.setZoomEvents = true;
+    }
+
+    _createClass(ZoomImages, [{
+      key: "zoomIn",
+      value: function zoomIn() {
+        var winWidth = this.widowWidth();
+
+        if (this.zoomedIn || winWidth <= 768) {
+          return;
+        }
+
+        var img = this.img;
+        img.setAttribute('data-style', img.getAttribute('style'));
+        img.style.maxWidth = img.naturalWidth + 'px';
+        img.style.maxHeight = img.naturalHeight + 'px';
+
+        if (img.naturalWidth > winWidth) {
+          var centerX = winWidth / 2 - img.naturalWidth / 2;
+          this.setTranslate(this.img.parentNode, centerX, 0);
+        }
+
+        this.slide.classList.add('zoomed');
+        this.zoomedIn = true;
+      }
+    }, {
+      key: "zoomOut",
+      value: function zoomOut() {
+        this.img.parentNode.setAttribute('style', '');
+        this.img.setAttribute('style', this.img.getAttribute('data-style'));
+        this.slide.classList.remove('zoomed');
+        this.zoomedIn = false;
+        this.currentX = null;
+        this.currentY = null;
+        this.initialX = null;
+        this.initialY = null;
+        this.xOffset = 0;
+        this.yOffset = 0;
+
+        if (this.onclose && typeof this.onclose == 'function') {
+          this.onclose();
+        }
+      }
+    }, {
+      key: "dragStart",
+      value: function dragStart(e) {
+        if (!this.zoomedIn) {
+          this.active = false;
+          return;
+        }
+
+        if (e.type === "touchstart") {
+          this.initialX = e.touches[0].clientX - this.xOffset;
+          this.initialY = e.touches[0].clientY - this.yOffset;
+        } else {
+          this.initialX = e.clientX - this.xOffset;
+          this.initialY = e.clientY - this.yOffset;
+        }
+
+        if (e.target === this.img) {
+          this.active = true;
+          this.img.classList.add('dragging');
+        }
+      }
+    }, {
+      key: "dragEnd",
+      value: function dragEnd() {
+        var _this2 = this;
+
+        this.initialX = this.currentX;
+        this.initialY = this.currentY;
+        this.active = false;
+        setTimeout(function () {
+          _this2.dragging = false;
+          _this2.img.isDragging = false;
+
+          _this2.img.classList.remove('dragging');
+        }, 100);
+      }
+    }, {
+      key: "drag",
+      value: function drag(e) {
+        if (this.active) {
+          e.preventDefault();
+
+          if (e.type === 'touchmove') {
+            this.currentX = e.touches[0].clientX - this.initialX;
+            this.currentY = e.touches[0].clientY - this.initialY;
+          } else {
+            this.currentX = e.clientX - this.initialX;
+            this.currentY = e.clientY - this.initialY;
+          }
+
+          this.xOffset = this.currentX;
+          this.yOffset = this.currentY;
+          this.img.isDragging = true;
+          this.dragging = true;
+          this.setTranslate(this.img, this.currentX, this.currentY);
+        }
+      }
+    }, {
+      key: "onMove",
+      value: function onMove(e) {
+        if (!this.zoomedIn) {
+          return;
+        }
+
+        var xOffset = e.clientX - this.img.naturalWidth / 2;
+        var yOffset = e.clientY - this.img.naturalHeight / 2;
+        this.setTranslate(this.img, xOffset, yOffset);
+      }
+    }, {
+      key: "setTranslate",
+      value: function setTranslate(node, xPos, yPos) {
+        node.style.transform = "translate3d(" + xPos + "px, " + yPos + "px, 0)";
+      }
+    }, {
+      key: "widowWidth",
+      value: function widowWidth() {
+        return window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+      }
+    }]);
+
+    return ZoomImages;
+  }();
+
   var isMobile = navigator.userAgent.match(/(iPad)|(iPhone)|(iPod)|(Android)|(PlayBook)|(BB10)|(BlackBerry)|(Opera Mini)|(IEMobile)|(webOS)|(MeeGo)/i);
   var isTouch = isMobile !== null || document.createTouch !== undefined || 'ontouchstart' in window || 'onmsgesturechange' in window || navigator.msMaxTouchPoints;
   var html = document.getElementsByTagName('html')[0];
@@ -455,6 +624,7 @@
     plyr: {
       css: 'https://cdn.plyr.io/3.5.6/plyr.css',
       js: 'https://cdn.plyr.io/3.5.6/plyr.js',
+      ratio: '16:9',
       config: {
         youtube: {
           noCookie: true,
@@ -493,33 +663,16 @@
         "in": 'slideInLeft',
         out: 'slideOutRight'
       }
+    },
+    svg: {
+      close: '<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" xml:space="preserve"><g><g><path d="M505.943,6.058c-8.077-8.077-21.172-8.077-29.249,0L6.058,476.693c-8.077,8.077-8.077,21.172,0,29.249C10.096,509.982,15.39,512,20.683,512c5.293,0,10.586-2.019,14.625-6.059L505.943,35.306C514.019,27.23,514.019,14.135,505.943,6.058z"/></g></g><g><g><path d="M505.942,476.694L35.306,6.059c-8.076-8.077-21.172-8.077-29.248,0c-8.077,8.076-8.077,21.171,0,29.248l470.636,470.636c4.038,4.039,9.332,6.058,14.625,6.058c5.293,0,10.587-2.019,14.624-6.057C514.018,497.866,514.018,484.771,505.942,476.694z"/></g></g></svg>',
+      next: '<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 477.175 477.175" xml:space="preserve"> <g><path d="M360.731,229.075l-225.1-225.1c-5.3-5.3-13.8-5.3-19.1,0s-5.3,13.8,0,19.1l215.5,215.5l-215.5,215.5c-5.3,5.3-5.3,13.8,0,19.1c2.6,2.6,6.1,4,9.5,4c3.4,0,6.9-1.3,9.5-4l225.1-225.1C365.931,242.875,365.931,234.275,360.731,229.075z"/></g></svg>',
+      prev: '<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 477.175 477.175" xml:space="preserve"><g><path d="M145.188,238.575l215.5-215.5c5.3-5.3,5.3-13.8,0-19.1s-13.8-5.3-19.1,0l-225.1,225.1c-5.3,5.3-5.3,13.8,0,19.1l225.1,225c2.6,2.6,6.1,4,9.5,4s6.9-1.3,9.5-4c5.3-5.3,5.3-13.8,0-19.1L145.188,238.575z"/></g></svg>'
     }
   };
-  var lightboxSlideHtml = '<div class="gslide">\
-         <div class="gslide-inner-content">\
-            <div class="ginner-container">\
-               <div class="gslide-media">\
-               </div>\
-               <div class="gslide-description">\
-                    <div class="gdesc-inner">\
-                        <h4 class="gslide-title"></h4>\
-                        <div class="gslide-desc"></div>\
-                    </div>\
-               </div>\
-            </div>\
-         </div>\
-       </div>';
+  var lightboxSlideHtml = "<div class=\"gslide\">\n    <div class=\"gslide-inner-content\">\n        <div class=\"ginner-container\">\n            <div class=\"gslide-media\">\n            </div>\n            <div class=\"gslide-description\">\n                <div class=\"gdesc-inner\">\n                    <h4 class=\"gslide-title\"></h4>\n                    <div class=\"gslide-desc\"></div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>";
   defaults.slideHtml = lightboxSlideHtml;
-  var lightboxHtml = '<div id="glightbox-body" class="glightbox-container">\
-            <div class="gloader visible"></div>\
-            <div class="goverlay"></div>\
-            <div class="gcontainer">\
-               <div id="glightbox-slider" class="gslider"></div>\
-               <button class="gnext gbtn" tabindex="0"></button>\
-               <button class="gprev gbtn" tabindex="1"></button>\
-               <button class="gclose gbtn" tabindex="2"></button>\
-            </div>\
-   </div>';
+  var lightboxHtml = "<div id=\"glightbox-body\" class=\"glightbox-container\">\n    <div class=\"gloader visible\"></div>\n    <div class=\"goverlay\"></div>\n    <div class=\"gcontainer\">\n    <div id=\"glightbox-slider\" class=\"gslider\"></div>\n    <button class=\"gnext gbtn\" tabindex=\"0\">{nextSVG}</button>\n    <button class=\"gprev gbtn\" tabindex=\"1\">{prevSVG}</button>\n    <button class=\"gclose gbtn\" tabindex=\"2\">{closeSVG}</button>\n</div>\n</div>";
   defaults.lightboxHtml = lightboxHtml;
 
   function extend() {
@@ -822,6 +975,13 @@
     element.style.display = 'none';
   }
 
+  function windowSize() {
+    return {
+      width: window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
+      height: window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
+    };
+  }
+
   var getSlideData = function getSlideData() {
     var element = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
     var settings = arguments.length > 1 ? arguments[1] : undefined;
@@ -848,7 +1008,7 @@
     if (nodeType === 'img') url = element.src;
     data.href = url;
     each(data, function (val, key) {
-      if (utils.has(settings, key)) {
+      if (utils.has(settings, key) && key !== 'width') {
         data[key] = settings[key];
       }
 
@@ -898,16 +1058,20 @@
       if (!utils.isNil(desc) && desc !== '') data.description = desc;
     }
 
-    var nodeDesc = element.querySelector('.glightbox-desc');
+    if (data.description && data.description.substring(0, 1) == '.' && document.querySelector(data.description)) {
+      data.description = document.querySelector(data.description).innerHTML;
+    } else {
+      var nodeDesc = element.querySelector('.glightbox-desc');
 
-    if (nodeDesc) {
-      data.description = nodeDesc.innerHTML;
+      if (nodeDesc) {
+        data.description = nodeDesc.innerHTML;
+      }
     }
 
     var defaultWith = data.type == 'video' ? settings.videosWidth : settings.width;
     var defaultHeight = settings.height;
-    data.width = utils.has(data, 'width') ? data.width : defaultWith;
-    data.height = utils.has(data, 'height') ? data.height : defaultHeight;
+    data.width = utils.has(data, 'width') && data.width !== '' ? data.width : defaultWith;
+    data.height = utils.has(data, 'height') && data.height !== '' ? data.height : defaultHeight;
     return data;
   };
 
@@ -976,7 +1140,7 @@
 
     if (type === 'video') {
       addClass(slideMedia.parentNode, "gvideo-container");
-      slideMedia.innerHTML = '<div class="gvideo-wrapper"></div>';
+      slideMedia.insertBefore(createHTML('<div class="gvideo-wrapper"></div>'), slideMedia.firstChild);
       setSlideVideo.apply(this, [slide, data, finalCallback]);
       return;
     }
@@ -1001,12 +1165,19 @@
     if (type === 'image') {
       var img = new Image();
       img.addEventListener('load', function () {
+        if (!isMobile && img.naturalWidth > img.offsetWidth) {
+          addClass(img, 'zoomable');
+          new ZoomImages(img, slide, function () {
+            _this.resize(slide);
+          });
+        }
+
         if (utils.isFunction(finalCallback)) {
           finalCallback();
         }
       }, false);
       img.src = data.href;
-      slideMedia.appendChild(img);
+      slideMedia.insertBefore(img, slideMedia.firstChild);
       return;
     }
 
@@ -1037,7 +1208,7 @@
         embedID = vimeoID[1];
       }
 
-      if (url.match(/(youtube\.com|youtube-nocookie\.com)\/watch\?v=([a-zA-Z0-9\-_]+)/) || url.match(/youtu\.be\/([a-zA-Z0-9\-_]+)/)) {
+      if (url.match(/(youtube\.com|youtube-nocookie\.com)\/watch\?v=([a-zA-Z0-9\-_]+)/) || url.match(/youtu\.be\/([a-zA-Z0-9\-_]+)/) || url.match(/(youtube\.com|youtube-nocookie\.com)\/embed\/([a-zA-Z0-9\-_]+)/)) {
         var youtubeID = getYoutubeID(url);
         videoSource = 'youtube';
         embedID = youtubeID;
@@ -1294,7 +1465,7 @@
       return 'image';
     }
 
-    if (url.match(/(youtube\.com|youtube-nocookie\.com)\/watch\?v=([a-zA-Z0-9\-_]+)/) || url.match(/youtu\.be\/([a-zA-Z0-9\-_]+)/)) {
+    if (url.match(/(youtube\.com|youtube-nocookie\.com)\/watch\?v=([a-zA-Z0-9\-_]+)/) || url.match(/youtu\.be\/([a-zA-Z0-9\-_]+)/) || url.match(/(youtube\.com|youtube-nocookie\.com)\/embed\/([a-zA-Z0-9\-_]+)/)) {
       return 'video';
     }
 
@@ -1390,8 +1561,10 @@
       return false;
     }
 
-    var winWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-    var winHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+    var winSize = windowSize();
+    var winWidth = winSize.width;
+    var winHeight = winSize.height;
+    var process = false;
     var currentSlide = null;
     var media = null;
     var mediaImage = null;
@@ -1421,6 +1594,12 @@
     var overlay = document.querySelector('.goverlay');
     var touchInstance = new TouchEvents(sliderWrapper, {
       touchStart: function touchStart(e) {
+        if (hasClass(e.targetTouches[0].target, 'ginner-container')) {
+          process = false;
+          return false;
+        }
+
+        process = true;
         endCoords = e.targetTouches[0];
         startCoords.pageX = e.targetTouches[0].pageX;
         startCoords.pageY = e.targetTouches[0].pageY;
@@ -1438,6 +1617,10 @@
         removeClass(overlay, 'greset');
       },
       touchMove: function touchMove(e) {
+        if (!process) {
+          return;
+        }
+
         endCoords = e.targetTouches[0];
 
         if (doingZoom || imageZoomed) {
@@ -1489,6 +1672,10 @@
         slideCSSTransform(media, "translate3d(".concat(hDistancePercent, "%, ").concat(vDistancePercent, "%, 0)"));
       },
       touchEnd: function touchEnd() {
+        if (!process) {
+          return;
+        }
+
         doingMove = false;
 
         if (imageZoomed || doingZoom) {
@@ -1705,6 +1892,7 @@
 
       this.settings = extend(defaults, options || {});
       this.effectsClasses = this.getAnimationClasses();
+      this.slidesData = {};
     }
 
     _createClass(GlightboxInit, [{
@@ -1752,7 +1940,7 @@
         addClass(html, 'glightbox-open');
 
         if (isMobile) {
-          addClass(html, 'glightbox-mobile');
+          addClass(document.body, 'glightbox-mobile');
           this.settings.slideEffect = 'slide';
         }
 
@@ -1798,22 +1986,26 @@
 
         this.slideAnimateOut();
         var slide = this.slidesContainer.querySelectorAll('.gslide')[index];
-        show(this.slidesContainer);
 
         if (hasClass(slide, 'loaded')) {
           this.slideAnimateIn(slide, first);
           hide(this.loader);
         } else {
           show(this.loader);
-          var slide_data = getSlideData(this.elements[index], this.settings);
-          slide_data.index = index;
-          setSlideContent.apply(this, [slide, slide_data, function () {
+          var slideData = getSlideData(this.elements[index], this.settings);
+          slideData.index = index;
+          this.slidesData[index] = slideData;
+          setSlideContent.apply(this, [slide, slideData, function () {
             hide(_this7.loader);
+
+            _this7.resize();
 
             _this7.slideAnimateIn(slide, first);
           }]);
         }
 
+        this.slideDescription = slide.querySelector('.gslide-description');
+        this.slideDescriptionContained = this.slideDescription && hasClass(this.slideDescription.parentNode, 'gslide-media');
         this.preloadSlide(index + 1);
         this.preloadSlide(index - 1);
         removeClass(this.nextButton, 'disabled');
@@ -1840,16 +2032,17 @@
           return false;
         }
 
-        var slide_data = getSlideData(this.elements[index], this.settings);
-        slide_data.index = index;
-        var type = slide_data.sourcetype;
+        var slideData = getSlideData(this.elements[index], this.settings);
+        slideData.index = index;
+        this.slidesData[index] = slideData;
+        var type = slideData.sourcetype;
 
         if (type == 'video' || type == 'external') {
           setTimeout(function () {
-            setSlideContent.apply(_this8, [slide, slide_data]);
+            setSlideContent.apply(_this8, [slide, slideData]);
           }, 200);
         } else {
-          setSlideContent.apply(this, [slide, slide_data]);
+          setSlideContent.apply(this, [slide, slideData]);
         }
       }
     }, {
@@ -1907,7 +2100,6 @@
 
         if (slideMedia.offsetWidth > 0 && slideDesc) {
           hide(slideDesc);
-          slide.querySelector('.ginner-container').style.maxWidth = "".concat(slideMedia.offsetWidth, "px");
           slideDesc.style.display = '';
         }
 
@@ -1944,6 +2136,9 @@
           });
         }
 
+        setTimeout(function () {
+          _this9.resize(slide);
+        }, 100);
         addClass(slide, 'current');
       }
     }, {
@@ -2100,8 +2295,15 @@
           return false;
         }
 
-        var lightbox_html = createHTML(this.settings.lightboxHtml);
-        document.body.appendChild(lightbox_html);
+        var nextSVG = utils.has(this.settings.svg, 'next') ? this.settings.svg.next : '';
+        var prevSVG = utils.has(this.settings.svg, 'prev') ? this.settings.svg.prev : '';
+        var closeSVG = utils.has(this.settings.svg, 'close') ? this.settings.svg.close : '';
+        var lightboxHTML = this.settings.lightboxHtml;
+        lightboxHTML = lightboxHTML.replace(/{nextSVG}/g, nextSVG);
+        lightboxHTML = lightboxHTML.replace(/{prevSVG}/g, prevSVG);
+        lightboxHTML = lightboxHTML.replace(/{closeSVG}/g, closeSVG);
+        lightboxHTML = createHTML(lightboxHTML);
+        document.body.appendChild(lightboxHTML);
         var modal = document.getElementById('glightbox-body');
         this.modal = modal;
         var closeButton = modal.querySelector('.gclose');
@@ -2154,8 +2356,8 @@
           this.events['outClose'] = addEvent('click', {
             onElement: modal,
             withCallback: function withCallback(e, target) {
-              if (!getClosest(e.target, '.ginner-container')) {
-                if (!hasClass(e.target, 'gnext') && !hasClass(e.target, 'gprev')) {
+              if (!hasClass(document.body, 'glightbox-mobile') && !getClosest(e.target, '.ginner-container')) {
+                if (!getClosest(e.target, '.gbtn') && !hasClass(e.target, 'gnext') && !hasClass(e.target, 'gprev')) {
                   _this10.close();
                 }
               }
@@ -2170,10 +2372,100 @@
         });
 
         if (isTouch) {
-          addClass(html, 'glightbox-touch');
+          addClass(document.body, 'glightbox-touch');
         }
 
+        this.events['resize'] = addEvent('resize', {
+          onElement: window,
+          withCallback: function withCallback() {
+            _this10.resize();
+          }
+        });
         this.built = true;
+      }
+    }, {
+      key: "resize",
+      value: function resize() {
+        var slide = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+        slide = !slide ? this.activeSlide : slide;
+
+        if (!slide || hasClass(slide, 'zoomed')) {
+          return;
+        }
+
+        var winSize = windowSize();
+        var video = slide.querySelector('.gvideo-wrapper');
+        var image = slide.querySelector('.gslide-image');
+        var description = this.slideDescription;
+        var winWidth = winSize.width;
+        var winHeight = winSize.height;
+
+        if (winWidth <= 768) {
+          addClass(document.body, 'glightbox-mobile');
+        } else {
+          removeClass(document.body, 'glightbox-mobile');
+        }
+
+        if (!video && !image) {
+          return;
+        }
+
+        var descriptionResize = false;
+
+        if (description && (hasClass(description, 'description-bottom') || hasClass(description, 'description-top')) && !hasClass(description, 'gabsolute')) {
+          descriptionResize = true;
+        }
+
+        if (image) {
+          if (winWidth <= 768) {
+            var imgNode = image.querySelector('img');
+            imgNode.setAttribute('style', '');
+          } else if (descriptionResize) {
+            var descHeight = description.offsetHeight;
+            var maxWidth = this.slidesData[this.index].width;
+            maxWidth = maxWidth <= winWidth ? maxWidth + 'px' : '100%';
+
+            var _imgNode = image.querySelector('img');
+
+            _imgNode.setAttribute('style', "max-height: calc(100vh - ".concat(descHeight, "px)"));
+
+            description.setAttribute('style', "max-width: ".concat(_imgNode.offsetWidth, "px;"));
+          }
+        }
+
+        if (video) {
+          var videoRatio = this.settings.plyr.ratio.split(':');
+          var _maxWidth = this.slidesData[this.index].width;
+
+          var maxHeight = _maxWidth / (parseInt(videoRatio[0]) / parseInt(videoRatio[1]));
+
+          maxHeight = Math.floor(maxHeight);
+
+          if (descriptionResize) {
+            winHeight = winHeight - description.offsetHeight;
+          }
+
+          if (winHeight < maxHeight && winWidth > _maxWidth) {
+            var vwidth = video.offsetWidth;
+            var vheight = video.offsetHeight;
+            var ratio = winHeight / vheight;
+            var vsize = {
+              width: vwidth * ratio,
+              height: vheight * ratio
+            };
+            video.parentNode.setAttribute('style', "max-width: ".concat(vsize.width, "px"));
+
+            if (descriptionResize) {
+              description.setAttribute('style', "max-width: ".concat(vsize.width, "px;"));
+            }
+          } else {
+            video.parentNode.style.maxWidth = "".concat(_maxWidth, "px");
+
+            if (descriptionResize) {
+              description.setAttribute('style', "max-width: ".concat(_maxWidth, "px;"));
+            }
+          }
+        }
       }
     }, {
       key: "reload",
@@ -2210,10 +2502,8 @@
           }
 
           var body = document.body;
-          removeClass(body, 'glightbox-open');
           removeClass(html, 'glightbox-open');
-          removeClass(body, 'touching');
-          removeClass(body, 'gdesc-open');
+          removeClass(body, 'glightbox-open touching gdesc-open glightbox-touch glightbox-mobile');
           body.style.width = '';
 
           _this11.modal.parentNode.removeChild(_this11.modal);

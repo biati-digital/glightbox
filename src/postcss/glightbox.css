@@ -1,8 +1,7 @@
-@custom-media --extra-small-viewport (min-width: 20em);
-@custom-media --small-viewport (min-width: 25em);
-@custom-media --medium-small-viewport (min-width: 48em);
-@custom-media --medium-viewport (min-width: 62em);
-@custom-media --large-viewport (min-width: 75em);
+@custom-media --small-viewport (width >=576px);
+@custom-media --medium-small-viewport (width > 768px);
+@custom-media --medium-viewport (width >=992px);
+@custom-media --large-viewport (width >=1200px);
 
 .glightbox-container {
     width: 100%;
@@ -16,6 +15,7 @@
     -webkit-text-size-adjust: 100%;
     -webkit-backface-visibility: hidden;
     outline: none;
+    overflow: hidden;
 
     &.inactive {
         display: none;
@@ -35,24 +35,36 @@
         left: 0;
         top: 0;
         width: 100%;
-        position: absolute;
+        position: relative;
+        overflow: hidden;
+        display: flex !important;
+        justify-content: center;
+        align-items: center;
+        transform: translate3d(0, 0, 0);
     }
 
 
     .gslide {
-        height: 100%;
         width: 100%;
         position: absolute;
-        display: block;
+        opacity: 1;
+        user-select: none;
         display: flex;
         align-items: center;
         justify-content: center;
         opacity: 0;
-        user-select: none;
+
+        /* top: 0;
+        left: 0;
+        right: 0;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%); */
 
         &.current {
             opacity: 1;
             z-index: 99999;
+            position: relative;
         }
 
         &.prev {
@@ -63,18 +75,17 @@
 
     .gslide-inner-content {
         width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
     }
 
     .ginner-container {
+        position: relative;
         width: 100%;
         display: flex;
         justify-content: center;
         flex-direction: column;
         max-width: 100%;
-        max-height: 100vh;
+        margin: auto;
+        height: 100vh;
 
         &.gvideo-container {
             width: 100%;
@@ -82,6 +93,7 @@
 
         @media (--medium-small-viewport) {
             width: auto;
+            height: auto;
             flex-direction: row;
         }
 
@@ -95,13 +107,23 @@
             max-width: 100% !important;
         }
 
-        &.desc-left,
         &.desc-top {
             @media (--medium-small-viewport) {
                 .gslide-description {
                     order: 0;
                 }
-                .gslide-media {
+                .gslide-image img {
+                    order: 1;
+                }
+            }
+        }
+
+        &.desc-left {
+            @media (--medium-small-viewport) {
+                .gslide-description {
+                    order: 0;
+                }
+                .gslide-image {
                     order: 1;
                 }
             }
@@ -141,17 +163,40 @@
         height: auto;
         object-fit: cover;
         touch-action: none;
+        margin: auto;
+        min-width: 200px;
 
         @media (--medium-small-viewport) {
-            /* width: initial; */
             max-height: 97vh;
+            max-width: calc(100% - 20px);
+            max-width: 100%;
         }
 
         .desc-top &,
         .desc-bottom & {
-            width: 100%;
+            width: auto;
         }
 
+        .desc-left &,
+        .desc-right & {
+            width: auto;
+            max-width: 100%;
+        }
+
+        &.zoomable {
+            @media (--medium-small-viewport) {
+                cursor: zoom-in;
+
+                .zoomed & {
+                    cursor: grab;
+                }
+            }
+        }
+
+        &.dragging {
+            cursor: grabbing !important;
+            transition: none;
+        }
     }
 }
 
@@ -165,6 +210,8 @@
 
     .gvideo-wrapper {
         width: 100%;
+        /* max-width: 160vmin; */
+        margin: auto;
     }
 
     &::before {
@@ -217,13 +264,14 @@
 .gslide-media {
     display: block;
     display: inline-flex;
+    display: flex;
     width: auto;
 
     .desc-top &,
     .desc-bottom & {
         margin: 0 auto;
+        flex-direction: column;
     }
-
     /* @media (--medium-small-viewport) {
         display: block;
         display: inline-flex;
@@ -232,7 +280,6 @@
 }
 
 .gslide-description {
-    float: left;
     position: relative;
 
     &.description-left,
@@ -244,12 +291,22 @@
         }
     }
 
+    &.description-bottom,
+    &.description-top {
+        margin: 0 auto;
+        width: 100%;
+    }
+
     p {
         margin-bottom: 12px;
 
         &::last-child {
             margin-bottom: 0;
         }
+    }
+
+    .zoomed & {
+        display: none;
     }
 }
 
@@ -259,8 +316,10 @@
  * something like facebook does the description
  * for the photos
 */
-.glightbox-mobile .glightbox-container{
+.glightbox-mobile .glightbox-container {
     .gslide-description {
+        height: auto !important;
+        width: 100%;
         background: transparent;
         position: absolute;
         bottom: 15px;
@@ -271,6 +330,7 @@
         overflow: auto !important;
         background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, .75) 100%);
         transition: opacity .3s linear;
+        padding-bottom: 50px;
     }
 
     .gslide-title {
@@ -283,6 +343,13 @@
         a {
             color: #fff;
             font-weight: bold;
+        }
+
+        * {
+            color: inherit;
+        }
+        string {
+            color: #fff;
         }
         .desc-more {
             color: #fff;
@@ -311,8 +378,16 @@
     transition: all .3s ease;
 }
 
+.gabsolute {
+    position: absolute;
+}
+
+.grelative {
+    position: relative;
+}
+
 .glightbox-desc {
-    display: none;
+    display: none !important;
 }
 
 .glightbox-open {
@@ -348,6 +423,10 @@
     background: #000;
     will-change: opacity;
 
+    .glightbox-mobile & {
+        background: #000;
+    }
+
     @media (--medium-small-viewport) {
         background: rgba(0, 0, 0, .92);
     }
@@ -367,6 +446,13 @@
     height: 44px;
     display: block;
     background-position: 0 0;
+    border: none;
+
+    svg {
+        display: block;
+        width: 100%;
+        height: auto;
+    }
 
     &.disabled {
         opacity: .1;
@@ -391,7 +477,8 @@ iframe.wait-autoplay {
 
 
 /*Skin */
-.glightbox-clean {
+.glightbox-clean,
+.glightbox-modern {
 
     .gslide-media {
         @media (--medium-small-viewport) {
@@ -427,11 +514,25 @@ iframe.wait-autoplay {
         background: #000;
     }
 
-    .gprev,
+    /* .gprev,
     .gnext,
     .gclose{
         border: none;
         background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGMAAAA2CAYAAADTeCfRAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyFpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNS1jMDE0IDc5LjE1MTQ4MSwgMjAxMy8wMy8xMy0xMjowOToxNSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIE1hY2ludG9zaCIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDo5NThDMEMwNzg3NjgxMUU1QUM2MUYwRDYwNTNEN0UxMSIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDo5NThDMEMwODg3NjgxMUU1QUM2MUYwRDYwNTNEN0UxMSI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjk1OEMwQzA1ODc2ODExRTVBQzYxRjBENjA1M0Q3RTExIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjk1OEMwQzA2ODc2ODExRTVBQzYxRjBENjA1M0Q3RTExIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+htE8KwAAA9BJREFUeNrsm1tIFGEYhndDI4OSLgqkMrKjBXYwCjt40QkpL4pMyoqMgigIgm6iiy66KSwpj2vrucKgpINRRhYRooQkWYEWUkaWERokhVQXbu/QOyDhpjPzz3H/Dx7W1f2+753/3X9mnPnHHwqFfDKcEWPkEEgzZEgzpBkybDbjHLhvIP8GKLNhPILgksEaFaDKKWacAMdAn4Ean8F+kGOxGXFgDyjSmZ8L9oFpurKVU1uBnAr9jZMCah1hrQLBGkciyL7FGvNymXdZb2+RG3GGYo4LrHmINS9abEiZRkMu8PNXjPQVJV4Vc9SEgclm7WqLDSkd5RdBiBGizCihmMMmDkwWe1yz2JBy9g2E+ft5o7smkWZUUMwBCwYmg71u2nQMCZhphFEzaihmt4UDk86e9TYZUsj3OaKNMGJGHcVkWjwoChvZ+7HFfQvZt42vpaJ76Em6SzHbbDBCZR01NFvct519u8yorzXhEcWk2WiESiq1tFrUT901veZrnp1mNFHEWgcYoZJMTe0m98ljn3K+z+f7oB1mtLD5agcZoZJEbZ3Ab0J9deCrwpzSB6004xWbLnegESqJ1NgNok04aFeF+XtA5MF8pA90stkiBxuhkkCtvSBGQL2iEYz415Bys8yIAu/ZZKELjFCJp+Z+EGugTgHrVGq8ClEm2oxZ4CUYAHNcZIRKHOjj6ed8A8eISo15xUaPIcP9spFFk11ohMp0bkOHxrxa5lXo7Ksack9Pvn+YpTqLwS0QDZbxRo+bYgJoBZPAZtCiIVe5QzceZBroXwP8YKfWRH+YdVOx4AOYCOJBt0uMUAz4BGLAVNDjhXvg/bwF2UdTElywLVOoN5o/97hsRv/3HvgAv10fwVuQ6ODtUO45f6HmyaDXi6tDfoMZNKMdJDlwG2ZyN/qVs/mbl5fqDILZoAO8AMkO0j8XvONJhjKLf0TKuqkF4Dl4BlY6QLty1vcGdHE39SvSFrEtBc2gCWywUfcKfjE6eHIxGKkrCleBRvAApNmgOQU8BW2crRG/vDMV1JN0C/WmcmYqZizxeSyMLO/cBG6DOyDDAq3rwRPOyhSfB8PoWtst4DrJMlGnYnwDeMjZ4c0QdGGumhfIsk246LeVtetcfOFyVEQJ8nQv+AkqwThQIqjuDnAV1ILtPo9HlMBaB/kfewCMBfkG6ylL85VnJZSroLt8kRAmTLezOpfUD+W0WQvFnIzfpEePlaeO5oE1OvOVp56+R8KuaWiYZYYMG05tZUgzpBkypBnSDBnSDGmGDGmGDGmGNEOGNEOaIUOa4YH4I8AAM9m8BFEzyDIAAAAASUVORK5CYII=');
+    } */
+
+    .gprev,
+    .gnext,
+    .gclose {
+        background-color: rgba(0, 0, 0, 0.12);
+
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.20);
+        }
+
+        path {
+            fill: #fff;
+        }
     }
 
 
@@ -440,12 +541,10 @@ iframe.wait-autoplay {
     }
 
     .gprev {
-        background-color: rgba(0, 0, 0, 0.08);
-        background-position: 4px 5px;
         position: absolute;
         top: -100%;
         left: 30px;
-        width: 38px;
+        width: 40px;
         height: 56px;
 
         @media (--medium-small-viewport) {
@@ -453,20 +552,18 @@ iframe.wait-autoplay {
         }
     }
     .gnext {
-        background-color: rgba(0, 0, 0, 0.08);
-        background-position: -27px 5px;
         position: absolute;
         top: -100%;
         right: 30px;
-        width: 38px;
+        width: 40px;
         height: 56px;
 
         @media (--medium-small-viewport) {
             top: 45%;
         }
     }
+
     .gclose {
-        background-color: rgba(0, 0, 0, 0.08);
         width: 35px;
         height: 35px;
         top: 15px;
@@ -474,6 +571,10 @@ iframe.wait-autoplay {
         position: absolute;
         opacity: .7;
         background-position: -59px 2px;
+
+        svg {
+            width: 20px;
+        }
 
         @media (--medium-viewport) {
             right: 20px;
