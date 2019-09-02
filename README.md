@@ -3,7 +3,7 @@
 Glightbox is a pure javascript lightbox. It can display images, iframes, inline content and videos with optional autoplay for youtube, vimeo and even self hosted videos.
 
 ## Features
-- **Small** - only 9KB Gzipped
+- **Small** - only 11KB Gzipped
 - **Responsive** - works with any screen size
 - **Gallery Support** - Create multiple galleries
 - **Video Support** - Youtube, Vimeo and self hosted videos with autoplay
@@ -11,7 +11,9 @@ Glightbox is a pure javascript lightbox. It can display images, iframes, inline 
 - **Iframe support** - need to embed an iframe? no problem
 - **Keyboard Navigation** - esc, arrows keys, tab and enter is all you need
 - **Touch Navigation** - mobile touch events
+- **Zoomable images** - zoom and drag images on mobile and desktop
 - **Api** - control the lightbox with the provided methods
+- **Customizable** - create your skin or modify the animations with some minor css changes
 
 ## Live Demo
 You can check the live demo [right here](https://biati-digital.github.io/glightbox/)
@@ -73,14 +75,14 @@ OR CDN
 </a>
 
 <!-- Advanced Description -->
-<a href="large.jpg" class="glightbox5" data-glightbox="title: My title">
+<a href="large.jpg" class="glightbox5" data-glightbox="title: My title; description: .custom-desc1">
     <img src="small.jpg" alt="image">
-
-    <div class="glightbox-desc">
-        <p>Here you can set a more advanced description</p>
-        <p>With any kind of html</p>
-    </div>
 </a>
+
+<div class="glightbox-desc custom-desc1">
+    <p>The content of this div will be used as the slide description</p>
+    <p>You can add links and any HTML you want</p>
+</div>
 ```
 
 ## Slide Options
@@ -169,6 +171,7 @@ height               | number   | `506`            | Default height for inline e
 videosWidth          | number   | `960`            | Default width for videos. Videos are responsive so height is not required.
 descPosition         | string   | `bottom`         | Global position for slides description, you can define a specific position on each slide (bottom, top, left, right).
 loopAtEnd            | boolean  | `false`          | Loop slide at end.
+svg                  | object   | `{}`             | Set your own svg icons
 autoplayVideos       | boolean  | `true`           | Autoplay videos on open.
 plyr                 | object   | `{}`             | [View video player options.](#player)
 
@@ -290,6 +293,14 @@ Feel free to report any issues! If you wish to contribute by fixing a bug or imp
 
 
 ## Changelog
+### 2.0.3
+- Fixed responsive videos not resizing correctly when resizing the window vertically
+- Fixed responsive images not resizing correctly if they have description and the window height is lower that the slide height
+- Fixed youtube video not detected correctly for urls like youtube(-nocookie).com/embed/...
+- New: Zooming images. Now you can zoom images on desktop if image is too large
+- New: Now you can also define the slide description using the content of any div you want.
+- New: Replaced png icons with svg and added options to customize them.
+
 ### 2.0.2
 - Fixed StartAt not taking specified index
 - Removed JWPlayer because that player implemented some restrictions unless you pay for a license
