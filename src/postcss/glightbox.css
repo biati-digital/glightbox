@@ -112,6 +112,7 @@
                 .gslide-description {
                     order: 0;
                 }
+                .gslide-image,
                 .gslide-image img {
                     order: 1;
                 }

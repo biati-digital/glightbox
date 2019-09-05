@@ -476,12 +476,13 @@ function windowSize() {
  * @param {node} element
  */
 const getSlideData = function getSlideData(element = null, settings) {
+    console.log(settings)
     let data = {
         href: '',
         title: '',
         type: '',
         description: '',
-        descPosition: 'bottom',
+        descPosition: settings.descPosition,
         effect: '',
         width: '',
         height: '',

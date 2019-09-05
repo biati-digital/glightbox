@@ -850,7 +850,8 @@ iframe.wait-autoplay {
     -ms-flex-order: 0;
     order: 0;
   }
-  .glightbox-container .ginner-container.desc-top .gslide-image img {
+  .glightbox-container .ginner-container.desc-top .gslide-image,
+                .glightbox-container .ginner-container.desc-top .gslide-image img {
     -webkit-box-ordinal-group: 2;
     -ms-flex-order: 1;
     order: 1;
