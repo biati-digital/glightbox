@@ -14,6 +14,7 @@ Thumbs.db
 *.rar
 *.tar
 *.zip
+index.html
 /sitepsd
 /node_modules
 /release
