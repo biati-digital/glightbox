@@ -254,11 +254,11 @@
   display: -ms-flexbox;
   display: flex;
   width: auto;
-    /* @media (--medium-small-viewport) {
-        display: block;
-        display: inline-flex;
-        justify-content: center;
-    } */
+}
+
+.zoomed .gslide-media {
+  -webkit-box-shadow: none !important;
+  box-shadow: none !important;
 }
 
 .desc-top .gslide-media,

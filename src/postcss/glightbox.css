@@ -268,16 +268,15 @@
     display: flex;
     width: auto;
 
+    .zoomed & {
+        box-shadow: none !important;
+    }
+
     .desc-top &,
     .desc-bottom & {
         margin: 0 auto;
         flex-direction: column;
     }
-    /* @media (--medium-small-viewport) {
-        display: block;
-        display: inline-flex;
-        justify-content: center;
-    } */
 }
 
 .gslide-description {
