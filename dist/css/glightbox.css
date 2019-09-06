@@ -142,7 +142,6 @@
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
-  will-change: transform, opacity;
 }
 
 .gslide-image img {
@@ -158,7 +157,6 @@
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-  will-change: transform, opacity;
   max-width: 100vw;
   width: auto;
   height: auto;
@@ -179,6 +177,10 @@
         .desc-right .gslide-image img {
   width: auto;
   max-width: 100%;
+}
+
+.gslide-image img.zoomable {
+  position: relative;
 }
 
 .gslide-image img.dragging {

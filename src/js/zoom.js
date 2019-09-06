@@ -79,6 +79,7 @@ export default class ZoomImages {
         }
     }
     dragStart(e) {
+        e.preventDefault();
         if (!this.zoomedIn) {
             this.active = false;
             return;
@@ -96,7 +97,8 @@ export default class ZoomImages {
             this.img.classList.add('dragging');
         }
     }
-    dragEnd() {
+    dragEnd(e) {
+        e.preventDefault();
         this.initialX = this.currentX;
         this.initialY = this.currentY;
         this.active = false;

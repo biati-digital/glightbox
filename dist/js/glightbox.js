@@ -513,6 +513,8 @@
     }, {
       key: "dragStart",
       value: function dragStart(e) {
+        e.preventDefault();
+
         if (!this.zoomedIn) {
           this.active = false;
           return;
@@ -533,9 +535,10 @@
       }
     }, {
       key: "dragEnd",
-      value: function dragEnd() {
+      value: function dragEnd(e) {
         var _this2 = this;
 
+        e.preventDefault();
         this.initialX = this.currentX;
         this.initialY = this.currentY;
         this.active = false;
@@ -2388,6 +2391,8 @@
       value: function resize() {
         var slide = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
         slide = !slide ? this.activeSlide : slide;
+        document.body.style.width = "";
+        document.body.style.width = "".concat(document.body.offsetWidth, "px");
 
         if (!slide || hasClass(slide, 'zoomed')) {
           return;

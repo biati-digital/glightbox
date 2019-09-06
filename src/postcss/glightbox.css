@@ -146,7 +146,6 @@
 
 .gslide-image {
     align-items: center;
-    will-change: transform, opacity;
 
     img {
         max-height: 100vh;
@@ -158,7 +157,6 @@
         outline: none;
         border: none;
         user-select: none;
-        will-change: transform, opacity;
         max-width: 100vw;
         width: auto;
         height: auto;
@@ -185,6 +183,8 @@
         }
 
         &.zoomable {
+            position: relative;
+
             @media (--medium-small-viewport) {
                 cursor: zoom-in;
 

@@ -1899,6 +1899,9 @@ class GlightboxInit {
      */
     resize(slide = null) {
         slide = (!slide ? this.activeSlide : slide);
+        document.body.style.width = ``;
+        document.body.style.width = `${document.body.offsetWidth}px`;
+
         if (!slide || hasClass(slide, 'zoomed')) {
             return;
         }
