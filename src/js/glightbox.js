@@ -471,6 +471,33 @@ function windowSize() {
 }
 
 /**
+ * Handle fullscreen
+ *
+ * @param {object} event
+ */
+function handleMediaFullScreen(event) {
+    if (!hasClass(event.target, 'plyr--html5')) {
+        return;
+    }
+    const item = event.target;
+    const media = getClosest(item, '.gslide-media');
+    const video = media.querySelector('.gvideo-local');
+
+    if (event.type == 'enterfullscreen') {
+        media.setAttribute('data-style', media.getAttribute('style'));
+        video.setAttribute('data-style', media.getAttribute('style'));
+        media.setAttribute('style', 'max-width: 100%');
+        video.setAttribute('style', 'max-width: 100%;width:100%;');
+    }
+    if (event.type == 'exitfullscreen') {
+        media.setAttribute('style', media.getAttribute('data-style'));
+        video.setAttribute('style', media.getAttribute('data-style'));
+        media.removeAttribute('data-style');
+        video.removeAttribute('data-style');
+    }
+}
+
+/**
  * Get slide data
  *
  * @param {node} element
@@ -760,6 +787,8 @@ function setSlideVideo(slide, data, callback) {
                 callback()
             }
         });
+        player.on('enterfullscreen', handleMediaFullScreen);
+        player.on('exitfullscreen', handleMediaFullScreen);
     })
 }
 
