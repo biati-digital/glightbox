@@ -985,7 +985,6 @@
   var getSlideData = function getSlideData() {
     var element = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
     var settings = arguments.length > 1 ? arguments[1] : undefined;
-    console.log(settings);
     var data = {
       href: '',
       title: '',
