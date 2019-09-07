@@ -219,6 +219,16 @@
   display: none;
 }
 
+.gslide-video.fullscreen {
+  max-width: 100% !important;
+  min-width: 100%;
+}
+
+.gslide-video.fullscreen video {
+  max-width: 100% !important;
+  width: 100% !important;
+}
+
 .gslide-inline {
   background: #fff;
   padding: 20px;

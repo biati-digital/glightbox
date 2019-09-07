@@ -227,6 +227,16 @@
     &.playing::before {
         display: none;
     }
+
+    &.fullscreen {
+        max-width: 100% !important;
+        min-width: 100%;
+
+        video {
+            max-width: 100% !important;
+            width:100% !important;
+        }
+    }
 }
 
 .gslide-inline {

@@ -479,21 +479,12 @@ function handleMediaFullScreen(event) {
     if (!hasClass(event.target, 'plyr--html5')) {
         return;
     }
-    const item = event.target;
-    const media = getClosest(item, '.gslide-media');
-    const video = media.querySelector('.gvideo-local');
-
+    const media = getClosest(event.target, '.gslide-media');
     if (event.type == 'enterfullscreen') {
-        media.setAttribute('data-style', media.getAttribute('style'));
-        video.setAttribute('data-style', media.getAttribute('style'));
-        media.setAttribute('style', 'max-width: 100%');
-        video.setAttribute('style', 'max-width: 100%;width:100%;');
+        addClass(media, 'fullscreen');
     }
     if (event.type == 'exitfullscreen') {
-        media.setAttribute('style', media.getAttribute('data-style'));
-        video.setAttribute('style', media.getAttribute('data-style'));
-        media.removeAttribute('data-style');
-        video.removeAttribute('data-style');
+        removeClass(media, 'fullscreen');
     }
 }
 
