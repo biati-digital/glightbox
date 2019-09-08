@@ -1,5 +1,5 @@
 /**
- * GLightbox v2.0.3
+ * GLightbox v2.0.4
  * Awesome pure javascript lightbox
  * made by https://www.biati.digital
  */
