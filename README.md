@@ -188,7 +188,7 @@ afterSlideLoad       | Trigger a function after a slide is loaded for the first 
 
 ## Video player
 
-Starting from version 2.0.2 glightbox droped support of JWPlayer because that player implemented new restrictions for the free edition, it was replaced with an awesome new player "[Plyr](https://plyr.io/)" that also includes support for youtube and vimeo. So instead of mainating 3 different apis now we only can focus on one. You can pass any Plyr option to the player, view all available options here [Plyr options](https://github.com/sampotts/plyr).
+Starting from version 2.0.2 glightbox droped support of JWPlayer because that player implemented new restrictions for the free edition, it was replaced with an awesome new player "[Plyr](https://plyr.io/)" that also includes support for youtube and vimeo. So instead of maintaining 3 different apis now we only can focus on one. You can pass any Plyr option to the player, view all available options here [Plyr options](https://github.com/sampotts/plyr).
 
 Please note that GLightbox will only inject the video player library if required and only when the lightbox is opened.
 
@@ -293,22 +293,27 @@ Feel free to report any issues! If you wish to contribute by fixing a bug or imp
 
 
 ## Changelog
+### 2.0.4
+- Fixed some errors when zooming and dragging images
+- Fixed description position not respected when configured globally
+- Fixed local videos not resized correctly when entered fullscreen
+
 ### 2.0.3
-- Fixed responsive videos not resizing correctly when resizing the window vertically
-- Fixed responsive images not resizing correctly if they have description and the window height is lower that the slide height
-- Fixed youtube video not detected correctly for urls like youtube(-nocookie).com/embed/...
 - New: Zooming images. Now you can zoom images on desktop if image is too large
 - New: Now you can also define the slide description using the content of any div you want.
 - New: Replaced png icons with svg and added options to customize them.
+- Fixed responsive videos not resizing correctly when resizing the window vertically
+- Fixed responsive images not resizing correctly if they have description and the window height is lower that the slide height
+- Fixed youtube video not detected correctly for urls like youtube(-nocookie).com/embed/...
 
 ### 2.0.2
+- New: [Plyr player](https://plyr.io/), we have changed to this player so that way only one api is managed instead of 3
+- New: Added tabindex accesibility to loop the controls with the tab key
+- New: Inside inline content you can close the lightbox by adding the class **gtrigger-close** to any element
 - Fixed StartAt not taking specified index
 - Removed JWPlayer because that player implemented some restrictions unless you pay for a license
 - Improved mobile touch events, swipe, move, zoom, etc.
 - Changed: Youtube now by default uses youtube-nocookie.com, you can enable cookies in the config with youtube.nocookie to false
-- New: [Plyr player](https://plyr.io/), we have changed to this player so that way only one api is managed instead of 3
-- New: Added tabindex accesibility to loop the controls with the tab key
-- New: Inside inline content you can close the lightbox by adding the class **gtrigger-close** to any element
 - Removed option videosHeight. The height is automatic depending the video width and ratio.
 - Removed Gulp and replaced for pure nodejs scripts
 - Improved documentation
@@ -318,10 +323,10 @@ Feel free to report any issues! If you wish to contribute by fixing a bug or imp
 - Fixed slide width for external sources
 
 ### 2.0.0
+- New: Delegated permissions to cross-origin iframes (for the new browsers autoplay restrictions)
 - Fixed youtube, vimeo autoplay when changing slides
 - Fixed lightbox won't fit screen with description
 - Fixed Removed global body variable that was causing some problems
-- New: Delegated permissions to cross-origin iframes (for the new browsers autoplay restrictions)
 
 ### 1.0.9
 - Added svg to source types so it can be displayed as an image [@tuomassalo](https://github.com/mcstudios/glightbox/pull/40)
