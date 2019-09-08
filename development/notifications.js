@@ -9,6 +9,7 @@ function notify(title, body) {
         message: body,
         icon: icon
     });
+    console.log(`${title}, ${body}`);
 }
 
 module.exports = notify;
