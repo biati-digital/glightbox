@@ -1,5 +1,4 @@
 const postcss = require('postcss');
-const cssimport = require('postcss-smart-import');
 const cssnext = require('postcss-preset-env');
 const cssnested = require('postcss-nested');
 const cssmqpacker = require('css-mqpacker');
@@ -23,7 +22,6 @@ function postcssCompiler(config) {
 
     return new Promise((resolve, reject) => {
         return postcss([
-                cssimport(),
                 cssnested(),
                 cssnext({
                     stage: 0,
