@@ -7,6 +7,13 @@ const args = process.argv.slice(2);
 const notify = require('./notifications');
 const folder = path.join(__dirname, '/..');
 
+/**
+ * Realease new version
+ * calling
+ * node development/package.js versionhere
+ * then npm update
+ */
+
 async function createFolder() {
     const tmpfolder = path.join(os.tmpdir(), 'glightbox-master');
 
