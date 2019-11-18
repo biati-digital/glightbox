@@ -1,5 +1,5 @@
 /**
- * GLightbox v2.0.4
+ * GLightbox v2.0.5
  * Awesome pure javascript lightbox
  * made by https://www.biati.digital
  */
@@ -34,8 +34,9 @@ const defaults = {
     afterSlideLoad: null,
     onOpen: null,
     onClose: null,
-    loopAtEnd: false,
+    loop: false,
     touchNavigation: true,
+    touchFollowAxis: true,
     keyboardNavigation: true,
     closeOnOutsideClick: true,
     plyr: {
@@ -733,7 +734,7 @@ function setSlideVideo(slide, data, callback) {
         }
 
         // Set local videos
-        if (url.match(/\.(mp4|ogg|webm)$/) !== null) {
+        if (url.match(/\.(mp4|ogg|webm|mov)$/) !== null) {
             videoSource = 'local'
             let html = '<video id="' + videoID + '" ';
             html += `style="background:#000; max-width: ${data.width}px;" `;
@@ -745,6 +746,7 @@ function setSlideVideo(slide, data, callback) {
 
             let format = url.toLowerCase().split('.').pop()
             let sources = {'mp4': '', 'ogg': '', 'webm': ''}
+            format = (format == 'mov' ? 'mp4' : format);
             sources[format] = url;
 
             for (let key in sources) {
@@ -1006,7 +1008,7 @@ const getSourceType = function(url) {
     let origin = url;
     url = url.toLowerCase();
 
-    if (url.match(/\.(jpeg|jpg|gif|png|apn|webp|svg)$/) !== null) {
+    if (url.match(/\.(jpeg|jpg|jpe|gif|png|apn|webp|svg)$/) !== null) {
         return 'image';
     }
     if (url.match(/(youtube\.com|youtube-nocookie\.com)\/watch\?v=([a-zA-Z0-9\-_]+)/) || url.match(/youtu\.be\/([a-zA-Z0-9\-_]+)/) || url.match(/(youtube\.com|youtube-nocookie\.com)\/embed\/([a-zA-Z0-9\-_]+)/)) {
@@ -1015,7 +1017,7 @@ const getSourceType = function(url) {
     if (url.match(/vimeo\.com\/([0-9]*)/)) {
         return 'video';
     }
-    if (url.match(/\.(mp4|ogg|webm)$/) !== null) {
+    if (url.match(/\.(mp4|ogg|webm|mov)$/) !== null) {
         return 'video';
     }
 
@@ -1126,6 +1128,7 @@ function touchNavigation() {
     const instance = this;
     const sliderWrapper = document.getElementById('glightbox-slider');
     const overlay = document.querySelector('.goverlay')
+    const loop = this.loop();
 
     const touchInstance = new TouchEvents(sliderWrapper, {
         touchStart: (e) => {
@@ -1192,10 +1195,18 @@ function touchNavigation() {
             if (vSwipe && mediaImage) {
                 opacity = 1 - Math.abs(vDistance) / winHeight;
                 overlay.style.opacity = opacity;
+
+                if (this.settings.touchFollowAxis) {
+                    hDistancePercent = 0;
+                }
             }
             if (hSwipe) {
                 opacity = 1 - Math.abs(hDistance) / winWidth;
                 media.style.opacity = opacity;
+
+                if (this.settings.touchFollowAxis) {
+                    vDistancePercent = 0;
+                }
             }
 
             if (!mediaImage) {
@@ -1217,11 +1228,11 @@ function touchNavigation() {
             const v = Math.abs(parseInt(vDistancePercent));
             const h = Math.abs(parseInt(hDistancePercent));
 
-            if (v > 35 && mediaImage) {
+            if (v > 29 && mediaImage) {
                 this.close();
                 return;
             }
-            if (v < 35 && h < 25) {
+            if (v < 29 && h < 25) {
                 addClass(overlay, 'greset')
                 overlay.style.opacity = 1;
                 return resetSlideMove(media)
@@ -1401,8 +1412,6 @@ function slideDescriptionEvents(desc, data) {
     })
 }
 
-
-
 /**
  * GLightbox Class
  * Class and public methods
@@ -1525,12 +1534,14 @@ class GlightboxInit {
         this.preloadSlide(index + 1);
         this.preloadSlide(index - 1);
 
+        const loop = this.loop();
+
         // Handle navigation arrows
         removeClass(this.nextButton, 'disabled');
         removeClass(this.prevButton, 'disabled');
-        if (index === 0) {
+        if (index === 0 && !loop) {
             addClass(this.prevButton, 'disabled');
-        } else if (index === this.elements.length - 1 && this.settings.loopAtEnd !== true) {
+        } else if (index === this.elements.length - 1 && !loop) {
             addClass(this.nextButton, 'disabled');
         }
         this.activeSlide = slide;
@@ -1575,11 +1586,7 @@ class GlightboxInit {
 	 * calls goToslide
 	 */
     prevSlide() {
-        let prev = this.index - 1;
-        if (prev < 0){
-            return false;
-        }
-        this.goToSlide(prev);
+        this.goToSlide(this.index - 1);
     }
 
 
@@ -1588,11 +1595,7 @@ class GlightboxInit {
      * calls goToslide
      */
     nextSlide() {
-        let next = this.index + 1;
-        if (next > this.elements.length)
-            return false;
-
-        this.goToSlide(next);
+        this.goToSlide(this.index + 1);
     }
 
 
@@ -1602,19 +1605,20 @@ class GlightboxInit {
      * @param {Int} - index
      */
     goToSlide(index = false) {
-        if (index > -1) {
-            this.prevActiveSlide = this.activeSlide;
-            this.prevActiveSlideIndex = this.index;
+        this.prevActiveSlide = this.activeSlide;
+        this.prevActiveSlideIndex = this.index;
 
-            if (index < this.elements.length) {
-                this.showSlide(index);
-            } else {
-                if (this.settings.loopAtEnd === true) {
-                    index = 0;
-                    this.showSlide(index);
-                }
-            }
+        const loop = this.loop();
+        if (!loop && (index < 0 || index > this.elements.length)) {
+            return false;
         }
+        if (index < 0) {
+            index = this.elements.length - 1;
+        }
+        else if (index >= this.elements.length) {
+            index = 0;
+        }
+        this.showSlide(index);
     }
 
 
@@ -2000,6 +2004,16 @@ class GlightboxInit {
      */
     reload() {
         this.init();
+    }
+
+    /**
+     * Handle loop config
+     */
+    loop() {
+        let loop = (utils.has(this.settings, 'loopAtEnd') ? this.settings.loopAtEnd : null);
+        loop = (utils.has(this.settings, 'loop') ? this.settings.loop : loop);
+
+        return loop;
     }
 
 
