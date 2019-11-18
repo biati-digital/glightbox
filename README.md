@@ -112,7 +112,7 @@ Example use of the options.
 ```javascript
 const lightbox = GLightbox({
     touchNavigation: true,
-    loopAtEnd: true,
+    loop: true,
     autoplayVideos: true,
     onOpen: () => {
         console.log('Lightbox opened')
@@ -163,6 +163,7 @@ moreText             | string   | `See more`       | More text for descriptions 
 moreLength           | number   | `60`             | Number of characters to display on the description before adding the moreText link (only for mobiles), if 0 it will display the entire description.
 closeButton          | boolean  | `true`           | Show or hide the close button.
 touchNavigation      | boolean  | `true`           | Enable or disable the touch navigation (swipe).
+touchFollowAxis      | boolean  | `true`           | Image follow axis when dragging on mobile.
 keyboardNavigation   | boolean  | `true`           | Enable or disable the keyboard navigation.
 closeOnOutsideClick  | boolean  | `true`           | Close the lightbox when clicking outside the active slide.
 startAt              | number   | `0`              | Start lightbox at defined index.
@@ -170,7 +171,7 @@ width                | number   | `900`            | Default with for inline ele
 height               | number   | `506`            | Default height for inline elements and iframes, you can define a specific size on each slide. **For inline elements you can set the height to auto**.
 videosWidth          | number   | `960`            | Default width for videos. Videos are responsive so height is not required.
 descPosition         | string   | `bottom`         | Global position for slides description, you can define a specific position on each slide (bottom, top, left, right).
-loopAtEnd            | boolean  | `false`          | Loop slide at end.
+loop                 | boolean  | `false`          | Loop slides on end.
 svg                  | object   | `{}`             | Set your own svg icons
 autoplayVideos       | boolean  | `true`           | Autoplay videos on open.
 plyr                 | object   | `{}`             | [View video player options.](#player)
