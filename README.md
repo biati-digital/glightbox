@@ -293,6 +293,12 @@ Feel free to report any issues! If you wish to contribute by fixing a bug or imp
 
 
 ## Changelog
+### 2.0.5
+- New: Loop, renamed loopAtEnd to loop and now works in both directions
+- New: added touchFollowAxis, for mobile when dragging the media will follow the same axis, set to false to move media as you wish
+- New: added jpe format
+- Fixed .mov videos not recognized as videos
+
 ### 2.0.4
 - Fixed some errors when zooming and dragging images
 - Fixed description position not respected when configured globally
