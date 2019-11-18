@@ -2,7 +2,7 @@
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
   (global = global || self, global.GLightbox = factory());
-}(this, function () { 'use strict';
+}(this, (function () { 'use strict';
 
   function _typeof(obj) {
     if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
@@ -620,8 +620,9 @@
     afterSlideLoad: null,
     onOpen: null,
     onClose: null,
-    loopAtEnd: false,
+    loop: false,
     touchNavigation: true,
+    touchFollowAxis: true,
     keyboardNavigation: true,
     closeOnOutsideClick: true,
     plyr: {
@@ -1233,7 +1234,7 @@
         embedID = youtubeID;
       }
 
-      if (url.match(/\.(mp4|ogg|webm)$/) !== null) {
+      if (url.match(/\.(mp4|ogg|webm|mov)$/) !== null) {
         videoSource = 'local';
 
         var _html = '<video id="' + videoID + '" ';
@@ -1250,6 +1251,7 @@
           'ogg': '',
           'webm': ''
         };
+        format = format == 'mov' ? 'mp4' : format;
         sources[format] = url;
 
         for (var key in sources) {
@@ -1482,7 +1484,7 @@
     var origin = url;
     url = url.toLowerCase();
 
-    if (url.match(/\.(jpeg|jpg|gif|png|apn|webp|svg)$/) !== null) {
+    if (url.match(/\.(jpeg|jpg|jpe|gif|png|apn|webp|svg)$/) !== null) {
       return 'image';
     }
 
@@ -1494,7 +1496,7 @@
       return 'video';
     }
 
-    if (url.match(/\.(mp4|ogg|webm)$/) !== null) {
+    if (url.match(/\.(mp4|ogg|webm|mov)$/) !== null) {
       return 'video';
     }
 
@@ -1613,6 +1615,7 @@
     var instance = this;
     var sliderWrapper = document.getElementById('glightbox-slider');
     var overlay = document.querySelector('.goverlay');
+    var loop = this.loop();
     var touchInstance = new TouchEvents(sliderWrapper, {
       touchStart: function touchStart(e) {
         if (hasClass(e.targetTouches[0].target, 'ginner-container')) {
@@ -1679,11 +1682,19 @@
         if (vSwipe && mediaImage) {
           opacity = 1 - Math.abs(vDistance) / winHeight;
           overlay.style.opacity = opacity;
+
+          if (_this5.settings.touchFollowAxis) {
+            hDistancePercent = 0;
+          }
         }
 
         if (hSwipe) {
           opacity = 1 - Math.abs(hDistance) / winWidth;
           media.style.opacity = opacity;
+
+          if (_this5.settings.touchFollowAxis) {
+            vDistancePercent = 0;
+          }
         }
 
         if (!mediaImage) {
@@ -1708,13 +1719,13 @@
         var v = Math.abs(parseInt(vDistancePercent));
         var h = Math.abs(parseInt(hDistancePercent));
 
-        if (v > 35 && mediaImage) {
+        if (v > 29 && mediaImage) {
           _this5.close();
 
           return;
         }
 
-        if (v < 35 && h < 25) {
+        if (v < 29 && h < 25) {
           addClass(overlay, 'greset');
           overlay.style.opacity = 1;
           return resetSlideMove(media);
@@ -2029,12 +2040,13 @@
         this.slideDescriptionContained = this.slideDescription && hasClass(this.slideDescription.parentNode, 'gslide-media');
         this.preloadSlide(index + 1);
         this.preloadSlide(index - 1);
+        var loop = this.loop();
         removeClass(this.nextButton, 'disabled');
         removeClass(this.prevButton, 'disabled');
 
-        if (index === 0) {
+        if (index === 0 && !loop) {
           addClass(this.prevButton, 'disabled');
-        } else if (index === this.elements.length - 1 && this.settings.loopAtEnd !== true) {
+        } else if (index === this.elements.length - 1 && !loop) {
           addClass(this.nextButton, 'disabled');
         }
 
@@ -2069,39 +2081,32 @@
     }, {
       key: "prevSlide",
       value: function prevSlide() {
-        var prev = this.index - 1;
-
-        if (prev < 0) {
-          return false;
-        }
-
-        this.goToSlide(prev);
+        this.goToSlide(this.index - 1);
       }
     }, {
       key: "nextSlide",
       value: function nextSlide() {
-        var next = this.index + 1;
-        if (next > this.elements.length) return false;
-        this.goToSlide(next);
+        this.goToSlide(this.index + 1);
       }
     }, {
       key: "goToSlide",
       value: function goToSlide() {
         var index = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+        this.prevActiveSlide = this.activeSlide;
+        this.prevActiveSlideIndex = this.index;
+        var loop = this.loop();
 
-        if (index > -1) {
-          this.prevActiveSlide = this.activeSlide;
-          this.prevActiveSlideIndex = this.index;
-
-          if (index < this.elements.length) {
-            this.showSlide(index);
-          } else {
-            if (this.settings.loopAtEnd === true) {
-              index = 0;
-              this.showSlide(index);
-            }
-          }
+        if (!loop && (index < 0 || index > this.elements.length)) {
+          return false;
         }
+
+        if (index < 0) {
+          index = this.elements.length - 1;
+        } else if (index >= this.elements.length) {
+          index = 0;
+        }
+
+        this.showSlide(index);
       }
     }, {
       key: "slideAnimateIn",
@@ -2496,6 +2501,13 @@
         this.init();
       }
     }, {
+      key: "loop",
+      value: function loop() {
+        var loop = utils.has(this.settings, 'loopAtEnd') ? this.settings.loopAtEnd : null;
+        loop = utils.has(this.settings, 'loop') ? this.settings.loop : loop;
+        return loop;
+      }
+    }, {
       key: "close",
       value: function close() {
         var _this11 = this;
@@ -2558,4 +2570,4 @@
 
   return glightbox;
 
-}));
+})));
