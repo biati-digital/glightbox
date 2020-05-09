@@ -23,6 +23,9 @@ Steps to reproduce the behavior:
 **Expected behavior**
 A clear and concise description of what you expected to happen.
 
+**Post the code you are using**
+Help me solve issues faster, if I can copy paste your code I can try to reproduce and fix the bug faster.
+
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
