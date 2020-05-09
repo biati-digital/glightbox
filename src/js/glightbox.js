@@ -1609,7 +1609,7 @@ class GlightboxInit {
         this.prevActiveSlideIndex = this.index;
 
         const loop = this.loop();
-        if (!loop && (index < 0 || index > this.elements.length)) {
+        if (!loop && (index < 0 || index > this.elements.length - 1)) {
             return false;
         }
         if (index < 0) {
