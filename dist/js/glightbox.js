@@ -2162,7 +2162,7 @@
         this.prevActiveSlideIndex = this.index;
         var loop = this.loop();
 
-        if (!loop && (index < 0 || index > this.elements.length)) {
+        if (!loop && (index < 0 || index > this.elements.length - 1)) {
           return false;
         }
 
