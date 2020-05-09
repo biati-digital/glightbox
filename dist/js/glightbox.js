@@ -604,16 +604,16 @@
   var uid = Date.now();
   var videoPlayers = {};
   var defaults = {
-    selector: 'glightbox',
+    selector: '.glightbox',
     elements: null,
     skin: 'clean',
     closeButton: true,
     startAt: null,
     autoplayVideos: true,
     descPosition: 'bottom',
-    width: 900,
-    height: 506,
-    videosWidth: 960,
+    width: '900px',
+    height: '506px',
+    videosWidth: '960px',
     beforeSlideChange: null,
     afterSlideChange: null,
     beforeSlideLoad: null,
@@ -628,8 +628,8 @@
     plyr: {
       css: 'https://cdn.plyr.io/3.5.6/plyr.css',
       js: 'https://cdn.plyr.io/3.5.6/plyr.js',
-      ratio: '16:9',
       config: {
+        ratio: '16:9',
         youtube: {
           noCookie: true,
           rel: 0,
@@ -681,7 +681,7 @@
 
   function extend() {
     var extended = {};
-    var deep = false;
+    var deep = true;
     var i = 0;
     var length = arguments.length;
 
@@ -1002,6 +1002,18 @@
     }
   }
 
+  function checkSize(size) {
+    return utils.isNumber(size) ? "".concat(size, "px") : size;
+  }
+
+  function setSize(data, settings) {
+    var defaultWith = data.type == 'video' ? checkSize(settings.videosWidth) : checkSize(settings.width);
+    var defaultHeight = checkSize(settings.height);
+    data.width = utils.has(data, 'width') && data.width !== '' ? checkSize(data.width) : defaultWith;
+    data.height = utils.has(data, 'height') && data.height !== '' ? checkSize(data.height) : defaultHeight;
+    return data;
+  }
+
   var getSlideData = function getSlideData() {
     var element = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
     var settings = arguments.length > 1 ? arguments[1] : undefined;
@@ -1014,11 +1026,22 @@
       effect: '',
       width: '',
       height: '',
-      node: element
+      node: element,
+      content: false
     };
 
     if (utils.isObject(element) && !utils.isNode(element)) {
-      return extend(data, element);
+      if (!utils.has(element, 'type')) {
+        if (utils.has(element, 'content') && element.content) {
+          element.type = 'inline';
+        } else if (utils.has(element, 'href')) {
+          element.type = getSourceType(element.href);
+        }
+      }
+
+      var objectData = extend(data, element);
+      setSize(objectData, settings);
+      return objectData;
     }
 
     var url = '';
@@ -1039,7 +1062,11 @@
       }
     });
 
-    if (!data.type) {
+    if (data.content) {
+      data.type = 'inline';
+    }
+
+    if (!data.type && url) {
       data.type = getSourceType(url);
     }
 
@@ -1088,10 +1115,7 @@
       }
     }
 
-    var defaultWith = data.type == 'video' ? settings.videosWidth : settings.width;
-    var defaultHeight = settings.height;
-    data.width = utils.has(data, 'width') && data.width !== '' ? data.width : defaultWith;
-    data.height = utils.has(data, 'height') && data.height !== '' ? data.height : defaultHeight;
+    setSize(data, settings);
     return data;
   };
 
@@ -1168,11 +1192,10 @@
     if (type === 'external') {
       var iframe = createIframe({
         url: data.href,
-        width: data.width,
-        height: data.height,
         callback: finalCallback
       });
-      slideMedia.parentNode.style.maxWidth = "".concat(data.width, "px");
+      slideMedia.parentNode.style.maxWidth = data.width;
+      slideMedia.parentNode.style.height = data.height;
       slideMedia.appendChild(iframe);
       return;
     }
@@ -1220,7 +1243,7 @@
       protocol = 'http';
     }
 
-    slideMedia.parentNode.style.maxWidth = "".concat(data.width, "px");
+    slideMedia.parentNode.style.maxWidth = data.width;
     injectVideoApi(this.settings.plyr.js, 'Plyr', function () {
       if (url.match(/vimeo\.com\/([0-9]*)/)) {
         var vimeoID = /vimeo.*\/(\d+)/i.exec(url);
@@ -1239,7 +1262,7 @@
 
         var _html = '<video id="' + videoID + '" ';
 
-        _html += "style=\"background:#000; max-width: ".concat(data.width, "px;\" ");
+        _html += "style=\"background:#000; max-width: ".concat(data.width, ";\" ");
         _html += 'preload="metadata" ';
         _html += 'x-webkit-airplay="allow" ';
         _html += 'webkit-playsinline="" ';
@@ -1293,27 +1316,14 @@
 
   function createIframe(config) {
     var url = config.url,
-        width = config.width,
-        height = config.height,
         allow = config.allow,
         callback = config.callback,
         appendTo = config.appendTo;
     var iframe = document.createElement('iframe');
-    var winWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
     iframe.className = 'vimeo-video gvideo';
     iframe.src = url;
-
-    if (height) {
-      if (isMobile && winWidth < 767) {
-        iframe.style.height = '';
-      } else {
-        iframe.style.height = "".concat(height, "px");
-      }
-    }
-
-    if (width) {
-      iframe.style.width = "".concat(width, "px");
-    }
+    iframe.style.width = '100%';
+    iframe.style.height = '100%';
 
     if (allow) {
       iframe.setAttribute('allow', allow);
@@ -1452,18 +1462,49 @@
     var _this3 = this;
 
     var slideMedia = slide.querySelector('.gslide-media');
-    var hash = data.href.split('#').pop().trim();
-    var div = document.getElementById(hash);
+    var hash = utils.has(data, 'href') && data.href ? data.href.split('#').pop().trim() : false;
+    var content = utils.has(data, 'content') && data.content ? data.content : false;
+    var innerContent;
 
-    if (!div) {
+    if (content) {
+      if (utils.isString(content)) {
+        innerContent = createHTML("<div class=\"ginlined-content\">".concat(content, "</div>"));
+      }
+
+      if (utils.isNode(content)) {
+        if (content.style.display == 'none') {
+          content.style.display = 'block';
+        }
+
+        var container = document.createElement('div');
+        container.className = 'ginlined-content';
+        container.appendChild(content);
+        innerContent = container;
+      }
+    }
+
+    if (hash) {
+      var div = document.getElementById(hash);
+
+      if (!div) {
+        return false;
+      }
+
+      var cloned = div.cloneNode(true);
+      cloned.style.height = data.height;
+      cloned.style.maxWidth = data.width;
+      addClass(cloned, 'ginlined-content');
+      innerContent = cloned;
+    }
+
+    if (!innerContent) {
+      console.error('Unable to append inline slide content', data);
       return false;
     }
 
-    var cloned = div.cloneNode(true);
-    cloned.style.height = utils.isNumber(data.height) ? "".concat(data.height, "px") : data.height;
-    cloned.style.maxWidth = utils.isNumber(data.width) ? "".concat(data.width, "px") : data.width;
-    addClass(cloned, 'ginlined-content');
-    slideMedia.appendChild(cloned);
+    slideMedia.style.height = data.height;
+    slideMedia.style.width = data.width;
+    slideMedia.appendChild(innerContent);
     this.events['inlineclose' + hash] = addEvent('click', {
       onElement: slideMedia.querySelectorAll('.gtrigger-close'),
       withCallback: function withCallback(e) {
@@ -1529,6 +1570,12 @@
         var key = event.keyCode;
 
         if (key == 9) {
+          var activeElement = document.activeElement && document.activeElement.nodeName ? document.activeElement.nodeName.toLocaleLowerCase() : false;
+
+          if (activeElement == 'input' || activeElement == 'textarea' || activeElement == 'button') {
+            return;
+          }
+
           event.preventDefault();
           var btns = document.querySelectorAll('.gbtn');
 
@@ -1618,7 +1665,7 @@
     var loop = this.loop();
     var touchInstance = new TouchEvents(sliderWrapper, {
       touchStart: function touchStart(e) {
-        if (hasClass(e.targetTouches[0].target, 'ginner-container')) {
+        if (hasClass(e.targetTouches[0].target, 'ginner-container') || getClosest(e.targetTouches[0].target, '.gslide-desc')) {
           process = false;
           return false;
         }
@@ -1919,10 +1966,12 @@
   }
 
   var GlightboxInit = function () {
-    function GlightboxInit(options) {
+    function GlightboxInit() {
+      var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
       _classCallCheck(this, GlightboxInit);
 
-      this.settings = extend(defaults, options || {});
+      this.settings = extend(defaults, options);
       this.effectsClasses = this.getAnimationClasses();
       this.slidesData = {};
     }
@@ -1933,7 +1982,7 @@
         var _this6 = this;
 
         this.baseEvents = addEvent('click', {
-          onElement: ".".concat(this.settings.selector),
+          onElement: this.getSelector(),
           withCallback: function withCallback(e, target) {
             e.preventDefault();
 
@@ -1945,12 +1994,13 @@
       key: "open",
       value: function open() {
         var element = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+        var startAt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
         this.elements = this.getElements(element);
         if (this.elements.length == 0) return false;
         this.activeSlide = null;
         this.prevActiveSlideIndex = null;
         this.prevActiveSlide = null;
-        var index = this.settings.startAt;
+        var index = startAt ? startAt : this.settings.startAt;
 
         if (element && utils.isNil(index)) {
           index = this.elements.indexOf(element);
@@ -1967,7 +2017,17 @@
         this.build();
         animateElement(this.overlay, this.settings.openEffect == 'none' ? 'none' : this.settings.cssEfects.fade["in"]);
         var body = document.body;
-        body.style.width = "".concat(body.offsetWidth, "px");
+        var scrollBar = window.innerWidth - document.documentElement.clientWidth;
+
+        if (scrollBar > 0) {
+          var styleSheet = document.createElement("style");
+          styleSheet.type = 'text/css';
+          styleSheet.className = 'gcss-styles';
+          styleSheet.innerText = ".gscrollbar-fixer {margin-right: ".concat(scrollBar, "px}");
+          document.head.appendChild(styleSheet);
+          addClass(body, 'gscrollbar-fixer');
+        }
+
         addClass(body, 'glightbox-open');
         addClass(html, 'glightbox-open');
 
@@ -2000,6 +2060,12 @@
         if (this.settings.keyboardNavigation) {
           keyboardNavigation.apply(this);
         }
+      }
+    }, {
+      key: "openAt",
+      value: function openAt() {
+        var index = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+        this.open(null, index);
       }
     }, {
       key: "showSlide",
@@ -2107,6 +2173,19 @@
         }
 
         this.showSlide(index);
+      }
+    }, {
+      key: "insertSlide",
+      value: function insertSlide() {
+        var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+        var index = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : -1;
+
+        if (!this.tmpAddSlides) {
+          this.tmpAddSlides = [];
+        }
+
+        data.atPosition = index;
+        this.tmpAddSlides.push(data);
       }
     }, {
       key: "slideAnimateIn",
@@ -2264,13 +2343,15 @@
       key: "getElements",
       value: function getElements() {
         var element = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-        this.elements = [];
+        var list = [];
+        this.elements = this.elements ? this.elements : [];
 
         if (!utils.isNil(this.settings.elements) && utils.isArray(this.settings.elements)) {
-          return this.settings.elements;
+          list = this.settings.elements;
         }
 
         var nodes = false;
+        var selector = this.getSelector();
 
         if (element !== null) {
           var gallery = element.getAttribute('data-gallery');
@@ -2280,12 +2361,31 @@
           }
         }
 
-        if (nodes == false) {
-          nodes = document.querySelectorAll(".".concat(this.settings.selector));
+        if (nodes == false && selector) {
+          nodes = document.querySelectorAll(this.getSelector());
         }
 
         nodes = Array.prototype.slice.call(nodes);
-        return nodes;
+        list = list.concat(nodes);
+
+        if (this.tmpAddSlides && this.tmpAddSlides.length) {
+          each(this.tmpAddSlides, function (tmp) {
+            var pos = tmp.atPosition < 0 ? list.length + 1 : tmp.atPosition;
+            list.splice(pos, 0, extend({}, tmp));
+          });
+          this.tmpAddSlides.length = 0;
+        }
+
+        return list;
+      }
+    }, {
+      key: "getSelector",
+      value: function getSelector() {
+        if (this.settings.selector.substring(0, 5) == 'data-') {
+          return "*[".concat(this.settings.selector, "]");
+        }
+
+        return this.settings.selector;
       }
     }, {
       key: "getActiveSlide",
@@ -2414,8 +2514,6 @@
       value: function resize() {
         var slide = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
         slide = !slide ? this.activeSlide : slide;
-        document.body.style.width = "";
-        document.body.style.width = "".concat(document.body.offsetWidth, "px");
 
         if (!slide || hasClass(slide, 'zoomed')) {
           return;
@@ -2462,7 +2560,8 @@
         }
 
         if (video) {
-          var videoRatio = this.settings.plyr.ratio.split(':');
+          var ratio = utils.has(this.settings.plyr.config, 'ratio') ? this.settings.plyr.config.ratio : '16:9';
+          var videoRatio = ratio.split(':');
           var _maxWidth = this.slidesData[this.index].width;
 
           var maxHeight = _maxWidth / (parseInt(videoRatio[0]) / parseInt(videoRatio[1]));
@@ -2476,10 +2575,12 @@
           if (winHeight < maxHeight && winWidth > _maxWidth) {
             var vwidth = video.offsetWidth;
             var vheight = video.offsetHeight;
-            var ratio = winHeight / vheight;
+
+            var _ratio = winHeight / vheight;
+
             var vsize = {
-              width: vwidth * ratio,
-              height: vheight * ratio
+              width: vwidth * _ratio,
+              height: vheight * _ratio
             };
             video.parentNode.setAttribute('style', "max-width: ".concat(vsize.width, "px"));
 
@@ -2538,13 +2639,18 @@
 
           var body = document.body;
           removeClass(html, 'glightbox-open');
-          removeClass(body, 'glightbox-open touching gdesc-open glightbox-touch glightbox-mobile');
-          body.style.width = '';
+          removeClass(body, 'glightbox-open touching gdesc-open glightbox-touch glightbox-mobile gscrollbar-fixer');
 
           _this11.modal.parentNode.removeChild(_this11.modal);
 
           if (utils.isFunction(_this11.settings.onClose)) {
             _this11.settings.onClose();
+          }
+
+          var styles = document.querySelector('.gcss-styles');
+
+          if (styles) {
+            styles.parentNode.removeChild(styles);
           }
 
           _this11.closing = null;
