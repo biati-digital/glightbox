@@ -141,7 +141,13 @@ const myGallery = GLightbox({
             'type': 'video',
             'source': 'youtube', //vimeo, youtube or local
             'width': 900,
-        }
+        },
+        {
+            'content': '<p>This will append some html inside the slide</p>' // read more in the Api section
+        },
+        {
+            'content': document.getElementById('inline-example') // this will append a node inside the slide
+        },
     ],
     autoplayVideos: true,
 });
@@ -153,7 +159,7 @@ myGallery.setElements([...]);
 
 Option               | Type     |  Default         | Description
 ------               | ----     |  -------         | -----------
-selector             | string   | `glightbox`      | Class name of the elements.
+selector             | string   | `.glightbox`     | Name of the selector for example '.glightbox' or 'data-glightbox' or '*[data-glightbox]'
 elements             | array    | `null`           | Instead of passing a selector you can pass all the items that you want in the gallery.
 skin                 | string   | `clean`          | Name of the skin, it will add a class to the lightbox so you can style it with css.
 openEffect           | string   | `zoomIn`         | Name of the effect on lightbox open. (zoom, fade, none)
@@ -167,9 +173,9 @@ touchFollowAxis      | boolean  | `true`           | Image follow axis when drag
 keyboardNavigation   | boolean  | `true`           | Enable or disable the keyboard navigation.
 closeOnOutsideClick  | boolean  | `true`           | Close the lightbox when clicking outside the active slide.
 startAt              | number   | `0`              | Start lightbox at defined index.
-width                | number   | `900`            | Default with for inline elements and iframes, you can define a specific size on each slide.
-height               | number   | `506`            | Default height for inline elements and iframes, you can define a specific size on each slide. **For inline elements you can set the height to auto**.
-videosWidth          | number   | `960`            | Default width for videos. Videos are responsive so height is not required.
+width                | number   | `900px`          | Default with for inline elements and iframes, you can define a specific size on each slide. You can use any unit for example 90% or 100vw for full width
+height               | number   | `506px`          | Default height for inline elements and iframes, you can define a specific size on each slide.You can use any unit for example 90% or 100vw **For inline elements you can set the height to auto**.
+videosWidth          | number   | `960px`          | Default width for videos. Videos are responsive so height is not required. The width can be in px % or even vw for example, 500px, 90% or 100vw for full width videos
 descPosition         | string   | `bottom`         | Global position for slides description, you can define a specific position on each slide (bottom, top, left, right).
 loop                 | boolean  | `false`          | Loop slides on end.
 svg                  | object   | `{}`             | Set your own svg icons
@@ -193,12 +199,22 @@ Starting from version 2.0.2 glightbox droped support of JWPlayer because that pl
 
 Please note that GLightbox will only inject the video player library if required and only when the lightbox is opened.
 
+**Internet explorer 11. If you need support for this browser you need to set the js url to use the polyfilled version. This is not the default because IE11 is ancient and we need to let it die.**
+
+```
+plyr: {
+    js: 'https://cdn.plyr.io/3.6.2/plyr.polyfilled.js',
+    ....
+```
+
+
 ```javascript
 const lightbox = GLightbox({
     plyr: {
         css: 'https://cdn.plyr.io/3.5.6/plyr.css', // Default not required to include
         js: 'https://cdn.plyr.io/3.5.6/plyr.js', // Default not required to include
         config: {
+            ratio: '16:9', // or '4:3'
             muted: false,
             hideControls: true,
             youtube: {
@@ -238,12 +254,14 @@ lightbox.close(); // Close de lightbox
 Option                |  Parameters      | Description
 ------                |  -------         | -----------
 open                  | `node`           | Open the lightbox, you can optionally pass a node.
+openAt                | `number`         | Open at specific index.
 close                 | `-`              | Close the lightbox.
 reload                | `-`              | Reload the lightbox, after inserting content with ajax.
 destroy               | `-`              | Destroy and remove all attached events.
 prevSlide             | `-`              | Go to the previous slide.
 nextSlide             | `-`              | Go to the next slide.
 goToSlide             | `number`         | Index of the slide.
+insertSlide           | `object, index`  | Insert a slide at the specified index.
 getActiveSlide        | `-`              | Get active slide. It will return the active node.
 getActiveSlideIndex   | `-`              | Get active slide. It will return the active slide index.
 playSlideVideo        | `number`         | Play video in the specified slide.
@@ -252,20 +270,81 @@ setElements           | `{}`             | Update the lightbox gallery elements.
 
 ```javascript
 // Example set custom gallery items
+// This iverwrites all the items in the gallery
 lightbox.setElements([
   {
     'href': 'https://picsum.photos/1200/800',
-    'type': 'image'
+    'type': 'image' // Type is only required if GlIghtbox fails to know what kind of content should display
   },
   {
     'href': 'https://www.youtube.com/watch?v=Ga6RYejo6Hk',
-    'type': 'video',
-    'source': 'youtube', //vimeo, youtube or local
-    'width': 900,
+    'type': 'video', // Type is only required if GlIghtbox fails to know what kind of content should display
+    'width': '900px',
+  },
+  {
+    'content': '<p>some html to append in the slide</p>',
+    'width': '900px',
   }
 ]);
+
+
+// Insert a single slide at the end of all the items,
+lightbox.insertSlide({
+    href: 'video url...',
+    width: '90vw'
+});
+
+// Insert a single slide at index 2 or pass 0 to add it at the start
+lightbox.insertSlide({
+    href: 'video url...',
+    width: '90vw'
+}, 2);
+
+// You can insert a slide with a defined html
+lightbox.insertSlide({
+    content: '<p>some html to append in the slide</p>',
+    width: '90vw'
+}, 2);
+
+// Or if you prefer you can pass a node
+// and it will be inserted in the slide
+lightbox.insertSlide({
+    content: document.getElementById('inline-example'),
+    width: '90vw'
+}, 2);
+
+
 // Open the lightbox
 lightbox.open();
+
+// You can also ppen the lightbox at specific index
+lightbox.openAt(2);
+
+
+// So imagine that you are making an ajax request that returns some html
+// You can create an empty instance and append the content once is returned
+
+const ajaxExample = GLightbox({ selector: '', elements: [] });;
+
+doAjaxCall({...}).then(response => {
+    ajaxExample.insertSlide({
+        width: '500px',
+        content: response.html
+    });
+    ajaxExample.open();
+})
+
+// Or you could use the set elements method to empty all the slides if any
+
+doAjaxCall({...}).then(response => {
+    ajaxExample.setElements([
+      {
+        content: response.html
+      }
+    ]);
+    ajaxExample.open();
+})
+
 ```
 
 
@@ -294,6 +373,21 @@ Feel free to report any issues! If you wish to contribute by fixing a bug or imp
 
 
 ## Changelog
+### 2.0.6
+
+- New: Now you can define width and height as 900px, 95%, 100vw, 100vh so you can have full screen content
+- New: Now you can define custom html or a node in the slide data to append it to the slide (view the API section)
+- New: Now you can use any attribute as selector for example '.glightbox' or 'data-glightbox' or '*[data-glightbox]'
+- New: Method "openAt" you can open the lightbox at specific index eg: lightbox.openAt(2);
+- New: Method "insertSlide" that allows you to append a slide at specified index
+- Fixed Tab Key Doesn't Work on Form Within GLightbox Inline Content
+- Fixed Scrolling Description triggers closing the lightbox on touch devices
+- Fixed Page jumps depending on page scrollbar
+- Fixed Overriding default plyr settings does not merge correctly
+- Fixed fullscreen video button on ios
+- Moved plyr.ratio to plyr.config.ratio
+
+
 ### 2.0.5
 - New: Loop, renamed loopAtEnd to loop and now works in both directions
 - New: added touchFollowAxis, for mobile when dragging the media will follow the same axis, set to false to move media as you wish
