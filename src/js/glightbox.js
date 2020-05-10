@@ -4,8 +4,8 @@
  * made by https://www.biati.digital
  */
 
-import TouchEvents from './touch-events';
-import ZoomImages from './zoom';
+import TouchEvents from './touch-events.js';
+import ZoomImages from './zoom.js';
 
 const isMobile = navigator.userAgent.match(/(iPad)|(iPhone)|(iPod)|(Android)|(PlayBook)|(BB10)|(BlackBerry)|(Opera Mini)|(IEMobile)|(webOS)|(MeeGo)/i);
 const isTouch = isMobile !== null || document.createTouch !== undefined || ('ontouchstart' in window) || ('onmsgesturechange' in window) || navigator.msMaxTouchPoints;
