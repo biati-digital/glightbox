@@ -1510,7 +1510,7 @@ class GlightboxInit {
         this.activeSlide = null
         this.prevActiveSlideIndex = null
         this.prevActiveSlide = null
-        let index = (startAt ? startAt : this.settings.startAt)
+        let index = (utils.isNumber(startAt) ? startAt : this.settings.startAt)
 
         if (element && utils.isNil(index)) { // if element passed and startAt is null, get the index
             index = this.elements.indexOf(element)
