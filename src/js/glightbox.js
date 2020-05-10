@@ -14,7 +14,7 @@ const transitionEnd = whichTransitionEvent();
 const animationEnd = whichAnimationEvent();
 const uid = Date.now();
 
-let videoPlayers = { }
+let videoPlayers = {}
 
 // Default settings
 const defaults = {
@@ -121,7 +121,7 @@ defaults.lightboxHtml = lightboxHtml;
  * Merge two or more objects
  */
 function extend() {
-    let extended = { }
+    let extended = {}
     let deep = true
     let i = 0
     let length = arguments.length
@@ -180,14 +180,13 @@ const utils = {
                 return o.keys().length;
             }
             let l = 0;
-            for (let k in o){
+            for (let k in o) {
                 if (utils.has(o, k)) {
                     l++
                 }
             }
             return l
-        }
-        else{
+        } else {
             return o.length;
         }
     },
@@ -245,7 +244,7 @@ function each(collection, callback) {
  */
 function getNodeEvents(node, name = null, fn = null) {
     const cache = (node[uid] = node[uid] || []);
-    const data = { all: cache, evt: null, found: null};
+    const data = { all: cache, evt: null, found: null };
     if (name && fn && utils.size(cache) > 0) {
         each(cache, (cl, i) => {
             if (cl.eventName == name && cl.fn.toString() == fn.toString()) {
@@ -271,11 +270,13 @@ function addEvent(eventName, {
     withCallback,
     avoidDuplicate = true,
     once = false,
-    useCapture = false} = { }, thisArg) {
+    useCapture = false
+} = {}, thisArg) {
     let element = onElement || []
     if (utils.isString(element)) {
-        element =  document.querySelectorAll(element)
+        element = document.querySelectorAll(element)
     }
+
     function handler(event) {
         if (utils.isFunction(withCallback)) {
             withCallback.call(thisArg, event, this)
@@ -295,7 +296,7 @@ function addEvent(eventName, {
         const events = getNodeEvents(el, eventName, handler);
         if (el.addEventListener && (avoidDuplicate && !events.found) || !avoidDuplicate) {
             el.addEventListener(eventName, handler, useCapture)
-            events.all.push({ eventName: eventName, fn: handler});
+            events.all.push({ eventName: eventName, fn: handler });
         }
     })
     return handler
@@ -319,7 +320,7 @@ function addClass(node, name) {
  * @param {string} class name
  */
 function removeClass(node, name) {
-    each(name.split(' '), cl => node.classList.remove(cl) )
+    each(name.split(' '), cl => node.classList.remove(cl))
 }
 
 /**
@@ -393,7 +394,7 @@ function animateElement(element, animation = '', callback = false) {
     }
     const animationNames = animation.split(' ')
     each(animationNames, (name) => {
-        addClass(element, 'g'+name)
+        addClass(element, 'g' + name)
     })
     addEvent(animationEnd, {
         onElement: element,
@@ -539,12 +540,11 @@ const getSlideData = function getSlideData(element = null, settings) {
         content: false
     };
 
-    if (utils.isObject(element) && !utils.isNode(element)){
+    if (utils.isObject(element) && !utils.isNode(element)) {
         if (!utils.has(element, 'type')) {
             if (utils.has(element, 'content') && element.content) {
                 element.type = 'inline';
-            }
-            else if (utils.has(element, 'href')) {
+            } else if (utils.has(element, 'href')) {
                 element.type = getSourceType(element.href);
             }
         }
@@ -616,8 +616,7 @@ const getSlideData = function getSlideData(element = null, settings) {
 
     if (data.description && data.description.substring(0, 1) == '.' && document.querySelector(data.description)) {
         data.description = document.querySelector(data.description).innerHTML;
-    }
-    else {
+    } else {
         let nodeDesc = element.querySelector('.glightbox-desc')
         if (nodeDesc) {
             data.description = nodeDesc.innerHTML;
@@ -636,7 +635,7 @@ const getSlideData = function getSlideData(element = null, settings) {
  * @param {object} data
  * @param {function} callback
  */
-const setSlideContent = function setSlideContent(slide = null, data = { }, callback = false) {
+const setSlideContent = function setSlideContent(slide = null, data = {}, callback = false) {
     if (hasClass(slide, 'loaded')) {
         return false
     }
@@ -664,7 +663,7 @@ const setSlideContent = function setSlideContent(slide = null, data = { }, callb
         if (slideDesc) {
             slideDesc.parentNode.parentNode.removeChild(slideDesc.parentNode);
         }
-    } else{
+    } else {
         if (slideTitle && data.title !== '') {
             slideTitle.innerHTML = data.title;
         } else {
@@ -675,8 +674,7 @@ const setSlideContent = function setSlideContent(slide = null, data = { }, callb
                 data.smallDescription = slideShortDesc(data.description, this.settings.moreLength, this.settings.moreText)
                 slideText.innerHTML = data.smallDescription;
                 slideDescriptionEvents.apply(this, [slideText, data])
-            }
-            else{
+            } else {
                 slideText.innerHTML = data.description;
             }
         } else {
@@ -721,7 +719,7 @@ const setSlideContent = function setSlideContent(slide = null, data = { }, callb
                     this.resize(slide);
                 });
             }
-            if (utils.isFunction(finalCallback)){
+            if (utils.isFunction(finalCallback)) {
                 finalCallback()
             }
         }, false);
@@ -787,7 +785,7 @@ function setSlideVideo(slide, data, callback) {
             html += 'class="gvideo-local">';
 
             let format = url.toLowerCase().split('.').pop()
-            let sources = {'mp4': '', 'ogg': '', 'webm': ''}
+            let sources = { 'mp4': '', 'ogg': '', 'webm': '' }
             format = (format == 'mov' ? 'mp4' : format);
             sources[format] = url;
 
@@ -1199,7 +1197,7 @@ function touchNavigation() {
     const touchInstance = new TouchEvents(sliderWrapper, {
         touchStart: (e) => {
             if (
-                hasClass(e.targetTouches[0].target, 'ginner-container') || 
+                hasClass(e.targetTouches[0].target, 'ginner-container') ||
                 getClosest(e.targetTouches[0].target, '.gslide-desc')
             ) {
                 process = false;
@@ -1438,7 +1436,7 @@ function slideShortDesc(string, n = 50, wordBoundary = false) {
     if (!useWordBoundary) {
         return subString
     }
-    return subString + '... <a href="#" class="desc-more">'+wordBoundary+'</a>'
+    return subString + '... <a href="#" class="desc-more">' + wordBoundary + '</a>'
 }
 
 function slideDescriptionEvents(desc, data) {
@@ -1493,7 +1491,7 @@ class GlightboxInit {
         this.slidesData = {};
     }
 
-    init(){
+    init() {
         this.baseEvents = addEvent('click', {
             onElement: this.getSelector(),
             withCallback: (e, target) => {
@@ -1503,7 +1501,7 @@ class GlightboxInit {
         })
     }
 
-    open(element = null, startAt = null){
+    open(element = null, startAt = null) {
         this.elements = this.getElements(element)
 
         if (this.elements.length == 0)
@@ -1669,9 +1667,9 @@ class GlightboxInit {
 
 
     /**
-	 * Load previous slide
-	 * calls goToslide
-	 */
+     * Load previous slide
+     * calls goToslide
+     */
     prevSlide() {
         this.goToSlide(this.index - 1);
     }
@@ -1701,8 +1699,7 @@ class GlightboxInit {
         }
         if (index < 0) {
             index = this.elements.length - 1;
-        }
-        else if (index >= this.elements.length) {
+        } else if (index >= this.elements.length) {
             index = 0;
         }
         this.showSlide(index);
@@ -1842,7 +1839,7 @@ class GlightboxInit {
 
 
 
-    playSlideVideo(slide){
+    playSlideVideo(slide) {
         if (utils.isNumber(slide)) {
             slide = this.slidesContainer.querySelectorAll('.gslide')[slide];
         }
@@ -1958,7 +1955,7 @@ class GlightboxInit {
      */
     getAnimationClasses() {
         let effects = []
-        for (let key in this.settings.cssEfects ){
+        for (let key in this.settings.cssEfects) {
             if (this.settings.cssEfects.hasOwnProperty(key)) {
                 let effect = this.settings.cssEfects[key]
                 effects.push(`g${effect.in}`)
@@ -2002,7 +1999,7 @@ class GlightboxInit {
 
         addClass(this.modal, 'glightbox-' + this.settings.skin);
 
-        if (this.settings.closeButton && closeButton){
+        if (this.settings.closeButton && closeButton) {
             this.events['close'] = addEvent('click', {
                 onElement: closeButton,
                 withCallback: (e, target) => {
@@ -2015,7 +2012,7 @@ class GlightboxInit {
             closeButton.parentNode.removeChild(closeButton);
         }
 
-        if (this.nextButton){
+        if (this.nextButton) {
             this.events['next'] = addEvent('click', {
                 onElement: this.nextButton,
                 withCallback: (e, target) => {
@@ -2123,7 +2120,7 @@ class GlightboxInit {
             let videoRatio = ratio.split(':');
             let maxWidth = this.slidesData[this.index].width;
             let maxHeight = maxWidth / (parseInt(videoRatio[0]) / parseInt(videoRatio[1]));
-                maxHeight = Math.floor(maxHeight);
+            maxHeight = Math.floor(maxHeight);
 
             if (descriptionResize) {
                 winHeight = winHeight - description.offsetHeight;
@@ -2213,18 +2210,11 @@ class GlightboxInit {
         });
     }
 
-    destroy(){
+    destroy() {
         this.close();
         this.baseEvents.destroy();
     }
 }
-
-/* module.exports = (options = { }) => {
-    const instance = new GlightboxInit(options);
-    instance.init()
-
-    return instance;
-} */
 
 export default function(options = {}) {
     const instance = new GlightboxInit(options);
