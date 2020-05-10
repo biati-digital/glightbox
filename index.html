@@ -26,7 +26,7 @@
                             <li><a href="#examples">EXAMPLES</a></li>
                             <li><a href="#specifications">INFO</a></li>
                             <li><a href="#license">LICENSE</a></li>
-                            <li><a href="https://github.com/biati-digital/glightbox/releases/download/2.0.5/glightbox-master.zip">DOWNLOAD</a></li>
+                            <li><a href="https://github.com/biati-digital/glightbox/releases/download/2.0.6/glightbox-master.zip">DOWNLOAD</a></li>
                         </ul>
                     </div>
                 </div>
@@ -44,7 +44,7 @@
                             video support.</p>
 
                         <div class="download">
-                            <a class="mcbutton primary" href="https://github.com/biati-digital/glightbox/releases/download/2.0.5/glightbox-master.zip">
+                            <a class="mcbutton primary" href="https://github.com/biati-digital/glightbox/releases/download/2.0.6/glightbox-master.zip">
                                 <i class="fa fa-download" aria-hidden="true"></i>
                                 <span>Download</span>
                             </a>
@@ -149,7 +149,12 @@
                                         <a href="http://google.com" target="_blank" style="text-decoration: underline; font-weight: bold;">Example Google link</a> ipsum vehicula eros ultrices lacinia Vestibulum ante ipsum primis in faucibus orci luctus
                                         et ultrices posuere
                                         cubilia Curae Duis quis ipsum vehicula eros ultrices lacinia. Vestibulum ante ipsum primis in faucibus
-                                        orci luctus et ultrices posuere</p>
+                                        orci luctus et ultrices posuere
+                                    </p>
+                                    <p>
+                                        Primis pharetra facilisis lorem quis penatibus ad nulla inceptos, dui per tempor taciti aliquet consequat sodales, curae tristique gravida auctor interdum malesuada sagittis. Felis pretium eros ligula natoque ad ante rutrum himenaeos, adipiscing urna mauris porta quam efficitur odio, sagittis morbi tellus nisi molestie mus faucibus.
+                                    </p>
+                                    <p>Primis pharetra facilisis lorem quis penatibus ad nulla inceptos, dui per tempor taciti aliquet consequat sodales, curae tristique gravida auctor interdum malesuada sagittis. Felis pretium eros ligula natoque ad ante rutrum himenaeos, adipiscing urna mauris porta quam efficitur odio, sagittis morbi tellus nisi molestie mus faucibus.</p>
                                 </div>
                             </div>
                         </li>
@@ -240,7 +245,7 @@
                         </li>
                         <li class="box">
                             <div class="inner">
-                                <a href="demo/BigBuckBunny_320x180.mp4" class="glightbox4">
+                                <a href="./demo/pexels-video-1550080.mp4" class="glightbox4">
                                     <img src="demo/img/small/gm16.jpg" alt="image">
                                 </a>
                             </div>
@@ -301,7 +306,7 @@
                     </div>
 
                     <p class="text-center footer-btns">
-                        <a class="mcbutton primary" href="https://github.com/mcstudios/glightbox/releases/download/2.0.5/glightbox-master.zip">
+                        <a class="mcbutton primary" href="https://github.com/mcstudios/glightbox/releases/download/2.0.6/glightbox-master.zip">
                             <i class="fa fa-download"></i>
                             Download
                         </a>
@@ -318,7 +323,13 @@
     <div id="inline-example" style="display: none;">
         <div class="inline-inner">
             <h4 class="text-center">Example of inline content</h4>
-            <p class="text-center">Duis quis ipsum vehicula eros ultrices lacinia. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices
+            <p class="text-center">
+                <form>
+                    <input type="text" name="mamma" placeholder="name">
+                    <input type="text" name="passs" placeholder="password">
+                </form>
+
+                Duis quis ipsum vehicula eros ultrices lacinia. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices
                 posuere cubilia Curae; Donec nec sollicitudin felis. Donec vel nulla vel leo varius tempor. Duis suscipit pharetra quam id imperdiet. Praesent vitae eros metus. Donec placerat sagittis rhoncus. In condimentum eleifend ante et ornare. Curabitur pharetra nibh non purus gravida lobortis. In risus risus, malesuada vitae iaculis nec, semper vitae ligula. Nullam vel eros ac libero cursus consectetur.</p>
 
             <a class="gtrigger-close inline-close-btn" href="#">Close Box</a>
@@ -338,14 +349,29 @@
     <script>
         var lightbox = GLightbox();
         var lightboxDescription = GLightbox({
-            selector: 'glightbox2',
+            selector: '.glightbox2',
         });
         var lightboxVideo = GLightbox({
-            selector: 'glightbox3',
+            selector: '.glightbox3',
         });
         var lightboxInlineIframe = GLightbox({
-            'selector': 'glightbox4'
+            'selector': '.glightbox4'
         });
+
+
+        /* var exampleApi = GLightbox({ selector: '', elements: [] });
+        exampleApi.insertSlide({
+            width: '90vw',
+            content: '<p>Example</p>'
+        });
+        exampleApi.insertSlide({
+            href: 'https://www.youtube.com/watch?v=WzqrwPhXmew',
+        });
+        exampleApi.insertSlide({
+            width: '600vw',
+            content: document.getElementById('inline-example')
+        });
+        exampleApi.open(); */
     </script>
 </body>
 
