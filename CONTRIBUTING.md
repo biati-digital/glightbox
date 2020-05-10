@@ -5,8 +5,8 @@ Please read these guidelines before contributing code.
 ## :nut_and_bolt: Setting up the development environment
 - Fork and clone the repository
 - `npm install`
-- `npm run start`
-- To update js and css files, use the src folder: src/js/glightbox.js and src/postcss/glightbox.css this files will be compiled automatically with every change to the dist folder (do not modify the dist files directly)
+- `npm run watch`
+- To update js and css files, use the `src` folder: src/js/glightbox.js and src/postcss/glightbox.css These files will be compiled automatically with every change to the `dist` folder (do not modify the dist files directly)
 
 ## :bug: Fixing a Bug
 When fixing a bug please make sure to test it in several browsers including ie11. If you are not able to do so, mention that in a PR comment, so other contributors can do it.
