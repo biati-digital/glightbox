@@ -1,6 +1,6 @@
 # GLightbox
 
-Glightbox is a pure javascript lightbox. It can display images, iframes, inline content and videos with optional autoplay for youtube, vimeo and even self hosted videos.
+Glightbox is a pure javascript lightbox. It can display images, iframes, inline content and videos with optional autoplay for YouTube, Vimeo and even self hosted videos.
 
 ## Features
 - **Small** - only 11KB Gzipped
@@ -12,7 +12,7 @@ Glightbox is a pure javascript lightbox. It can display images, iframes, inline 
 - **Keyboard Navigation** - esc, arrows keys, tab and enter is all you need
 - **Touch Navigation** - mobile touch events
 - **Zoomable images** - zoom and drag images on mobile and desktop
-- **Api** - control the lightbox with the provided methods
+- **API** - control the lightbox with the provided methods
 - **Customizable** - create your skin or modify the animations with some minor css changes
 
 ## Live Demo
@@ -143,7 +143,7 @@ const myGallery = GLightbox({
             'width': 900,
         },
         {
-            'content': '<p>This will append some html inside the slide</p>' // read more in the Api section
+            'content': '<p>This will append some html inside the slide</p>' // read more in the API section
         },
         {
             'content': document.getElementById('inline-example') // this will append a node inside the slide
@@ -173,7 +173,7 @@ touchFollowAxis      | boolean  | `true`           | Image follow axis when drag
 keyboardNavigation   | boolean  | `true`           | Enable or disable the keyboard navigation.
 closeOnOutsideClick  | boolean  | `true`           | Close the lightbox when clicking outside the active slide.
 startAt              | number   | `0`              | Start lightbox at defined index.
-width                | number   | `900px`          | Default with for inline elements and iframes, you can define a specific size on each slide. You can use any unit for example 90% or 100vw for full width
+width                | number   | `900px`          | Default width for inline elements and iframes, you can define a specific size on each slide. You can use any unit for example 90% or 100vw for full width
 height               | number   | `506px`          | Default height for inline elements and iframes, you can define a specific size on each slide.You can use any unit for example 90% or 100vw **For inline elements you can set the height to auto**.
 videosWidth          | number   | `960px`          | Default width for videos. Videos are responsive so height is not required. The width can be in px % or even vw for example, 500px, 90% or 100vw for full width videos
 descPosition         | string   | `bottom`         | Global position for slides description, you can define a specific position on each slide (bottom, top, left, right).
@@ -195,11 +195,11 @@ afterSlideLoad       | Trigger a function after a slide is loaded for the first 
 
 ## Video player
 
-Starting from version 2.0.2 glightbox droped support of JWPlayer because that player implemented new restrictions for the free edition, it was replaced with an awesome new player "[Plyr](https://plyr.io/)" that also includes support for youtube and vimeo. So instead of maintaining 3 different apis now we only can focus on one. You can pass any Plyr option to the player, view all available options here [Plyr options](https://github.com/sampotts/plyr).
+Starting from version 2.0.2 glightbox droped support of JWPlayer because that player implemented new restrictions for the free edition, it was replaced with an awesome new player "[Plyr](https://plyr.io/)" that also includes support for YouTube and Vimeo. So instead of maintaining 3 different APIs now we only can focus on one. You can pass any Plyr option to the player, view all available options here [Plyr options](https://github.com/sampotts/plyr).
 
 Please note that GLightbox will only inject the video player library if required and only when the lightbox is opened.
 
-**Internet explorer 11. If you need support for this browser you need to set the js url to use the polyfilled version. This is not the default because IE11 is ancient and we need to let it die.**
+**Internet Explorer 11. If you need support for this browser you need to set the js url to use the polyfilled version. This is not the default because IE11 is ancient and we need to let it die.**
 
 ```
 plyr: {
@@ -235,7 +235,7 @@ const lightbox = GLightbox({
 });
 ```
 
-## Api
+## API
 There are methods, setters and getters on a GLightbox object. The easiest way to access the GLightbox object is to set the return value from your call to a variable. For example:
 
 ```javascript
@@ -248,7 +248,7 @@ Example method use:
 
 ```javascript
 lightbox.nextSlide(); // Go to next slide
-lightbox.close(); // Close de lightbox
+lightbox.close(); // Close the lightbox
 ```
 
 Option                |  Parameters      | Description
@@ -266,11 +266,11 @@ getActiveSlide        | `-`              | Get active slide. It will return the 
 getActiveSlideIndex   | `-`              | Get active slide. It will return the active slide index.
 playSlideVideo        | `number`         | Play video in the specified slide.
 stopSlideVideo        | `number`         | Stop video in the specified slide.
-setElements           | `{}`             | Update the lightbox gallery elements.
+setElements           | `[]`             | Update the lightbox gallery elements.
 
 ```javascript
 // Example set custom gallery items
-// This iverwrites all the items in the gallery
+// This overwrites all the items in the gallery
 lightbox.setElements([
   {
     'href': 'https://picsum.photos/1200/800',
@@ -317,7 +317,7 @@ lightbox.insertSlide({
 // Open the lightbox
 lightbox.open();
 
-// You can also ppen the lightbox at specific index
+// You can also open the lightbox at a specific index
 lightbox.openAt(2);
 
 
@@ -365,7 +365,7 @@ GLightbox was tested in the following browsers.
 - Firefox
 - Internet Explorer 11
 
-It will work in any browser that supports css Flexbox
+It will work in any browser that supports CSS Flexbox
 
 ## Contributing
 
