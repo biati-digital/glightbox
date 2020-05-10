@@ -1641,7 +1641,7 @@ class GlightboxInit {
     preloadSlide(index) {
         // Verify slide index, it can not be lower than 0
         // and it can not be greater than the total elements
-        if (index < 0 || index > this.elements.length)
+        if (index < 0 || index > this.elements.length - 1)
             return false
 
         if (utils.isNil(this.elements[index]))
