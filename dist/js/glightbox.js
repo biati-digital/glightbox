@@ -1156,6 +1156,8 @@
     var slideText = slide.querySelector('.gslide-desc');
     var slideDesc = slide.querySelector('.gdesc-inner');
     var finalCallback = callback;
+    var titleID = 'gSlideTitle_' + data.index;
+    var textID = 'gSlideDesc_' + data.index;
 
     if (utils.isFunction(this.settings.afterSlideLoad)) {
       finalCallback = function finalCallback() {
@@ -1173,12 +1175,15 @@
       }
     } else {
       if (slideTitle && data.title !== '') {
+        slideTitle.id = titleID;
         slideTitle.innerHTML = data.title;
       } else {
         slideTitle.parentNode.removeChild(slideTitle);
       }
 
       if (slideText && data.description !== '') {
+        slideText.id = textID;
+
         if (isMobile && this.settings.moreLength > 0) {
           data.smallDescription = slideShortDesc(data.description, this.settings.moreLength, this.settings.moreText);
           slideText.innerHTML = data.smallDescription;
@@ -1239,15 +1244,11 @@
       console.log(img);
 
       if (data.title !== '') {
-        var titleID = 'gSlideTitle_' + data.index;
-        slideTitle.id = titleID;
         img.setAttribute('aria-labelledby', titleID);
       }
 
       if (data.description !== '') {
-        var descID = 'gSlideDesc_' + data.index;
-        slideDesc.id = descID;
-        img.setAttribute('aria-describedby', descID);
+        img.setAttribute('aria-describedby', textID);
       }
 
       slideMedia.insertBefore(img, slideMedia.firstChild);

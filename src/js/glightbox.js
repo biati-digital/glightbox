@@ -652,6 +652,10 @@ const setSlideContent = function setSlideContent(slide = null, data = {}, callba
     let slideDesc = slide.querySelector('.gdesc-inner');
     let finalCallback = callback
 
+    // used for image accessiblity
+    let titleID = 'gSlideTitle_' + data.index;
+    let textID = 'gSlideDesc_' + data.index;
+
     if (utils.isFunction(this.settings.afterSlideLoad)) {
         finalCallback = () => {
             if (utils.isFunction(callback)) { callback() }
@@ -665,11 +669,13 @@ const setSlideContent = function setSlideContent(slide = null, data = {}, callba
         }
     } else {
         if (slideTitle && data.title !== '') {
+            slideTitle.id = titleID;
             slideTitle.innerHTML = data.title;
         } else {
             slideTitle.parentNode.removeChild(slideTitle);
         }
         if (slideText && data.description !== '') {
+            slideText.id = textID;
             if (isMobile && this.settings.moreLength > 0) {
                 data.smallDescription = slideShortDesc(data.description, this.settings.moreLength, this.settings.moreText)
                 slideText.innerHTML = data.smallDescription;
@@ -727,14 +733,10 @@ const setSlideContent = function setSlideContent(slide = null, data = {}, callba
         img.alt = ''; // https://davidwalsh.name/accessibility-tip-empty-alt-attributes
         console.log(img);
         if (data.title !== '') {
-            let titleID = 'gSlideTitle_' + data.index;
-            slideTitle.id = titleID;
             img.setAttribute('aria-labelledby', titleID);
         }
-        if (data.description !== '') {
-            let descID = 'gSlideDesc_' + data.index;
-            slideDesc.id = descID; // https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Techniques/Using_the_aria-describedby_attribute#Example_2_A_Close_Button
-            img.setAttribute('aria-describedby', descID);
+        if (data.description !== '') { // https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Techniques/Using_the_aria-describedby_attribute#Example_2_A_Close_Button
+            img.setAttribute('aria-describedby', textID);
         }
 
         slideMedia.insertBefore(img, slideMedia.firstChild);
