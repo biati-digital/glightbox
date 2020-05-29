@@ -1241,7 +1241,6 @@
       }, false);
       img.src = data.href;
       img.alt = '';
-      console.log(img);
 
       if (data.title !== '') {
         img.setAttribute('aria-labelledby', titleID);
