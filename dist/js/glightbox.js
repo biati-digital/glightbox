@@ -1236,6 +1236,13 @@
       }, false);
       img.src = data.href;
       img.alt = '';
+
+      if (slideText && data.description !== '') {
+        var descID = 'gSlideDesc_' + data.index;
+        slideDesc.id = descID;
+        img.ariaDescribedby = descID;
+      }
+
       slideMedia.insertBefore(img, slideMedia.firstChild);
       return;
     }
