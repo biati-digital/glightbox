@@ -724,7 +724,7 @@ const setSlideContent = function setSlideContent(slide = null, data = {}, callba
             }
         }, false);
         img.src = data.href;
-        img.alt = '';
+        img.alt = ''; // https://davidwalsh.name/accessibility-tip-empty-alt-attributes
         slideMedia.insertBefore(img, slideMedia.firstChild);
         return
     }
