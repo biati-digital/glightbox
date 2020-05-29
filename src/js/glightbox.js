@@ -725,11 +725,18 @@ const setSlideContent = function setSlideContent(slide = null, data = {}, callba
         }, false);
         img.src = data.href;
         img.alt = ''; // https://davidwalsh.name/accessibility-tip-empty-alt-attributes
-        if (slideText && data.description !== '') {
+        console.log(img);
+        if (data.title !== '') {
+            let titleID = 'gSlideTitle_' + data.index;
+            slideTitle.id = titleID;
+            img.setAttribute('aria-labelledby', titleID);
+        }
+        if (data.description !== '') {
             let descID = 'gSlideDesc_' + data.index;
             slideDesc.id = descID; // https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Techniques/Using_the_aria-describedby_attribute#Example_2_A_Close_Button
-            img.ariaDescribedby = descID;
+            img.setAttribute('aria-describedby', descID);
         }
+
         slideMedia.insertBefore(img, slideMedia.firstChild);
         return
     }

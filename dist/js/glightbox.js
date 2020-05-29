@@ -1236,11 +1236,18 @@
       }, false);
       img.src = data.href;
       img.alt = '';
+      console.log(img);
 
-      if (slideText && data.description !== '') {
+      if (data.title !== '') {
+        var titleID = 'gSlideTitle_' + data.index;
+        slideTitle.id = titleID;
+        img.setAttribute('aria-labelledby', titleID);
+      }
+
+      if (data.description !== '') {
         var descID = 'gSlideDesc_' + data.index;
         slideDesc.id = descID;
-        img.ariaDescribedby = descID;
+        img.setAttribute('aria-describedby', descID);
       }
 
       slideMedia.insertBefore(img, slideMedia.firstChild);
