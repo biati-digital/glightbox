@@ -149,32 +149,32 @@ function extend() {
 
 
 const utils = {
-    isFunction: function(f) {
+    isFunction: function (f) {
         return typeof f === 'function'
     },
-    isString: function(s) {
+    isString: function (s) {
         return typeof s === 'string'
     },
-    isNode: function(el) {
+    isNode: function (el) {
         return !!(el && el.nodeType && el.nodeType == 1)
     },
-    isArray: function(ar) {
+    isArray: function (ar) {
         return Array.isArray(ar)
     },
-    isArrayLike: function(ar) {
+    isArrayLike: function (ar) {
         return (ar && ar.length && isFinite(ar.length))
     },
-    isObject: function(o) {
+    isObject: function (o) {
         let type = typeof o;
         return type === 'object' && (o != null && !utils.isFunction(o) && !utils.isArray(o))
     },
-    isNil: function(o) {
+    isNil: function (o) {
         return o == null
     },
-    has: function(obj, key) {
+    has: function (obj, key) {
         return obj !== null && hasOwnProperty.call(obj, key);
     },
-    size: function(o) {
+    size: function (o) {
         if (utils.isObject(o)) {
             if (o.keys) {
                 return o.keys().length;
@@ -190,7 +190,7 @@ const utils = {
             return o.length;
         }
     },
-    isNumber: function(n) {
+    isNumber: function (n) {
         return !isNaN(parseFloat(n)) && isFinite(n)
     }
 };
@@ -285,7 +285,7 @@ function addEvent(eventName, {
             handler.destroy();
         }
     }
-    handler.destroy = function() {
+    handler.destroy = function () {
         each(element, (el) => {
             const events = getNodeEvents(el, eventName, handler);
             if (events.found) { events.all.splice(events.evt, 1); }
@@ -652,6 +652,10 @@ const setSlideContent = function setSlideContent(slide = null, data = {}, callba
     let slideDesc = slide.querySelector('.gdesc-inner');
     let finalCallback = callback
 
+    // used for image accessiblity
+    let titleID = 'gSlideTitle_' + data.index;
+    let textID = 'gSlideDesc_' + data.index;
+
     if (utils.isFunction(this.settings.afterSlideLoad)) {
         finalCallback = () => {
             if (utils.isFunction(callback)) { callback() }
@@ -665,11 +669,13 @@ const setSlideContent = function setSlideContent(slide = null, data = {}, callba
         }
     } else {
         if (slideTitle && data.title !== '') {
+            slideTitle.id = titleID;
             slideTitle.innerHTML = data.title;
         } else {
             slideTitle.parentNode.removeChild(slideTitle);
         }
         if (slideText && data.description !== '') {
+            slideText.id = textID;
             if (isMobile && this.settings.moreLength > 0) {
                 data.smallDescription = slideShortDesc(data.description, this.settings.moreLength, this.settings.moreText)
                 slideText.innerHTML = data.smallDescription;
@@ -724,6 +730,14 @@ const setSlideContent = function setSlideContent(slide = null, data = {}, callba
             }
         }, false);
         img.src = data.href;
+        img.alt = ''; // https://davidwalsh.name/accessibility-tip-empty-alt-attributes
+        if (data.title !== '') {
+            img.setAttribute('aria-labelledby', titleID);
+        }
+        if (data.description !== '') { // https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Techniques/Using_the_aria-describedby_attribute#Example_2_A_Close_Button
+            img.setAttribute('aria-describedby', textID);
+        }
+
         slideMedia.insertBefore(img, slideMedia.firstChild);
         return
     }
@@ -845,7 +859,7 @@ function createIframe(config) {
     if (allow) {
         iframe.setAttribute('allow', allow)
     }
-    iframe.onload = function() {
+    iframe.onload = function () {
         addClass(iframe, 'node-ready');
         if (utils.isFunction(callback)) {
             callback()
@@ -1063,7 +1077,7 @@ function setInlineContent(slide, data, callback) {
  *
  * @param {string} url
  */
-const getSourceType = function(url) {
+const getSourceType = function (url) {
     let origin = url;
     url = url.toLowerCase();
 
@@ -2216,7 +2230,7 @@ class GlightboxInit {
     }
 }
 
-export default function(options = {}) {
+export default function (options = {}) {
     const instance = new GlightboxInit(options);
     instance.init()
 
