@@ -1895,33 +1895,6 @@ class GlightboxInit {
         }
 
         return list;
-
-
-        /* this.elements = (this.elements ? this.elements : []);
-
-        if (!utils.isNil(this.settings.elements) && utils.isArray(this.settings.elements)) {
-            // this.elements = this.settings.elements;
-            this.elements.concat(this.settings.elements);
-
-            return this.elements
-        }
-
-        if (this.elements.length > 0) {
-            return this.elements;
-        }
-
-        let nodes = false;
-        if (element !== null) {
-            let gallery = element.getAttribute('data-gallery')
-            if (gallery && gallery !== '') {
-                nodes = document.querySelectorAll(`[data-gallery="${gallery}"]`);
-            }
-        }
-        if (nodes == false) {
-            nodes = document.querySelectorAll(this.getSelector());
-        }
-        nodes = Array.prototype.slice.call(nodes);
-        return nodes; */
     }
 
     /**

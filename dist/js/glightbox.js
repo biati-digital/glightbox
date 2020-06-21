@@ -2000,7 +2000,7 @@
         this.activeSlide = null;
         this.prevActiveSlideIndex = null;
         this.prevActiveSlide = null;
-        var index = startAt ? startAt : this.settings.startAt;
+        var index = utils.isNumber(startAt) ? startAt : this.settings.startAt;
 
         if (element && utils.isNil(index)) {
           index = this.elements.indexOf(element);
@@ -2123,7 +2123,7 @@
       value: function preloadSlide(index) {
         var _this8 = this;
 
-        if (index < 0 || index > this.elements.length) return false;
+        if (index < 0 || index > this.elements.length - 1) return false;
         if (utils.isNil(this.elements[index])) return false;
         var slide = this.slidesContainer.querySelectorAll('.gslide')[index];
 
