@@ -83,6 +83,17 @@ OR CDN
     <p>The content of this div will be used as the slide description</p>
     <p>You can add links and any HTML you want</p>
 </div>
+
+<!-- URL with no extension -->
+<a href="https://picsum.photos/1200/800" data-glightbox="type: image">
+    <img src="small.jpg" alt="image">
+</a>
+<!-- OR using multiple data attributes -->
+<a href="https://picsum.photos/1200/800" data-type="image">
+    <img src="small.jpg" alt="image">
+</a>
+
+
 ```
 
 ## Slide Options
@@ -117,7 +128,7 @@ const lightbox = GLightbox({
     onOpen: () => {
         console.log('Lightbox opened')
     },
-    beforeSlideLoad: (slide, data) => {
+    beforeSlideLoad: (slideData) => {
         // Need to execute a script in the slide?
         // You can do that here...
     }
@@ -188,10 +199,52 @@ Option               | Description
 ------               | -----------
 onOpen               | Provide a function when the lightbox is opened for the first time.
 onClose              | Provide a function when the lightbox is closed.
-beforeSlideChange    | Trigger a function before the slide is changed `beforeSlideChange: function(prevSlide, slide) {}`
-afterSlideChange     | Trigger a function after the slide is changed `afterSlideChange: function(prevSlide, activeSlide) {}`
-beforeSlideLoad      | Trigger a function before a slide is loaded for the first time, the function will only be called once. `beforeSlideLoad: function(slide, data) {}`
-afterSlideLoad       | Trigger a function after a slide is loaded for the first time, the function will only be called once. `afterSlideLoad: function(slide, data) {}`
+beforeSlideChange    | Trigger a function before the slide is changed `beforeSlideChange: function(prevSlide, currentSlide) {}`
+afterSlideChange     | Trigger a function after the slide is changed `afterSlideChange: function(prevSlide, currentSlide) {}`
+beforeSlideLoad      | Trigger a function before a slide is loaded for the first time, the function will only be called once. `beforeSlideLoad: function(slideData) {}`
+afterSlideLoad       | Trigger a function after a slide is loaded for the first time, the function will only be called once. `afterSlideLoad: function(slideData) {}`
+slideInserted        | Trigger a function after a slide is inserted using insertSlide. `slideInserted: function(slideData) {}`
+slideRemoved         | Trigger a function after a slide is removed. `slideRemoved: function(deletedIndex) {}`
+
+```
+const lightbox = GLightbox({
+    selector: '.glightbox3',
+    afterSlideChange: (prevSlide, currentSlide) => {
+        // prevSlide is the previously active slide
+        // currentSlide is the active slide
+        // the player variable can be false if slide has no video
+
+        const { index, slide, player } = currentSlide;
+
+        if (player) {
+            if (!player.ready) {
+                // If player is not ready
+                player.on('ready', event => {
+                    // Do something when video is ready
+                });
+            }
+
+            player.on('play', event => {
+                console.log("Started play");
+            });
+
+            player.on('volumechange', event => {
+                console.log("Volume change");
+            });
+
+            player.on('ended', event => {
+                console.log("Video ended");
+            });
+        }
+    },
+    slideInserted: (slideData) => {
+        const { index, slide, player } = slideData;
+    },
+    afterSlideLoad: (slideData) => {
+        const { index, slide, player } = slideData;
+    }
+});
+```
 
 ## Video player
 
@@ -262,10 +315,13 @@ prevSlide             | `-`              | Go to the previous slide.
 nextSlide             | `-`              | Go to the next slide.
 goToSlide             | `number`         | Index of the slide.
 insertSlide           | `object, index`  | Insert a slide at the specified index.
+removeSlide           | `index`          | Remove slide at the specified index.
 getActiveSlide        | `-`              | Get active slide. It will return the active node.
 getActiveSlideIndex   | `-`              | Get active slide. It will return the active slide index.
 playSlideVideo        | `number`         | Play video in the specified slide.
 stopSlideVideo        | `number`         | Stop video in the specified slide.
+getSlidePlayerInstance| `node, index`    | Get the player instance of the specified slide.
+getAllPlayers         | `-`              | Get all players instance.
 setElements           | `[]`             | Update the lightbox gallery elements.
 
 ```javascript
@@ -313,13 +369,14 @@ lightbox.insertSlide({
     width: '90vw'
 }, 2);
 
+// Remove the slide at index 2
+lightbox.removeSlide(2);
 
 // Open the lightbox
 lightbox.open();
 
 // You can also open the lightbox at a specific index
 lightbox.openAt(2);
-
 
 // So imagine that you are making an ajax request that returns some html
 // You can create an empty instance and append the content once is returned
@@ -373,6 +430,18 @@ Feel free to report any issues! If you wish to contribute by fixing a bug or imp
 
 
 ## Changelog
+
+### 3.0.0
+- New: New methods to access player instances "getSlidePlayerInstance(index or node) and getAllPlayers"
+- New: Access player instance from afterSlideChange and beforeSlideChange"
+- New: New Method removeSlide(1) remove slide at the specified index, it works even when the lightbox is open
+- New: insertSlide now works even when the lightbox is open
+- New: Added Accesibility features to slides
+- New: Enabled touchNavigation for all devices that support touch events and not only mobile devices
+- Changed: afterSlideLoad and beforeSlideLoad methods to follow the same variables as afterSlideChange, beforeSlideChange
+- Fixed: Calling `destroy()` throws an error when modal is not open
+- Fixed: Navigation not disabled correctly when only one slide
+
 ### 2.0.6
 
 - New: Now you can define width and height as 900px, 95%, 100vw, 100vh so you can have full screen content
