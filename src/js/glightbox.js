@@ -1,5 +1,5 @@
 /**
- * GLightbox v2.0.6
+ * GLightbox v3.0.0
  * Awesome pure javascript lightbox
  * made by https://www.biati.digital
  */
@@ -7,7 +7,7 @@
 import TouchEvents from './touch-events.js';
 import ZoomImages from './zoom.js';
 
-const isMobile = navigator.userAgent.match(/(iPad)|(iPhone)|(iPod)|(Android)|(PlayBook)|(BB10)|(BlackBerry)|(Opera Mini)|(IEMobile)|(webOS)|(MeeGo)/i);
+const isMobile = ('navigator' in window && window.navigator.userAgent.match(/(iPad)|(iPhone)|(iPod)|(Android)|(PlayBook)|(BB10)|(BlackBerry)|(Opera Mini)|(IEMobile)|(webOS)|(MeeGo)/i));
 const isTouch = isMobile !== null || document.createTouch !== undefined || ('ontouchstart' in window) || ('onmsgesturechange' in window) || navigator.msMaxTouchPoints;
 const html = document.getElementsByTagName('html')[0];
 const transitionEnd = whichTransitionEvent();
@@ -32,6 +32,8 @@ const defaults = {
     afterSlideChange: null,
     beforeSlideLoad: null,
     afterSlideLoad: null,
+    slideInserted: null,
+    slideRemoved: null,
     onOpen: null,
     onClose: null,
     loop: false,
@@ -115,6 +117,18 @@ const lightboxHtml = `<div id="glightbox-body" class="glightbox-container">
 </div>`;
 defaults.lightboxHtml = lightboxHtml;
 
+let singleSlideData = {
+    href: '',
+    title: '',
+    type: '',
+    description: '',
+    descPosition: '',
+    effect: '',
+    width: '',
+    height: '',
+    node: false,
+    content: false
+};
 
 
 /**
@@ -527,18 +541,7 @@ function setSize(data, settings) {
  * @param {node} element
  */
 const getSlideData = function getSlideData(element = null, settings) {
-    let data = {
-        href: '',
-        title: '',
-        type: '',
-        description: '',
-        descPosition: settings.descPosition,
-        effect: '',
-        width: '',
-        height: '',
-        node: element,
-        content: false
-    };
+    let data = extend({ descPosition: settings.descPosition }, singleSlideData);
 
     if (utils.isObject(element) && !utils.isNode(element)) {
         if (!utils.has(element, 'type')) {
@@ -641,7 +644,11 @@ const setSlideContent = function setSlideContent(slide = null, data = {}, callba
     }
 
     if (utils.isFunction(this.settings.beforeSlideLoad)) {
-        this.settings.beforeSlideLoad(slide, data);
+        this.settings.beforeSlideLoad({
+            index: data.index,
+            slide: slide,
+            player: false
+        });
     }
 
     let type = data.type;
@@ -659,7 +666,11 @@ const setSlideContent = function setSlideContent(slide = null, data = {}, callba
     if (utils.isFunction(this.settings.afterSlideLoad)) {
         finalCallback = () => {
             if (utils.isFunction(callback)) { callback() }
-            this.settings.afterSlideLoad(slide, data);
+            this.settings.afterSlideLoad({
+                index: data.index,
+                slide: slide,
+                player: this.getSlidePlayerInstance(data.index)
+            });
         }
     }
 
@@ -719,7 +730,7 @@ const setSlideContent = function setSlideContent(slide = null, data = {}, callba
     if (type === 'image') {
         let img = new Image();
         img.addEventListener('load', () => {
-            if (!isMobile && img.naturalWidth > img.offsetWidth) {
+            if (img.naturalWidth > img.offsetWidth) {
                 addClass(img, 'zoomable')
                 new ZoomImages(img, slide, () => {
                     this.resize(slide);
@@ -823,6 +834,7 @@ function setSlideVideo(slide, data, callback) {
         addClass(slideMedia, `${videoSource}-video gvideo`)
         slideMedia.appendChild(placeholder)
         slideMedia.setAttribute('data-id', videoID)
+        slideMedia.setAttribute('data-index', data.index)
 
         const playerConfig = utils.has(this.settings.plyr, 'config') ? this.settings.plyr.config : {};
         const player = new Plyr('#' + videoID, playerConfig);
@@ -1513,11 +1525,11 @@ class GlightboxInit {
                 this.open(target);
             }
         })
+
+        this.elements = this.getElements()
     }
 
     open(element = null, startAt = null) {
-        this.elements = this.getElements(element)
-
         if (this.elements.length == 0)
             return false;
 
@@ -1526,14 +1538,14 @@ class GlightboxInit {
         this.prevActiveSlide = null
         let index = (utils.isNumber(startAt) ? startAt : this.settings.startAt)
 
-        if (element && utils.isNil(index)) { // if element passed and startAt is null, get the index
-            index = this.elements.indexOf(element)
+        if (utils.isNode(element) && utils.isNil(index)) { // if element passed and startAt is null, get the index
+            index = this.getElementIndex(element)
             if (index < 0) {
                 index = 0
             }
         }
 
-        if (utils.isNil(index)) {
+        if (!utils.isNumber(index)) {
             index = 0
         }
 
@@ -1574,7 +1586,7 @@ class GlightboxInit {
             this.settings.onOpen();
         }
 
-        if (isMobile && isTouch && this.settings.touchNavigation) {
+        if (isTouch && this.settings.touchNavigation) {
             touchNavigation.apply(this)
             return false
         }
@@ -1616,7 +1628,8 @@ class GlightboxInit {
         } else {
             // If not loaded add the slide content
             show(this.loader);
-            let slideData = getSlideData(this.elements[index], this.settings);
+
+            let slideData = this.elements[index];
             slideData.index = index;
             this.slidesData[index] = slideData;
             setSlideContent.apply(this, [slide, slideData, () => {
@@ -1633,7 +1646,10 @@ class GlightboxInit {
         this.preloadSlide(index + 1);
         this.preloadSlide(index - 1);
 
-        const loop = this.loop();
+        // Handle navigation arrows
+        this.updateNavigationClasses();
+
+        /* const loop = this.loop();
 
         // Handle navigation arrows
         removeClass(this.nextButton, 'disabled');
@@ -1642,7 +1658,7 @@ class GlightboxInit {
             addClass(this.prevButton, 'disabled');
         } else if (index === this.elements.length - 1 && !loop) {
             addClass(this.nextButton, 'disabled');
-        }
+        } */
         this.activeSlide = slide;
     }
 
@@ -1666,7 +1682,7 @@ class GlightboxInit {
             return false;
         }
 
-        let slideData = getSlideData(this.elements[index], this.settings);
+        let slideData = this.elements[index];
         slideData.index = index;
         this.slidesData[index] = slideData;
         let type = slideData.sourcetype;
@@ -1727,11 +1743,79 @@ class GlightboxInit {
      * @param { numeric } position
      */
     insertSlide(data = {}, index = -1) {
-        if (!this.tmpAddSlides) {
-            this.tmpAddSlides = [];
+        const defaults = extend({ descPosition: this.settings.descPosition }, singleSlideData);
+        const newSlide = createHTML(this.settings.slideHtml);
+        const totalSlides = this.elements.length - 1;
+
+        // Append at the end
+        if (index < 0) {
+            index = this.elements.length;
         }
-        data.atPosition = index;
-        this.tmpAddSlides.push(data)
+
+        data = extend(defaults, data);
+        data.index = index;
+        data.node = false;
+        this.elements.splice(index, 0, data);
+
+        if (this.slidesContainer) {
+            // Append at the end
+            if (index > totalSlides) {
+                this.slidesContainer.appendChild(newSlide);
+            } else {
+                // A current slide must exist in the position specified
+                // we need tp get that slide and insder the new slide before
+                let existingSlide = this.slidesContainer.querySelectorAll('.gslide')[index];
+                this.slidesContainer.insertBefore(newSlide, existingSlide);
+            }
+
+            if (this.index == 0 && index == 0 || this.index - 1 == index || this.index + 1 == index) {
+                this.preloadSlide(index);
+            }
+
+            if (this.index == 0 && index == 0) {
+                this.index = 1;
+            }
+
+            this.updateNavigationClasses();
+        }
+
+        if (utils.isFunction(this.settings.slideInserted)) {
+            this.settings.slideInserted({
+                index: index,
+                slide: this.slidesContainer.querySelectorAll('.gslide')[index],
+                player: this.getSlidePlayerInstance(index)
+            });
+        }
+    }
+
+
+    /**
+     * Remove slide
+     *
+     * @param { numeric } position
+     */
+    removeSlide(index = -1) {
+        if (index < 0 || index > this.elements.length - 1) {
+            return false;
+        }
+
+        const slide = this.slidesContainer && this.slidesContainer.querySelectorAll('.gslide')[index];
+
+        if (slide) {
+            if (this.getActiveSlideIndex() == index) {
+                if (index == this.elements.length - 1) {
+                    this.prevSlide();
+                } else {
+                    this.nextSlide();
+                }
+            }
+            slide.parentNode.removeChild(slide);
+        }
+        this.elements.splice(index, 1);
+
+        if (utils.isFunction(this.settings.slideRemoved)) {
+            this.settings.slideRemoved(index);
+        }
     }
 
 
@@ -1744,11 +1828,13 @@ class GlightboxInit {
         let slideDesc = slide.querySelector('.gslide-description');
         let prevData = {
             index: this.prevActiveSlideIndex,
-            slide: this.prevActiveSlide
+            slide: this.prevActiveSlide,
+            player: this.getSlidePlayerInstance(this.prevActiveSlideIndex)
         };
         let nextData = {
             index: this.index,
-            slide: this.activeSlide
+            slide: this.activeSlide,
+            player: this.getSlidePlayerInstance(this.index)
         };
         if (slideMedia.offsetWidth > 0 && slideDesc) {
             hide(slideDesc)
@@ -1808,10 +1894,12 @@ class GlightboxInit {
         if (utils.isFunction(this.settings.beforeSlideChange)) {
             this.settings.beforeSlideChange.apply(this, [{
                 index: this.prevActiveSlideIndex,
-                slide: this.prevActiveSlide
+                slide: this.prevActiveSlide,
+                player: this.getSlidePlayerInstance(this.prevActiveSlideIndex)
             }, {
                 index: this.index,
-                slide: this.activeSlide
+                slide: this.activeSlide,
+                player: this.getSlidePlayerInstance(this.index)
             }]);
         }
         if (this.prevActiveSlideIndex > this.index && this.settings.slideEffect == 'slide') { // going back
@@ -1831,51 +1919,136 @@ class GlightboxInit {
         });
     }
 
+    /**
+     * Get all defined players
+     */
+    getAllPlayers() {
+        return videoPlayers;
+    }
 
+    /**
+     * Get player at index
+     *
+     * @param index
+     * @return bool|object
+     */
+    getSlidePlayerInstance(index) {
+        let id = 'gvideo' + index;
+        if (utils.has(videoPlayers, id) && videoPlayers[id]) {
+            return videoPlayers[id];
+        }
+
+        return false;
+    }
+
+    /**
+     * Stop video at specified
+     * node or index
+     *
+     * @param slide node or index
+     * @return void
+     */
     stopSlideVideo(slide) {
-        if (utils.isNumber(slide)) {
-            slide = this.slidesContainer.querySelectorAll('.gslide')[slide]
-        }
-
-        let slideVideo = (slide ? slide.querySelector('.gvideo') : null)
-        if (!slideVideo) {
-            return false
-        }
-
-        const videoID = slideVideo.getAttribute('data-id');
-        if (videoPlayers && utils.has(videoPlayers, videoID)) {
-            const api = videoPlayers[videoID]
-            if (api && api.play) {
-                api.pause();
+        if (utils.isNode(slide)) {
+            let node = slide.querySelector('.gvideo-wrapper');
+            if (node) {
+                slide = node.getAttribute('data-index');
             }
+        }
+
+        const player = this.getSlidePlayerInstance(slide);
+        if (player && player.playing) {
+            player.pause();
         }
     }
 
-
-
+    /**
+     * Play video at specified
+     * node or index
+     *
+     * @param slide node or index
+     * @return void
+     */
     playSlideVideo(slide) {
-        if (utils.isNumber(slide)) {
-            slide = this.slidesContainer.querySelectorAll('.gslide')[slide];
-        }
-        const slideVideo = slide.querySelector('.gvideo');
-        if (!slideVideo) {
-            return false;
-        }
-
-        const videoID = slideVideo.getAttribute('data-id');
-        if (videoPlayers && utils.has(videoPlayers, videoID)) {
-            const api = videoPlayers[videoID]
-
-            if (api && api.play) {
-                api.play();
+        if (utils.isNode(slide)) {
+            let node = slide.querySelector('.gvideo-wrapper');
+            if (node) {
+                slide = node.getAttribute('data-index');
             }
         }
+
+        const player = this.getSlidePlayerInstance(slide);
+        if (player && !player.playing) {
+            player.play();
+        }
     }
 
+
+    /**
+     * Set the entire elements
+     * in the gallery, it replaces all
+     * the existing elements
+     * with the specified list
+     *
+     * @param {array}  elements
+     */
     setElements(elements) {
-        this.settings.elements = elements;
+        this.settings.elements = false;
+
+        const newElements = [];
+        each(elements, (el) => {
+            const data = getSlideData(el, this.settings);
+            newElements.push(data);
+        })
+
+        this.elements = newElements;
+
+        if (this.lightboxOpen) {
+            this.slidesContainer.innerHTML = '';
+
+            each(this.elements, () => {
+                let slide = createHTML(this.settings.slideHtml);
+                this.slidesContainer.appendChild(slide);
+            })
+            this.showSlide(0, true);
+        }
     }
 
+
+    /**
+     * Return the index
+     * of the specified node,
+     * this node is for example an image, link, etc.
+     * that when clicked it opens the lightbox
+     * its position in the elements array can change
+     * when using insertSlide or removeSlide so we
+     * need to find it in the elements list
+     *
+     * @param {node} node
+     * @return bool|int
+     */
+    getElementIndex(node) {
+        let index = false;
+        each(this.elements, (el, i) => {
+            if (utils.has(el, 'node') && el.node == node) {
+                index = i;
+                return true; // exit loop
+            }
+        });
+
+        return index;
+    }
+
+
+    /**
+     * Get elements
+     * returns an array containing all
+     * the elements that must be displayed in the
+     * lightbox
+     *
+     * @param { mixed } element
+     * @return { array }
+     */
     getElements(element = null) {
         let list = [];
         this.elements = (this.elements ? this.elements : []);
@@ -1898,15 +2071,12 @@ class GlightboxInit {
         }
         nodes = Array.prototype.slice.call(nodes);
 
-        list = list.concat(nodes);
-
-        if (this.tmpAddSlides && this.tmpAddSlides.length) {
-            each(this.tmpAddSlides, (tmp) => {
-                const pos = (tmp.atPosition < 0 ? list.length + 1 : tmp.atPosition);
-                list.splice(pos, 0, extend({}, tmp));
-            })
-            this.tmpAddSlides.length = 0;
-        }
+        each(nodes, (el, i) => {
+            const elData = getSlideData(el, this.settings);
+            elData.node = el;
+            elData.index = i;
+            list.push(elData);
+        })
 
         return list;
     }
@@ -2141,6 +2311,27 @@ class GlightboxInit {
         this.init();
     }
 
+
+    /**
+     * Update navigation classes on slide change
+     */
+    updateNavigationClasses() {
+        const loop = this.loop();
+        // Handle navigation arrows
+        removeClass(this.nextButton, 'disabled');
+        removeClass(this.prevButton, 'disabled');
+
+        if (this.index == 0 && this.elements.length - 1 == 0) {
+            addClass(this.prevButton, 'disabled');
+            addClass(this.nextButton, 'disabled');
+        } else if (this.index === 0 && !loop) {
+            addClass(this.prevButton, 'disabled');
+        } else if (this.index === this.elements.length - 1 && !loop) {
+            addClass(this.nextButton, 'disabled');
+        }
+    }
+
+
     /**
      * Handle loop config
      */
@@ -2158,6 +2349,18 @@ class GlightboxInit {
      * and some classes
      */
     close() {
+        if (!this.lightboxOpen) {
+            if (this.events) {
+                for (let key in this.events) {
+                    if (this.events.hasOwnProperty(key)) {
+                        this.events[key].destroy()
+                    }
+                }
+                this.events = null;
+            }
+            return false;
+        }
+
         if (this.closing) {
             return false;
         }
@@ -2192,7 +2395,7 @@ class GlightboxInit {
             if (styles) {
                 styles.parentNode.removeChild(styles)
             }
-
+            this.lightboxOpen = false
             this.closing = null;
         });
     }
