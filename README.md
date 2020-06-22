@@ -206,7 +206,7 @@ afterSlideLoad       | Trigger a function after a slide is loaded for the first 
 slideInserted        | Trigger a function after a slide is inserted using insertSlide. `slideInserted: function(slideData) {}`
 slideRemoved         | Trigger a function after a slide is removed. `slideRemoved: function(deletedIndex) {}`
 
-```
+```javascript
 const lightbox = GLightbox({
     selector: '.glightbox3',
     afterSlideChange: (prevSlide, currentSlide) => {
