@@ -70,7 +70,7 @@ OR CDN
 </a>
 
 <!-- Simple Description -->
-<a href="large.jpg" class="glightbox4" data-glightbox="title: My title; description: this is the slide desciption">
+<a href="large.jpg" class="glightbox4" data-glightbox="title: My title; description: this is the slide description">
     <img src="small.jpg" alt="image">
 </a>
 
@@ -109,10 +109,10 @@ You can specify some options to each individual slide, the available options are
 
 ```html
 <!-- One line config -->
-<a href="large.jpg" data-glightbox="title: Your title; description: desciption here; descPosition: left; type: image; effect: fade; width: 900px; height: auto;"></a>
+<a href="large.jpg" data-glightbox="title: Your title; description: description here; descPosition: left; type: image; effect: fade; width: 900px; height: auto;"></a>
 
 <!-- Multiple data attributes / You can use the options as separated data attributes -->
-<a href="large.jpg" data-title="My title" data-description="desciption here" data-descPosition="right" data-type="image" data-effect="fade" data-width="900px" data-height="auto"></a>
+<a href="large.jpg" data-title="My title" data-description="description here" data-desc-position="right" data-type="image" data-effect="fade" data-width="900px" data-height="auto"></a>
 ```
 
 
