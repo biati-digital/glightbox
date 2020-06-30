@@ -2071,7 +2071,7 @@ class GlightboxInit {
         }
         nodes = Array.prototype.slice.call(nodes);
 
-        each(nodes, (el, i) => {
+        nodes.forEach((el, i) => {
             const elData = getSlideData(el, this.settings);
             elData.node = el;
             elData.index = i;
