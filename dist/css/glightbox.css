@@ -289,9 +289,10 @@
 }
 
 .gslide-description {
-  max-height: 100vh;
-  overflow-y: auto;
   position: relative;
+  -webkit-box-flex: 1;
+  -ms-flex: 1 0 100%;
+  flex: 1 0 100%;
 }
 
 .gslide-description.description-left,
@@ -929,6 +930,14 @@ iframe.wait-autoplay {
 .glightbox-modern .gslide-media {
     -webkit-box-shadow: 1px 2px 9px 0px rgba(0, 0, 0, 0.65);
     box-shadow: 1px 2px 9px 0px rgba(0, 0, 0, 0.65);
+  }
+  .glightbox-clean .description-left .gdesc-inner,
+.glightbox-clean .description-right .gdesc-inner,
+.glightbox-modern .description-left .gdesc-inner,
+.glightbox-modern .description-right .gdesc-inner {
+    position: absolute;
+    height: 100%;
+    overflow-y: auto;
   }
   .glightbox-clean .gprev,
 .glightbox-modern .gprev {

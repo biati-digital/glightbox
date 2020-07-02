@@ -297,9 +297,8 @@
 }
 
 .gslide-description {
-    max-height: 100vh;
-    overflow-y: auto;
     position: relative;
+    flex: 1 0 100%;
 
     &.description-left,
     &.description-right {
@@ -511,6 +510,18 @@ iframe.wait-autoplay {
 
     .gdesc-inner {
         padding: 22px 20px;
+    }
+
+    @media (--medium-small-viewport) {
+        .description-left,
+        .description-right {        
+            
+            .gdesc-inner {
+                position: absolute;
+                height: 100%;
+                overflow-y: auto;
+            }
+        }
     }
 
     .gslide-title {
