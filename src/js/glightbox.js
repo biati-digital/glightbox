@@ -110,9 +110,9 @@ const lightboxHtml = `<div id="glightbox-body" class="glightbox-container">
     <div class="goverlay"></div>
     <div class="gcontainer">
     <div id="glightbox-slider" class="gslider"></div>
-    <button class="gnext gbtn" tabindex="0">{nextSVG}</button>
-    <button class="gprev gbtn" tabindex="1">{prevSVG}</button>
-    <button class="gclose gbtn" tabindex="2">{closeSVG}</button>
+    <button class="gnext gbtn" tabindex="0" aria-label="Next">{nextSVG}</button>
+    <button class="gprev gbtn" tabindex="1" aria-label="Previous">{prevSVG}</button>
+    <button class="gclose gbtn" tabindex="2" aria-label="Close">{closeSVG}</button>
 </div>
 </div>`;
 defaults.lightboxHtml = lightboxHtml;
@@ -1518,13 +1518,17 @@ class GlightboxInit {
     }
 
     init() {
-        this.baseEvents = addEvent('click', {
-            onElement: this.getSelector(),
-            withCallback: (e, target) => {
-                e.preventDefault();
-                this.open(target);
-            }
-        })
+        const selector = this.getSelector();
+
+        if (selector) {
+            this.baseEvents = addEvent('click', {
+                onElement: selector,
+                withCallback: (e, target) => {
+                    e.preventDefault();
+                    this.open(target);
+                }
+            });
+        }
 
         this.elements = this.getElements()
     }
