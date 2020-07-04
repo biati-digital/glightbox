@@ -514,8 +514,8 @@ iframe.wait-autoplay {
 
     @media (--medium-small-viewport) {
         .description-left,
-        .description-right {        
-            
+        .description-right {
+
             .gdesc-inner {
                 position: absolute;
                 height: 100%;
