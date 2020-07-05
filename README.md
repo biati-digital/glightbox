@@ -381,7 +381,7 @@ lightbox.openAt(2);
 // So imagine that you are making an ajax request that returns some html
 // You can create an empty instance and append the content once is returned
 
-const ajaxExample = GLightbox({ selector: '', elements: [] });;
+const ajaxExample = GLightbox({ selector: null }); // or you can set the selector empty selector: ''
 
 doAjaxCall({...}).then(response => {
     ajaxExample.insertSlide({

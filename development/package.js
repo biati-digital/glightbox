@@ -11,7 +11,7 @@ const folder = path.join(__dirname, '/..');
  * Realease new version
  * calling
  * node development/package.js versionhere
- * then npm update
+ * then npm publish
  */
 
 async function createFolder() {
