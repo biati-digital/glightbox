@@ -431,6 +431,11 @@ Feel free to report any issues! If you wish to contribute by fixing a bug or imp
 
 ## Changelog
 
+### 3.0.1
+- Fixed: vertical scrolling of descriptions [@zothynine](https://github.com/biati-digital/glightbox/pull/134)
+- Fixed: CSS properties bug
+- Fixed: Passing null as selector throws an exception
+
 ### 3.0.0
 - New: New methods to access player instances "getSlidePlayerInstance(index or node) and getAllPlayers"
 - New: Access player instance from afterSlideChange and beforeSlideChange"
