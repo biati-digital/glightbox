@@ -1,5 +1,5 @@
 /**
- * GLightbox v3.0.0
+ * GLightbox v3.0.1
  * Awesome pure javascript lightbox
  * made by https://www.biati.digital
  */
@@ -2073,7 +2073,10 @@ class GlightboxInit {
         if (nodes == false && selector) {
             nodes = document.querySelectorAll(this.getSelector());
         }
-        nodes = Array.prototype.slice.call(nodes);
+
+        if (!nodes) {
+            return list;
+        }
 
         each(nodes, (el, i) => {
             const elData = getSlideData(el, this.settings);
@@ -2089,7 +2092,7 @@ class GlightboxInit {
      * Get selector
      */
     getSelector() {
-        if (this.settings.selector.substring(0, 5) == 'data-') {
+        if (this.settings.selector && this.settings.selector.substring(0, 5) == 'data-') {
             return `*[${this.settings.selector}]`;
         }
         return this.settings.selector;

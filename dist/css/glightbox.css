@@ -134,7 +134,6 @@
   border: none;
   min-height: 165px;
   -webkit-overflow-scrolling: touch;
-  overflow-scrolling: touch;
   -ms-touch-action: auto;
   touch-action: auto;
 }
@@ -310,7 +309,7 @@
   margin-bottom: 12px;
 }
 
-.gslide-description p::last-child {
+.gslide-description p:last-child {
   margin-bottom: 0;
 }
 

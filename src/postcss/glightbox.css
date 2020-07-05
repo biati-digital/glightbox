@@ -139,7 +139,6 @@
         border: none;
         min-height: 165px;
         -webkit-overflow-scrolling: touch;
-        overflow-scrolling: touch;
         touch-action: auto;
     }
 }
@@ -318,7 +317,7 @@
     p {
         margin-bottom: 12px;
 
-        &::last-child {
+        &:last-child {
             margin-bottom: 0;
         }
     }

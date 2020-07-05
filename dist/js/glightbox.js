@@ -2508,7 +2508,10 @@
           nodes = document.querySelectorAll(this.getSelector());
         }
 
-        nodes = Array.prototype.slice.call(nodes);
+        if (!nodes) {
+          return list;
+        }
+
         each(nodes, function (el, i) {
           var elData = getSlideData(el, _this11.settings);
           elData.node = el;
@@ -2520,7 +2523,7 @@
     }, {
       key: "getSelector",
       value: function getSelector() {
-        if (this.settings.selector.substring(0, 5) == 'data-') {
+        if (this.settings.selector && this.settings.selector.substring(0, 5) == 'data-') {
           return "*[".concat(this.settings.selector, "]");
         }
 
