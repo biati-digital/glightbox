@@ -106,13 +106,15 @@ You can specify some options to each individual slide, the available options are
 * effect
 * width
 * height
+* zoomable
+* draggable
 
 ```html
 <!-- One line config -->
-<a href="large.jpg" data-glightbox="title: Your title; description: description here; descPosition: left; type: image; effect: fade; width: 900px; height: auto;"></a>
+<a href="large.jpg" data-glightbox="title: Your title; description: description here; descPosition: left; type: image; effect: fade; width: 900px; height: auto; zoomable: true; draggable: true;"></a>
 
 <!-- Multiple data attributes / You can use the options as separated data attributes -->
-<a href="large.jpg" data-title="My title" data-description="description here" data-desc-position="right" data-type="image" data-effect="fade" data-width="900px" data-height="auto"></a>
+<a href="large.jpg" data-title="My title" data-description="description here" data-desc-position="right" data-type="image" data-effect="fade" data-width="900px" data-height="auto" data-zoomable="true" data-draggable="true"></a>
 ```
 
 
@@ -189,6 +191,11 @@ height               | number   | `506px`          | Default height for inline e
 videosWidth          | number   | `960px`          | Default width for videos. Videos are responsive so height is not required. The width can be in px % or even vw for example, 500px, 90% or 100vw for full width videos
 descPosition         | string   | `bottom`         | Global position for slides description, you can define a specific position on each slide (bottom, top, left, right).
 loop                 | boolean  | `false`          | Loop slides on end.
+zoomable             | boolean  | `true`           | Enable or disable zoomable images you can also use data-zoomable="false" on individual nodes.
+draggable            | boolean  | `true`           | Enable or disable mouse drag to go prev and next slide (only images and inline content), you can also use data-draggable="false" on individual nodes.
+dragToleranceX       | number   | `40`             | Used with draggable. Number of pixels the user has to drag to go to prev or next slide
+dragToleranceY       | number   | `65`             | Used with draggable. Number of pixels the user has to drag up or down to close the lightbox (Set 0 to disable vertical drag)
+preload              | boolean  | `true`           | Enable or disable preloading
 svg                  | object   | `{}`             | Set your own svg icons
 autoplayVideos       | boolean  | `true`           | Autoplay videos on open.
 plyr                 | object   | `{}`             | [View video player options.](#player)
@@ -428,15 +435,35 @@ It will work in any browser that supports CSS Flexbox
 
 Feel free to report any issues! If you wish to contribute by fixing a bug or implementing a new feature, please first read the [CONTRIBUTING](./CONTRIBUTING.md) guide.
 
+## Donate
+
+If you find this code useful, please consider a donation to keep this project growing, any amount is appreciated.
+
+[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://paypal.me/bdigital9816/5usd)
 
 ## Changelog
 
+### 3.0.2
+
+- New: Option "zoomable" to enable or disable zoomable images
+- New: Option "preload" to enable or disable preloading
+- New: Option "draggable" to go to prev/next slide by mouse dragging. Thanks to @Hirbod for the donation to make this happen
+- New: Option "dragToleranceX" Used with draggable. Number of pixels the user has to drag to go to prev or next slide
+- New: Option "dragToleranceY" Used with draggable. Number of pixels the user has to drag up or down to close the lightbox (Set 0 to disable vertical drag)
+- New: The code was refactored to make it easier to maintain
+- Fixed: data gallery stopped working
+- Fixed: iOS bug with Vimeo iframe when fullscreen button pressed
+- Fixed: "See more" link in the description throws an JS error when clicked
+- Fixed: Videos not resized vertically when window height was smaller that the window width
+
 ### 3.0.1
+
 - Fixed: vertical scrolling of descriptions [@zothynine](https://github.com/biati-digital/glightbox/pull/134)
 - Fixed: CSS properties bug
 - Fixed: Passing null as selector throws an exception
 
 ### 3.0.0
+
 - New: New methods to access player instances "getSlidePlayerInstance(index or node) and getAllPlayers"
 - New: Access player instance from afterSlideChange and beforeSlideChange"
 - New: New Method removeSlide(1) remove slide at the specified index, it works even when the lightbox is open
@@ -461,19 +488,21 @@ Feel free to report any issues! If you wish to contribute by fixing a bug or imp
 - Fixed fullscreen video button on ios
 - Moved plyr.ratio to plyr.config.ratio
 
-
 ### 2.0.5
+
 - New: Loop, renamed loopAtEnd to loop and now works in both directions
 - New: added touchFollowAxis, for mobile when dragging the media will follow the same axis, set to false to move media as you wish
 - New: added jpe format
 - Fixed .mov videos not recognized as videos
 
 ### 2.0.4
+
 - Fixed some errors when zooming and dragging images
 - Fixed description position not respected when configured globally
 - Fixed local videos not resized correctly when entered fullscreen
 
 ### 2.0.3
+
 - New: Zooming images. Now you can zoom images on desktop if image is too large
 - New: Now you can also define the slide description using the content of any div you want.
 - New: Replaced png icons with svg and added options to customize them.
@@ -482,6 +511,7 @@ Feel free to report any issues! If you wish to contribute by fixing a bug or imp
 - Fixed youtube video not detected correctly for urls like youtube(-nocookie).com/embed/...
 
 ### 2.0.2
+
 - New: [Plyr player](https://plyr.io/), we have changed to this player so that way only one api is managed instead of 3
 - New: Added tabindex accesibility to loop the controls with the tab key
 - New: Inside inline content you can close the lightbox by adding the class **gtrigger-close** to any element
@@ -494,16 +524,19 @@ Feel free to report any issues! If you wish to contribute by fixing a bug or imp
 - Improved documentation
 
 ### 2.0.1
+
 - Fixed Mobile navigation
 - Fixed slide width for external sources
 
 ### 2.0.0
+
 - New: Delegated permissions to cross-origin iframes (for the new browsers autoplay restrictions)
 - Fixed youtube, vimeo autoplay when changing slides
 - Fixed lightbox won't fit screen with description
 - Fixed Removed global body variable that was causing some problems
 
 ### 1.0.9
+
 - Added svg to source types so it can be displayed as an image [@tuomassalo](https://github.com/mcstudios/glightbox/pull/40)
 - Added contributing file
 - Updated dependencies [@tuomassalo](https://github.com/mcstudios/glightbox/pull/40).
@@ -515,33 +548,48 @@ Feel free to report any issues! If you wish to contribute by fixing a bug or imp
 - Fixed global slide params not working
 - Fixed some issues on IE11
 - Fixed using characters : or ; in slide description
+
 ### 1.0.7
+
 - New: Added reload method, useful when injecting content with ajax, cloning nodes, etc.
 - Fixed closeButton setting not removing the element
 - Fixed video not displayed on mobile devices
+
 ### 1.0.6
+
 - New: Now you can set individual width and height for each slide with inlines or iframes.
 - New: Now you can set individual source types for each slide ('type': 'image' | 'iframe' | 'video' | 'inline' | 'external).
 - New: Published on npm
 - New: Published on bower
 - Fixed afterSlideLoad only triggered one time for all the slides
 - Fixed a small space between the image and description when is set to top or bottom
+
 ### 1.0.5
+
 - New: Added none as a new option to disable open, close and slide animations
 - New: Added new options (touchNavigation, keyboardNavigation, closeOnOutsideClick) to enable or disable user interaction
 - Fixed open and close effect not taking a custom animation
 - Fixed an error when calling the destroy method and no videos were present in the slider
+
 ### 1.0.4
+
 - Improved the open method so it can be called without duplicating the structure and events
 - New: The original node is passed to events like beforeSlideChange, afterSlideChange, etc.
+
 ### 1.0.3
+
 - New: Added option moreLength to control the number of characters in the description for mobile devices
+
 ### 1.0.2
+
 - Fixed instance not returned and unable to call public methods
+
 ### 1.0.1
+
 - Fixed large images not displayed correctly
 
 ### 1.0.0
+
 - Initial release
 
 ## License
