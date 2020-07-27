@@ -230,7 +230,7 @@
     &.fullscreen {
         max-width: 100% !important;
         min-width: 100%;
-        height: 80vh;
+        height: 75vh;
 
         video {
             max-width: 100% !important;
@@ -253,6 +253,11 @@
     .ginlined-content {
         padding: 20px;
         width: 100%;
+    }
+
+    .dragging {
+        cursor: grabbing !important;
+        transition: none;
     }
 }
 
