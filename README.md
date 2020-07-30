@@ -448,6 +448,7 @@ If you find this code useful, please consider a donation to keep this project gr
 
 - New: Option "dragAutoSnap" to control the mouse drag auto close or change slide
 - Fixed: Multiple galleries not working
+- Fixed: Setting the elements directly using an object triggered error
 
 ### 3.0.2
 
