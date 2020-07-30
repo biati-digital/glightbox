@@ -9,7 +9,7 @@ export default class SlideConfigParser {
             title: '',
             type: '',
             description: '',
-            descPosition: '',
+            descPosition: 'bottom',
             effect: '',
             width: '',
             height: '',
