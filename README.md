@@ -193,10 +193,11 @@ descPosition         | string   | `bottom`         | Global position for slides 
 loop                 | boolean  | `false`          | Loop slides on end.
 zoomable             | boolean  | `true`           | Enable or disable zoomable images you can also use data-zoomable="false" on individual nodes.
 draggable            | boolean  | `true`           | Enable or disable mouse drag to go prev and next slide (only images and inline content), you can also use data-draggable="false" on individual nodes.
-dragToleranceX       | number   | `40`             | Used with draggable. Number of pixels the user has to drag to go to prev or next slide
-dragToleranceY       | number   | `65`             | Used with draggable. Number of pixels the user has to drag up or down to close the lightbox (Set 0 to disable vertical drag)
-preload              | boolean  | `true`           | Enable or disable preloading
-svg                  | object   | `{}`             | Set your own svg icons
+dragToleranceX       | number   | `40`             | Used with draggable. Number of pixels the user has to drag to go to prev or next slide.
+dragToleranceY       | number   | `65`             | Used with draggable. Number of pixels the user has to drag up or down to close the lightbox (Set 0 to disable vertical drag).
+dragAutoSnap         | boolean  | `false`          | If true the slide will automatically change to prev/next or close if dragToleranceX|dragToleranceY is reached, otherwise it will wait till the mouse is released.
+preload              | boolean  | `true`           | Enable or disable preloading.
+svg                  | object   | `{}`             | Set your own svg icons.
 autoplayVideos       | boolean  | `true`           | Autoplay videos on open.
 plyr                 | object   | `{}`             | [View video player options.](#player)
 
@@ -443,6 +444,11 @@ If you find this code useful, please consider a donation to keep this project gr
 
 ## Changelog
 
+### 3.0.3
+
+- New: Option "dragAutoSnap" to control the mouse drag auto close or change slide
+- Fixed: Multiple galleries not working
+
 ### 3.0.2
 
 - New: Option "zoomable" to enable or disable zoomable images
@@ -454,7 +460,7 @@ If you find this code useful, please consider a donation to keep this project gr
 - Fixed: data gallery stopped working
 - Fixed: iOS bug with Vimeo iframe when fullscreen button pressed
 - Fixed: "See more" link in the description throws an JS error when clicked
-- Fixed: Videos not resized vertically when window height was smaller that the window width
+- Fixed: Videos not resized vertically when window height was smaller than the window width
 
 ### 3.0.1
 
