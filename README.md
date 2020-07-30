@@ -195,7 +195,7 @@ zoomable             | boolean  | `true`           | Enable or disable zoomable 
 draggable            | boolean  | `true`           | Enable or disable mouse drag to go prev and next slide (only images and inline content), you can also use data-draggable="false" on individual nodes.
 dragToleranceX       | number   | `40`             | Used with draggable. Number of pixels the user has to drag to go to prev or next slide.
 dragToleranceY       | number   | `65`             | Used with draggable. Number of pixels the user has to drag up or down to close the lightbox (Set 0 to disable vertical drag).
-dragAutoSnap         | boolean  | `false`          | If true the slide will automatically change to prev/next or close if dragToleranceX|dragToleranceY is reached, otherwise it will wait till the mouse is released.
+dragAutoSnap         | boolean  | `false`          | If true the slide will automatically change to prev/next or close if dragToleranceX or dragToleranceY is reached, otherwise it will wait till the mouse is released.
 preload              | boolean  | `true`           | Enable or disable preloading.
 svg                  | object   | `{}`             | Set your own svg icons.
 autoplayVideos       | boolean  | `true`           | Autoplay videos on open.
