@@ -1484,6 +1484,16 @@
         this.yOffset = 0;
         this.active = false;
 
+        if (this.doSlideChange) {
+          this.instance.preventOutsideClick = true;
+          this.doSlideChange == 'right' && this.instance.prevSlide();
+          this.doSlideChange == 'left' && this.instance.nextSlide();
+        }
+
+        if (this.doSlideClose) {
+          this.instance.close();
+        }
+
         if (!this.toleranceReached) {
           this.setTranslate(this.dragContainer, 0, 0, true);
         }
@@ -1522,6 +1532,8 @@
           this.yOffset = this.currentY;
           this.el.isDragging = true;
           this.dragging = true;
+          this.doSlideChange = false;
+          this.doSlideClose = false;
           var currentXInt = Math.abs(this.currentX);
           var currentYInt = Math.abs(this.currentY);
 
@@ -1529,20 +1541,21 @@
             this.yOffset = 0;
             this.lastDirection = 'x';
             this.setTranslate(this.dragContainer, this.currentX, 0);
-            this.toleranceReached = false;
+            var doChange = this.shouldChange();
 
-            if (currentXInt >= this.toleranceX) {
-              var dragDir = this.currentX > 0 ? 'right' : 'left';
+            if (!this.instance.settings.dragAutoSnap && doChange) {
+              this.doSlideChange = doChange;
+            }
 
-              if (dragDir == 'left' && this.slide !== this.slide.parentNode.lastChild || dragDir == 'right' && this.slide !== this.slide.parentNode.firstChild) {
-                this.toleranceReached = true;
-                this.active = false;
-                this.instance.preventOutsideClick = true;
-                this.dragEnd(null);
-                dragDir == 'right' && this.instance.prevSlide();
-                dragDir == 'left' && this.instance.nextSlide();
-                return;
-              }
+            if (this.instance.settings.dragAutoSnap && doChange) {
+              this.instance.preventOutsideClick = true;
+              this.toleranceReached = true;
+              this.active = false;
+              this.instance.preventOutsideClick = true;
+              this.dragEnd(null);
+              doChange == 'right' && this.instance.prevSlide();
+              doChange == 'left' && this.instance.nextSlide();
+              return;
             }
           }
 
@@ -1550,14 +1563,47 @@
             this.xOffset = 0;
             this.lastDirection = 'y';
             this.setTranslate(this.dragContainer, 0, this.currentY);
+            var doClose = this.shouldClose();
 
-            if (currentYInt >= this.toleranceY) {
+            if (!this.instance.settings.dragAutoSnap && doClose) {
+              this.doSlideClose = true;
+            }
+
+            if (this.instance.settings.dragAutoSnap && doClose) {
               this.instance.close();
             }
 
             return;
           }
         }
+      }
+    }, {
+      key: "shouldChange",
+      value: function shouldChange() {
+        var doChange = false;
+        var currentXInt = Math.abs(this.currentX);
+
+        if (currentXInt >= this.toleranceX) {
+          var dragDir = this.currentX > 0 ? 'right' : 'left';
+
+          if (dragDir == 'left' && this.slide !== this.slide.parentNode.lastChild || dragDir == 'right' && this.slide !== this.slide.parentNode.firstChild) {
+            doChange = dragDir;
+          }
+        }
+
+        return doChange;
+      }
+    }, {
+      key: "shouldClose",
+      value: function shouldClose() {
+        var doClose = false;
+        var currentYInt = Math.abs(this.currentY);
+
+        if (currentYInt >= this.toleranceY) {
+          doClose = true;
+        }
+
+        return doClose;
       }
     }, {
       key: "setTranslate",
@@ -2233,6 +2279,7 @@
     loop: false,
     zoomable: true,
     draggable: true,
+    dragAutoSnap: false,
     dragToleranceX: 40,
     dragToleranceY: 65,
     preload: true,
@@ -2305,6 +2352,7 @@
       this.effectsClasses = this.getAnimationClasses();
       this.videoPlayers = {};
       this.apiEvents = {};
+      this.fullElementsList = false;
     }
 
     _createClass(GlightboxInit, [{
@@ -2342,6 +2390,7 @@
           var gallery = element.getAttribute('data-gallery');
 
           if (gallery) {
+            this.fullElementsList = this.elements;
             this.elements = this.getGalleryElements(this.elements, gallery);
           }
 
@@ -3118,6 +3167,10 @@
 
         this.closing = true;
         this.stopSlideVideo(this.activeSlide);
+
+        if (this.fullElementsList) {
+          this.elements = this.fullElementsList;
+        }
 
         addClass(this.modal, 'glightbox-closing');
 

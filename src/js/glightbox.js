@@ -35,6 +35,7 @@ const defaults = {
     loop: false,
     zoomable: true,
     draggable: true,
+    dragAutoSnap: false,
     dragToleranceX: 40,
     dragToleranceY: 65,
     preload: true,
@@ -131,6 +132,7 @@ class GlightboxInit {
         this.effectsClasses = this.getAnimationClasses()
         this.videoPlayers = {};
         this.apiEvents = {};
+        this.fullElementsList = false;
     }
 
     init() {
@@ -161,6 +163,7 @@ class GlightboxInit {
         if (_.isNode(element)) {
             const gallery = element.getAttribute('data-gallery');
             if (gallery) {
+                this.fullElementsList = this.elements;
                 this.elements = this.getGalleryElements(this.elements, gallery);
             }
             if (_.isNil(index)) { // get the index of the element
@@ -837,6 +840,7 @@ class GlightboxInit {
                 }
             })
         }
+
         _.each(this.elements, (slide) => {
             this.slidesContainer.appendChild(slide.instance.create());
         })
@@ -1007,6 +1011,10 @@ class GlightboxInit {
         }
         this.closing = true;
         this.stopSlideVideo(this.activeSlide)
+
+        if (this.fullElementsList) {
+            this.elements = this.fullElementsList;
+        }
         _.addClass(this.modal, 'glightbox-closing')
         _.animateElement(this.overlay, (this.settings.openEffect == 'none' ? 'none' : this.settings.cssEfects.fade.out))
         _.animateElement(this.activeSlide, this.settings.closeEffect, () => {
