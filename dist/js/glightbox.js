@@ -1851,7 +1851,7 @@
         title: '',
         type: '',
         description: '',
-        descPosition: '',
+        descPosition: 'bottom',
         effect: '',
         width: '',
         height: '',
@@ -2862,7 +2862,14 @@
         this.elements = this.elements ? this.elements : [];
 
         if (!isNil(this.settings.elements) && isArray(this.settings.elements)) {
-          list = this.settings.elements;
+          each(this.settings.elements, function (el, i) {
+            var slide = new Slide(el, _this5);
+            var elData = slide.getConfig();
+            elData.node = false;
+            elData.index = i;
+            elData.instance = slide;
+            list.push(elData);
+          });
         }
 
         var nodes = false;
@@ -2898,6 +2905,10 @@
     }, {
       key: "getSelector",
       value: function getSelector() {
+        if (this.settings.elements) {
+          return false;
+        }
+
         if (this.settings.selector && this.settings.selector.substring(0, 5) == 'data-') {
           return "*[".concat(this.settings.selector, "]");
         }

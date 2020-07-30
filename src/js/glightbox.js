@@ -677,7 +677,14 @@ class GlightboxInit {
         this.elements = (this.elements ? this.elements : []);
 
         if (!_.isNil(this.settings.elements) && _.isArray(this.settings.elements)) {
-            list = this.settings.elements;
+            _.each(this.settings.elements, (el, i) => {
+                const slide = new Slide(el, this);
+                const elData = slide.getConfig();
+                elData.node = false;
+                elData.index = i;
+                elData.instance = slide;
+                list.push(elData);
+            })
         }
 
         let nodes = false;
@@ -720,6 +727,9 @@ class GlightboxInit {
      * Get selector
      */
     getSelector() {
+        if (this.settings.elements) {
+            return false;
+        }
         if (this.settings.selector && this.settings.selector.substring(0, 5) == 'data-') {
             return `*[${this.settings.selector}]`;
         }
