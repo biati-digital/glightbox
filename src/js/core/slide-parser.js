@@ -75,72 +75,74 @@ export default class SlideConfigParser {
             return objectData;
         }
 
-        let url = '';
-        let config = element.getAttribute('data-glightbox')
-        let nodeType = element.nodeName.toLowerCase();
-        if (nodeType === 'a')
-            url = element.href;
-        if (nodeType === 'img')
-            url = element.src;
+        if(element.length != 0) {
+            let url = '';
+            let config = element.getAttribute('data-glightbox')
+            let nodeType = element.nodeName.toLowerCase();
+            if (nodeType === 'a')
+                url = element.href;
+            if (nodeType === 'img')
+                url = element.src;
 
-        data.href = url;
+            data.href = url;
 
-        each(data, (val, key) => {
-            if (has(settings, key) && key !== 'width') {
-                data[key] = settings[key];
+            each(data, (val, key) => {
+                if (has(settings, key) && key !== 'width') {
+                    data[key] = settings[key];
+                }
+                const nodeData = element.dataset[key];
+                if (!isNil(nodeData)) {
+                    data[key] = this.sanitizeValue(nodeData);
+                }
+            });
+
+            if (data.content) {
+                data.type = 'inline';
             }
-            const nodeData = element.dataset[key];
-            if (!isNil(nodeData)) {
-                data[key] = this.sanitizeValue(nodeData);
+
+            if (!data.type && url) {
+                data.type = this.sourceType(url);
             }
-        });
 
-        if (data.content) {
-            data.type = 'inline';
-        }
+            if (!isNil(config)) {
+                let cleanKeys = [];
+                each(data, (v, k) => {
+                    cleanKeys.push(';\\s?' + k);
+                })
+                cleanKeys = cleanKeys.join('\\s?:|');
+                if (config.trim() !== '') {
+                    each(data, (val, key) => {
+                        const str = config;
+                        const match = '\s?' + key + '\s?:\s?(.*?)(' + cleanKeys + '\s?:|$)';
+                        const regex = new RegExp(match);
+                        const matches = str.match(regex);
 
-        if (!data.type && url) {
-            data.type = this.sourceType(url);
-        }
-
-        if (!isNil(config)) {
-            let cleanKeys = [];
-            each(data, (v, k) => {
-                cleanKeys.push(';\\s?' + k);
-            })
-            cleanKeys = cleanKeys.join('\\s?:|');
-            if (config.trim() !== '') {
-                each(data, (val, key) => {
-                    const str = config;
-                    const match = '\s?' + key + '\s?:\s?(.*?)(' + cleanKeys + '\s?:|$)';
-                    const regex = new RegExp(match);
-                    const matches = str.match(regex);
-
-                    if (matches && matches.length && matches[1]) {
-                        const value = matches[1].trim().replace(/;\s*$/, '');
-                        data[key] = this.sanitizeValue(value);
-                    }
-                });
+                        if (matches && matches.length && matches[1]) {
+                            const value = matches[1].trim().replace(/;\s*$/, '');
+                            data[key] = this.sanitizeValue(value);
+                        }
+                    });
+                }
+            } else {
+                if (nodeType == 'a') {
+                    let title = element.title
+                    if (!isNil(title) && title !== '') data.title = title;
+                }
+                if (nodeType == 'img') {
+                    let alt = element.alt
+                    if (!isNil(alt) && alt !== '') data.title = alt;
+                }
+                let desc = element.getAttribute('data-description')
+                if (!isNil(desc) && desc !== '') data.description = desc;
             }
-        } else {
-            if (nodeType == 'a') {
-                let title = element.title
-                if (!isNil(title) && title !== '') data.title = title;
-            }
-            if (nodeType == 'img') {
-                let alt = element.alt
-                if (!isNil(alt) && alt !== '') data.title = alt;
-            }
-            let desc = element.getAttribute('data-description')
-            if (!isNil(desc) && desc !== '') data.description = desc;
-        }
 
-        if (data.description && data.description.substring(0, 1) == '.' && document.querySelector(data.description)) {
-            data.description = document.querySelector(data.description).innerHTML;
-        } else {
-            let nodeDesc = element.querySelector('.glightbox-desc')
-            if (nodeDesc) {
-                data.description = nodeDesc.innerHTML;
+            if (data.description && data.description.substring(0, 1) == '.' && document.querySelector(data.description)) {
+                data.description = document.querySelector(data.description).innerHTML;
+            } else {
+                let nodeDesc = element.querySelector('.glightbox-desc')
+                if (nodeDesc) {
+                    data.description = nodeDesc.innerHTML;
+                }
             }
         }
 

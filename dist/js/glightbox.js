@@ -1921,74 +1921,76 @@
           return objectData;
         }
 
-        var url = '';
-        var config = element.getAttribute('data-glightbox');
-        var nodeType = element.nodeName.toLowerCase();
-        if (nodeType === 'a') url = element.href;
-        if (nodeType === 'img') url = element.src;
-        data.href = url;
-        each(data, function (val, key) {
-          if (has(settings, key) && key !== 'width') {
-            data[key] = settings[key];
-          }
+        if (element.length != 0) {
+          var url = '';
+          var config = element.getAttribute('data-glightbox');
+          var nodeType = element.nodeName.toLowerCase();
+          if (nodeType === 'a') url = element.href;
+          if (nodeType === 'img') url = element.src;
+          data.href = url;
+          each(data, function (val, key) {
+            if (has(settings, key) && key !== 'width') {
+              data[key] = settings[key];
+            }
 
-          var nodeData = element.dataset[key];
+            var nodeData = element.dataset[key];
 
-          if (!isNil(nodeData)) {
-            data[key] = _this.sanitizeValue(nodeData);
-          }
-        });
-
-        if (data.content) {
-          data.type = 'inline';
-        }
-
-        if (!data.type && url) {
-          data.type = this.sourceType(url);
-        }
-
-        if (!isNil(config)) {
-          var cleanKeys = [];
-          each(data, function (v, k) {
-            cleanKeys.push(';\\s?' + k);
+            if (!isNil(nodeData)) {
+              data[key] = _this.sanitizeValue(nodeData);
+            }
           });
-          cleanKeys = cleanKeys.join('\\s?:|');
 
-          if (config.trim() !== '') {
-            each(data, function (val, key) {
-              var str = config;
-              var match = '\s?' + key + '\s?:\s?(.*?)(' + cleanKeys + '\s?:|$)';
-              var regex = new RegExp(match);
-              var matches = str.match(regex);
+          if (data.content) {
+            data.type = 'inline';
+          }
 
-              if (matches && matches.length && matches[1]) {
-                var value = matches[1].trim().replace(/;\s*$/, '');
-                data[key] = _this.sanitizeValue(value);
-              }
+          if (!data.type && url) {
+            data.type = this.sourceType(url);
+          }
+
+          if (!isNil(config)) {
+            var cleanKeys = [];
+            each(data, function (v, k) {
+              cleanKeys.push(';\\s?' + k);
             });
+            cleanKeys = cleanKeys.join('\\s?:|');
+
+            if (config.trim() !== '') {
+              each(data, function (val, key) {
+                var str = config;
+                var match = '\s?' + key + '\s?:\s?(.*?)(' + cleanKeys + '\s?:|$)';
+                var regex = new RegExp(match);
+                var matches = str.match(regex);
+
+                if (matches && matches.length && matches[1]) {
+                  var value = matches[1].trim().replace(/;\s*$/, '');
+                  data[key] = _this.sanitizeValue(value);
+                }
+              });
+            }
+          } else {
+            if (nodeType == 'a') {
+              var title = element.title;
+              if (!isNil(title) && title !== '') data.title = title;
+            }
+
+            if (nodeType == 'img') {
+              var alt = element.alt;
+              if (!isNil(alt) && alt !== '') data.title = alt;
+            }
+
+            var desc = element.getAttribute('data-description');
+            if (!isNil(desc) && desc !== '') data.description = desc;
           }
-        } else {
-          if (nodeType == 'a') {
-            var title = element.title;
-            if (!isNil(title) && title !== '') data.title = title;
-          }
 
-          if (nodeType == 'img') {
-            var alt = element.alt;
-            if (!isNil(alt) && alt !== '') data.title = alt;
-          }
+          if (data.description && data.description.substring(0, 1) == '.' && document.querySelector(data.description)) {
+            data.description = document.querySelector(data.description).innerHTML;
+          } else {
+            var nodeDesc = element.querySelector('.glightbox-desc');
 
-          var desc = element.getAttribute('data-description');
-          if (!isNil(desc) && desc !== '') data.description = desc;
-        }
-
-        if (data.description && data.description.substring(0, 1) == '.' && document.querySelector(data.description)) {
-          data.description = document.querySelector(data.description).innerHTML;
-        } else {
-          var nodeDesc = element.querySelector('.glightbox-desc');
-
-          if (nodeDesc) {
-            data.description = nodeDesc.innerHTML;
+            if (nodeDesc) {
+              data.description = nodeDesc.innerHTML;
+            }
           }
         }
 
