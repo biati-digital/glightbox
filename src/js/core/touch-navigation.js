@@ -102,7 +102,10 @@ export default function touchNavigation(instance) {
                 mediaImage = media.querySelector('img');
             }
 
-            removeClass(overlay, 'greset')
+            removeClass(overlay, 'greset');
+
+            if (e.pageX > 20 && e.pageX < window.innerWidth - 20) return;
+            e.preventDefault();
         },
         touchMove: (e) => {
             if (!process) {
