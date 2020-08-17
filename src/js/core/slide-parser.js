@@ -42,6 +42,9 @@ export default class SlideConfigParser {
         if (url.match(/\.(mp4|ogg|webm|mov)$/) !== null) {
             return 'video';
         }
+        if (url.match(/\.(mp3|wav|wma|aac|ogg)$/) !== null) {
+            return 'audio';
+        }
 
         // Check if inline content
         if (url.indexOf("#") > -1) {
