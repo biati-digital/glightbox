@@ -26,7 +26,7 @@
                             <li><a href="#examples">EXAMPLES</a></li>
                             <li><a href="#specifications">INFO</a></li>
                             <li><a href="#license">LICENSE</a></li>
-                            <li><a href="https://github.com/biati-digital/glightbox/releases/download/3.0.3/glightbox-master.zip">DOWNLOAD</a></li>
+                            <li><a href="https://github.com/biati-digital/glightbox/releases/download/3.0.4/glightbox-master.zip">DOWNLOAD</a></li>
                         </ul>
                     </div>
                 </div>
@@ -44,7 +44,7 @@
                             video support.</p>
 
                         <div class="download">
-                            <a class="mcbutton primary" href="https://github.com/biati-digital/glightbox/releases/download/3.0.3/glightbox-master.zip">
+                            <a class="mcbutton primary" href="https://github.com/biati-digital/glightbox/releases/download/3.0.4/glightbox-master.zip">
                                 <i class="fa fa-download" aria-hidden="true"></i>
                                 <span>Download</span>
                             </a>
@@ -306,7 +306,7 @@
                     </div>
 
                     <p class="text-center footer-btns">
-                        <a class="mcbutton primary" href="https://github.com/mcstudios/glightbox/releases/download/3.0.3/glightbox-master.zip">
+                        <a class="mcbutton primary" href="https://github.com/mcstudios/glightbox/releases/download/3.0.4/glightbox-master.zip">
                             <i class="fa fa-download"></i>
                             Download
                         </a>
@@ -347,49 +347,65 @@
     <script src="dist/js/glightbox.js"></script>
     <script src="demo/js/site.js"></script>
     <script>
-        var lightbox = GLightbox();
+        /* var lightbox = GLightbox();
+        lightbox.on('open', (target) => {
+            console.log("lightbox opened");
+        });
 
         var lightboxDescription = GLightbox({
             selector: '.glightbox2',
         });
         var lightboxVideo = GLightbox({
-            selector: '.glightbox3',
-            afterSlideLoad: (data) => {
-                console.log(data);
-            },
-            afterSlideChange: (prevSlide, currentSlide) => {
-                // prevSlide is the previously active slide
-                // currentSlide is the active slide
-                // the player variable can be false if slide has no video
+            selector: '.glightbox3'
+        });
+        lightboxVideo.on('slide_changed', ({ prev, current }) => {
+            console.log("Prev slide", prev);
+            console.log("Current slide", current);
 
-                const { index, slide, player } = currentSlide;
+            const { index, slide, player } = current;
 
-                if (player) {
-
-                    if (!player.ready) {
-                        // If player is not ready
-                        player.on('ready', event => {
-                            // Do something when video is ready
-                        });
-                    }
-
-                    player.on('play', event => {
-                        console.log("Started play");
-                    });
-
-                    player.on('volumechange', event => {
-                        console.log("Volume change");
-                    });
-
-                    player.on('ended', event => {
-                        console.log("Video ended");
+            if (player) {
+                if (!player.ready) {
+                    // If player is not ready
+                    player.on('ready', event => {
+                        // Do something when video is ready
                     });
                 }
+
+                player.on('play', event => {
+                    console.log("Started play");
+                });
+
+                player.on('volumechange', event => {
+                    console.log("Volume change");
+                });
+
+                player.on('ended', event => {
+                    console.log("Video ended");
+                });
             }
         });
+
         var lightboxInlineIframe = GLightbox({
             'selector': '.glightbox4'
-        });
+        }); */
+
+
+        const videoGallery = GLightbox({
+            elements: [],
+            descPosition: 'top',
+            autoplayVideos: true,
+            plyr: {
+                css: 'https://cdn.plyr.io/3.6.2/plyr.css',
+                js: 'https://cdn.plyr.io/3.6.2/plyr.js',
+                ratio: '16:9',
+                config: {
+                    controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'airplay', 'fullscreen'],
+                    iconUrl: '../../../../assets/video-icons/mfa-video-icons.svg',
+                    iconPrefix: 'mfa',
+                }
+            }
+        })
 
 
         /* var exampleApi = GLightbox({ selector: null });
