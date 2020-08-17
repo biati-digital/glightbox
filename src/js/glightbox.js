@@ -1,5 +1,5 @@
 /**
- * GLightbox v3.0.3
+ * GLightbox
  * Awesome pure javascript lightbox
  * made by https://www.biati.digital
  */
@@ -9,6 +9,7 @@ import touchNavigation from './core/touch-navigation.js';
 import Slide from './core/slide.js';
 import * as _ from './utils/helpers.js';
 
+const version = '3.0.4';
 const isMobile = _.isMobile();
 const isTouch = _.isTouch();
 const html = document.getElementsByTagName('html')[0];
@@ -63,12 +64,12 @@ const defaults = {
             }
         }
     },
-    openEffect: 'zoomIn', // fade, zoom, none
-    closeEffect: 'zoomOut', // fade, zoom, none
+    openEffect: 'zoom', // fade, zoom, none
+    closeEffect: 'zoom', // fade, zoom, none
     slideEffect: 'slide', // fade, slide, zoom, none
     moreText: 'See more',
     moreLength: 60,
-    lightboxHtml: '',
+    lightboxHTML: '',
     cssEfects: {
         fade: { in: 'fadeIn', out: 'fadeOut' },
         zoom: { in: 'zoomIn', out: 'zoomOut' },
@@ -91,7 +92,7 @@ const defaults = {
 // prev arrow class = gnext
 // next arrow id = gprev
 // close id = gclose
-let lightboxSlideHtml = `<div class="gslide">
+defaults.slideHTML = `<div class="gslide">
     <div class="gslide-inner-content">
         <div class="ginner-container">
             <div class="gslide-media">
@@ -106,9 +107,7 @@ let lightboxSlideHtml = `<div class="gslide">
     </div>
 </div>`;
 
-defaults.slideHtml = lightboxSlideHtml;
-
-const lightboxHtml = `<div id="glightbox-body" class="glightbox-container">
+defaults.lightboxHTML = `<div id="glightbox-body" class="glightbox-container">
     <div class="gloader visible"></div>
     <div class="goverlay"></div>
     <div class="gcontainer">
@@ -118,7 +117,6 @@ const lightboxHtml = `<div id="glightbox-body" class="glightbox-container">
     <button class="gclose gbtn" tabindex="2" aria-label="Close">{closeSVG}</button>
 </div>
 </div>`;
-defaults.lightboxHtml = lightboxHtml;
 
 
 /**
@@ -131,7 +129,7 @@ class GlightboxInit {
         this.settings = _.extend(defaults, options)
         this.effectsClasses = this.getAnimationClasses()
         this.videoPlayers = {};
-        this.apiEvents = {};
+        this.apiEvents = [];
         this.fullElementsList = false;
     }
 
@@ -212,6 +210,9 @@ class GlightboxInit {
         }
         this.lightboxOpen = true
 
+        this.trigger('open');
+
+        // settings.onOpen is deprecated and will be removed in a future update
         if (_.isFunction(this.settings.onOpen)) {
             this.settings.onOpen();
         }
@@ -259,10 +260,13 @@ class GlightboxInit {
 
             const slide = this.elements[index];
 
+            this.trigger('slide_before_load', slide);
+
             slide.instance.setContent(slideNode, () => {
                 _.hide(this.loader);
                 this.resize();
                 this.slideAnimateIn(slideNode, first);
+                this.trigger('slide_after_load', slide);
             })
         }
 
@@ -306,12 +310,18 @@ class GlightboxInit {
         const slide = this.elements[index];
         const type = slide.type;
 
+        this.trigger('slide_before_load', slide);
+
         if (type == 'video' || type == 'external') {
             setTimeout(() => {
-                slide.instance.setContent(slideNode)
+                slide.instance.setContent(slideNode, () => {
+                    this.trigger('slide_after_load', slide);
+                });
             }, 200);
         } else {
-            slide.instance.setContent(slideNode)
+            slide.instance.setContent(slideNode, () => {
+                this.trigger('slide_after_load', slide);
+            });
         }
     }
 
@@ -399,6 +409,13 @@ class GlightboxInit {
             this.updateNavigationClasses();
         }
 
+        this.trigger('slide_inserted', {
+            index: index,
+            slide: this.slidesContainer.querySelectorAll('.gslide')[index],
+            player: this.getSlidePlayerInstance(index)
+        });
+
+        // Deprecated and will be removed in a future update
         if (_.isFunction(this.settings.slideInserted)) {
             this.settings.slideInserted({
                 index: index,
@@ -433,6 +450,9 @@ class GlightboxInit {
         }
         this.elements.splice(index, 1);
 
+        this.trigger('slide_removed', index);
+
+        // Deprecated and will be removed in a future update
         if (_.isFunction(this.settings.slideRemoved)) {
             this.settings.slideRemoved(index);
         }
@@ -462,10 +482,17 @@ class GlightboxInit {
         }
         _.removeClass(slide, this.effectsClasses)
         if (first) {
-            _.animateElement(slide, this.settings.openEffect, () => {
+            _.animateElement(slide, this.settings.cssEfects[this.settings.openEffect].in, () => {
                 if (!isMobile && this.settings.autoplayVideos) {
-                    this.playSlideVideo(slide)
+                    this.slidePlayerPlay(slide)
                 }
+
+                this.trigger('slide_changed', {
+                    prev: prevData,
+                    current: nextData
+                });
+
+                // settings.afterSlideChange is deprecated and will be removed in a future update
                 if (_.isFunction(this.settings.afterSlideChange)) {
                     this.settings.afterSlideChange.apply(this, [prevData, nextData]);
                 }
@@ -480,8 +507,15 @@ class GlightboxInit {
             }
             _.animateElement(slide, animIn, () => {
                 if (!isMobile && this.settings.autoplayVideos) {
-                    this.playSlideVideo(slide)
+                    this.slidePlayerPlay(slide)
                 }
+
+                this.trigger('slide_changed', {
+                    prev: prevData,
+                    current: nextData
+                });
+
+                // settings.afterSlideChange is deprecated and will be removed in a future update
                 if (_.isFunction(this.settings.afterSlideChange)) {
                     this.settings.afterSlideChange.apply(this, [prevData, nextData]);
                 }
@@ -509,7 +543,22 @@ class GlightboxInit {
         let animation = this.settings.slideEffect;
         let animOut = (animation !== 'none' ? this.settings.cssEfects[animation].out : animation);
 
-        this.stopSlideVideo(prevSlide)
+        this.slidePlayerPause(prevSlide)
+
+        this.trigger('slide_before_change', {
+            prev: {
+                index: this.prevActiveSlideIndex,
+                slide: this.prevActiveSlide,
+                player: this.getSlidePlayerInstance(this.prevActiveSlideIndex)
+            },
+            current: {
+                index: this.index,
+                slide: this.activeSlide,
+                player: this.getSlidePlayerInstance(this.index)
+            }
+        });
+
+        // settings.beforeSlideChange is deprecated and will be removed in a future update
         if (_.isFunction(this.settings.beforeSlideChange)) {
             this.settings.beforeSlideChange.apply(this, [{
                 index: this.prevActiveSlideIndex,
@@ -576,7 +625,26 @@ class GlightboxInit {
                 slide = node.getAttribute('data-index');
             }
         }
+        console.log("stopSlideVideo is deprecated, use slidePlayerPause");
+        const player = this.getSlidePlayerInstance(slide);
+        if (player && player.playing) {
+            player.pause();
+        }
+    }
 
+    /**
+     * Stop player at specified index
+     *
+     * @param slide node or index
+     * @return void
+     */
+    slidePlayerPause(slide) {
+        if (_.isNode(slide)) {
+            let node = slide.querySelector('.gvideo-wrapper');
+            if (node) {
+                slide = node.getAttribute('data-index');
+            }
+        }
         const player = this.getSlidePlayerInstance(slide);
         if (player && player.playing) {
             player.pause();
@@ -591,6 +659,27 @@ class GlightboxInit {
      * @return void
      */
     playSlideVideo(slide) {
+        if (_.isNode(slide)) {
+            let node = slide.querySelector('.gvideo-wrapper');
+            if (node) {
+                slide = node.getAttribute('data-index');
+            }
+        }
+        console.log("playSlideVideo is deprecated, use slidePlayerPlay");
+        const player = this.getSlidePlayerInstance(slide);
+        if (player && !player.playing) {
+            player.play();
+        }
+    }
+
+    /**
+     * Play media player at specified
+     * node or index
+     *
+     * @param slide node or index
+     * @return void
+     */
+    slidePlayerPlay(slide) {
         if (_.isNode(slide)) {
             let node = slide.querySelector('.gvideo-wrapper');
             if (node) {
@@ -631,7 +720,7 @@ class GlightboxInit {
             this.slidesContainer.innerHTML = '';
 
             _.each(this.elements, () => {
-                let slide = _.createHTML(this.settings.slideHtml);
+                let slide = _.createHTML(this.settings.slideHTML);
                 this.slidesContainer.appendChild(slide);
             })
             this.showSlide(0, true);
@@ -781,7 +870,7 @@ class GlightboxInit {
         const prevSVG = _.has(this.settings.svg, 'prev') ? this.settings.svg.prev : '';
         const closeSVG = _.has(this.settings.svg, 'close') ? this.settings.svg.close : '';
 
-        let lightboxHTML = this.settings.lightboxHtml;
+        let lightboxHTML = this.settings.lightboxHTML;
         lightboxHTML = lightboxHTML.replace(/{nextSVG}/g, nextSVG);
         lightboxHTML = lightboxHTML.replace(/{prevSVG}/g, prevSVG);
         lightboxHTML = lightboxHTML.replace(/{closeSVG}/g, closeSVG);
@@ -1020,14 +1109,14 @@ class GlightboxInit {
             return false;
         }
         this.closing = true;
-        this.stopSlideVideo(this.activeSlide)
+        this.slidePlayerPause(this.activeSlide)
 
         if (this.fullElementsList) {
             this.elements = this.fullElementsList;
         }
         _.addClass(this.modal, 'glightbox-closing')
         _.animateElement(this.overlay, (this.settings.openEffect == 'none' ? 'none' : this.settings.cssEfects.fade.out))
-        _.animateElement(this.activeSlide, this.settings.closeEffect, () => {
+        _.animateElement(this.activeSlide, this.settings.cssEfects[this.settings.closeEffect].out, () => {
             this.activeSlide = null;
             this.prevActiveSlideIndex = null;
             this.prevActiveSlide = null;
@@ -1046,6 +1135,10 @@ class GlightboxInit {
             _.removeClass(html, 'glightbox-open')
             _.removeClass(body, 'glightbox-open touching gdesc-open glightbox-touch glightbox-mobile gscrollbar-fixer')
             this.modal.parentNode.removeChild(this.modal)
+
+            this.trigger('close');
+
+            // settings.onClose is deprecated and will be removed in a future update
             if (_.isFunction(this.settings.onClose)) {
                 this.settings.onClose();
             }
@@ -1065,7 +1158,62 @@ class GlightboxInit {
      */
     destroy() {
         this.close();
+        this.clearAllEvents();
         this.baseEvents.destroy();
+    }
+
+    /**
+     * Set event
+     */
+    on(evt, callback, once = false) {
+        if (!evt || !_.isFunction(callback)) {
+            throw new TypeError('Event name and callback must be defined');
+        }
+        this.apiEvents.push({ evt, once, callback });
+    }
+
+    /**
+     * Set event
+     */
+    once(evt, callback) {
+        this.on(evt, callback, true);
+    }
+
+    /**
+     * Triggers an specific event
+     * with data
+     *
+     * @param string eventName
+     */
+    trigger(eventName, data = null) {
+        const onceTriggered = [];
+        _.each(this.apiEvents, (event, i) => {
+            const { evt, once, callback } = event;
+            if (evt == eventName) {
+                callback(data);
+                if (once) {
+                    onceTriggered.push(i);
+                }
+            }
+        });
+        if (onceTriggered.length) {
+           _.each(onceTriggered, i => this.apiEvents.splice(i, 1) );
+        }
+    }
+
+    /**
+     * Removes all events
+     * set using the API
+     */
+    clearAllEvents() {
+        this.apiEvents.push({ evt, once, callback });
+    }
+
+    /**
+     * Get Version
+     */
+    version() {
+        return version;
     }
 }
 
