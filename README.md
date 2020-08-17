@@ -618,7 +618,7 @@ If you find this code useful, please consider a donation to keep this project gr
 
 ### 3.0.4
 
-- New: New way to listen for events, the old events will still work but will be removed in a future update
+- New: New way to listen for events, the old events will still work but will be removed in a future update. See the Events section in the README
 - New: Added new methods "slidePlayerPause" and "slidePlayerPlay" so in the future they will replace "playSlideVideo" and "stopSlideVideo" to provide support for audio slides in a future update
 - New: Add preventDefault via touchstart on lightbox to prevent navigation swipe
 - Fixed: e.getAttribute is not a function when there are no nodes in the gallery
