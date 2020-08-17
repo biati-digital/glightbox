@@ -1886,6 +1886,10 @@
           return 'video';
         }
 
+        if (url.match(/\.(mp3|wav|wma|aac|ogg)$/) !== null) {
+          return 'audio';
+        }
+
         if (url.indexOf("#") > -1) {
           var hash = origin.split('#').pop();
 
@@ -2939,7 +2943,7 @@
         var list = [];
         this.elements = this.elements ? this.elements : [];
 
-        if (!isNil(this.settings.elements) && isArray(this.settings.elements)) {
+        if (!isNil(this.settings.elements) && isArray(this.settings.elements) && this.settings.elements.length) {
           each(this.settings.elements, function (el, i) {
             var slide = new Slide(el, _this6);
             var elData = slide.getConfig();

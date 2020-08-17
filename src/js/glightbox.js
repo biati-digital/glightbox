@@ -765,7 +765,7 @@ class GlightboxInit {
         let list = [];
         this.elements = (this.elements ? this.elements : []);
 
-        if (!_.isNil(this.settings.elements) && _.isArray(this.settings.elements)) {
+        if (!_.isNil(this.settings.elements) && _.isArray(this.settings.elements) && this.settings.elements.length) {
             _.each(this.settings.elements, (el, i) => {
                 const slide = new Slide(el, this);
                 const elData = slide.getConfig();
