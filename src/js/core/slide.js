@@ -215,7 +215,7 @@ export default class Slide {
      * @return { node }
      */
     create() {
-        return createHTML(this.instance.settings.slideHtml);
+        return createHTML(this.instance.settings.slideHTML);
     }
 
 
