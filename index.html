@@ -347,11 +347,10 @@
     <script src="dist/js/glightbox.js"></script>
     <script src="demo/js/site.js"></script>
     <script>
-        /* var lightbox = GLightbox();
+        var lightbox = GLightbox();
         lightbox.on('open', (target) => {
             console.log("lightbox opened");
         });
-
         var lightboxDescription = GLightbox({
             selector: '.glightbox2',
         });
@@ -388,24 +387,7 @@
 
         var lightboxInlineIframe = GLightbox({
             'selector': '.glightbox4'
-        }); */
-
-
-        const videoGallery = GLightbox({
-            elements: [],
-            descPosition: 'top',
-            autoplayVideos: true,
-            plyr: {
-                css: 'https://cdn.plyr.io/3.6.2/plyr.css',
-                js: 'https://cdn.plyr.io/3.6.2/plyr.js',
-                ratio: '16:9',
-                config: {
-                    controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'airplay', 'fullscreen'],
-                    iconUrl: '../../../../assets/video-icons/mfa-video-icons.svg',
-                    iconPrefix: 'mfa',
-                }
-            }
-        })
+        });
 
 
         /* var exampleApi = GLightbox({ selector: null });
