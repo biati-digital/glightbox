@@ -288,9 +288,7 @@ lightbox.on('slide_removed', (index) => {
 
 ## Video player
 
-Starting from version 2.0.2 glightbox droped support of JWPlayer because that player implemented new restrictions for the free edition, it was replaced with an awesome new player "[Plyr](https://plyr.io/)" that also includes support for YouTube and Vimeo. So instead of maintaining 3 different APIs now we only can focus on one. You can pass any Plyr option to the player, view all available options here [Plyr options](https://github.com/sampotts/plyr).
-
-Please note that GLightbox will only inject the video player library if required and only when the lightbox is opened.
+GLightbox includes "[Plyr](https://plyr.io/)" the best player out there, you can pass any Plyr option to the player, view all available options here [Plyr options](https://github.com/sampotts/plyr). GLightbox will only inject the player library if required and only when the lightbox is opened.
 
 **Internet Explorer 11. If you need support for this browser you need to set the js url to use the polyfilled version. This is not the default because IE11 is ancient and we need to let it die.**
 
@@ -616,7 +614,7 @@ If you find this code useful, please consider a donation to keep this project gr
 
 ## Changelog
 
-#### Latest version v3.0.4
+#### Latest version v3.0.5
 
 See the [CHANGELOG.md](CHANGELOG.md) file for details
 
