@@ -14,12 +14,12 @@
     "popup"
   ],
   "license": "MIT",
-  "homepage": "https://glightbox.mcstudios.com.mx",
+  "homepage": "https://biati-digital.github.io/glightbox/",
   "repository": {
-    "url": "https://github.com/mcstudios/glightbox",
+    "url": "https://github.com/biati-digital/glightbox",
     "type": "git"
   },
-  "bugs": "https://github.com/mcstudios/glightbox/issues",
+  "bugs": "https://github.com/biati-digital/glightbox/issues",
   "devDependencies": {
     "@babel/cli": "^7.10.3",
     "@babel/core": "^7.10.3",
