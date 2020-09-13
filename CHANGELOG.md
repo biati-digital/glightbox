@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## 3.0.5
+
+- Fixed: IE11 does not support ".includes()"
+- Fixed: Clicking outside the content to close only works in specific areas
+- Fixed: openEffect / closeEffect no longer accepting "none"
+
 ## 3.0.4
 
 - New: New way to listen for events, the old events will still work but will be removed in a future update. See the Events section in the README
