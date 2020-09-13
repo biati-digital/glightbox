@@ -54,7 +54,7 @@ export default class SlideConfigParser {
             }
         }
         // Ajax
-        if (url.includes("gajax=true")) {
+        if (url.indexOf("goajax=true") > -1) {
             return 'ajax';
         }
 
