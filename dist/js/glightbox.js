@@ -1898,7 +1898,7 @@
           }
         }
 
-        if (url.includes("gajax=true")) {
+        if (url.indexOf("goajax=true") > -1) {
           return 'ajax';
         }
 
@@ -2258,7 +2258,7 @@
     return Slide;
   }();
 
-  var _version = '3.0.4';
+  var _version = '3.0.5';
 
   var isMobile$1 = isMobile();
 
@@ -2337,6 +2337,10 @@
       slide_back: {
         "in": 'slideInLeft',
         out: 'slideOutRight'
+      },
+      none: {
+        "in": 'none',
+        out: 'none'
       }
     },
     svg: {
@@ -2899,26 +2903,30 @@
         this.settings.elements = false;
         var newElements = [];
 
-        each(elements, function (el, i) {
-          var slide = new Slide(el, _this5);
-          var data = slide.getConfig();
-          data.instance = slide;
-          data.index = i;
-          newElements.push(data);
-        });
+        if (elements && elements.length) {
+          each(elements, function (el, i) {
+            var slide = new Slide(el, _this5);
+            var data = slide.getConfig();
+            data.instance = slide;
+            data.index = i;
+            newElements.push(data);
+          });
+        }
 
         this.elements = newElements;
 
         if (this.lightboxOpen) {
           this.slidesContainer.innerHTML = '';
 
-          each(this.elements, function () {
-            var slide = createHTML(_this5.settings.slideHTML);
+          if (this.elements.length) {
+            each(this.elements, function () {
+              var slide = createHTML(_this5.settings.slideHTML);
 
-            _this5.slidesContainer.appendChild(slide);
-          });
+              _this5.slidesContainer.appendChild(slide);
+            });
 
-          this.showSlide(0, true);
+            this.showSlide(0, true);
+          }
         }
       }
     }, {
@@ -3093,7 +3101,7 @@
           this.events['outClose'] = addEvent('click', {
             onElement: modal,
             withCallback: function withCallback(e, target) {
-              if (!_this7.preventOutsideClick && !hasClass(document.body, 'glightbox-mobile') && !closest(e.target, '.ginner-container') && !hasClass(e.target, 'gslider')) {
+              if (!_this7.preventOutsideClick && !hasClass(document.body, 'glightbox-mobile') && !closest(e.target, '.ginner-container')) {
                 if (!closest(e.target, '.gbtn') && !hasClass(e.target, 'gnext') && !hasClass(e.target, 'gprev')) {
                   _this7.close();
                 }

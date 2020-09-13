@@ -9,7 +9,7 @@ import touchNavigation from './core/touch-navigation.js';
 import Slide from './core/slide.js';
 import * as _ from './utils/helpers.js';
 
-const version = '3.0.4';
+const version = '3.0.5';
 const isMobile = _.isMobile();
 const isTouch = _.isTouch();
 const html = document.getElementsByTagName('html')[0];
@@ -74,7 +74,8 @@ const defaults = {
         fade: { in: 'fadeIn', out: 'fadeOut' },
         zoom: { in: 'zoomIn', out: 'zoomOut' },
         slide: { in: 'slideInRight', out: 'slideOutLeft' },
-        slide_back: { in: 'slideInLeft', out: 'slideOutRight' }
+        slide_back: { in: 'slideInLeft', out: 'slideOutRight' },
+        none: { in: 'none', out: 'none' }
     },
     svg: {
         close: '<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" xml:space="preserve"><g><g><path d="M505.943,6.058c-8.077-8.077-21.172-8.077-29.249,0L6.058,476.693c-8.077,8.077-8.077,21.172,0,29.249C10.096,509.982,15.39,512,20.683,512c5.293,0,10.586-2.019,14.625-6.059L505.943,35.306C514.019,27.23,514.019,14.135,505.943,6.058z"/></g></g><g><g><path d="M505.942,476.694L35.306,6.059c-8.076-8.077-21.172-8.077-29.248,0c-8.077,8.076-8.077,21.171,0,29.248l470.636,470.636c4.038,4.039,9.332,6.058,14.625,6.058c5.293,0,10.587-2.019,14.624-6.057C514.018,497.866,514.018,484.771,505.942,476.694z"/></g></g></svg>',
@@ -706,24 +707,29 @@ class GlightboxInit {
         this.settings.elements = false;
 
         const newElements = [];
-        _.each(elements, (el, i) => {
-            const slide = new Slide(el, this);
-            const data = slide.getConfig();
-            data.instance = slide;
-            data.index = i;
-            newElements.push(data);
-        })
+
+        if (elements && elements.length) {
+            _.each(elements, (el, i) => {
+                const slide = new Slide(el, this);
+                const data = slide.getConfig();
+                data.instance = slide;
+                data.index = i;
+                newElements.push(data);
+            })
+        }
 
         this.elements = newElements;
 
         if (this.lightboxOpen) {
             this.slidesContainer.innerHTML = '';
 
-            _.each(this.elements, () => {
-                let slide = _.createHTML(this.settings.slideHTML);
-                this.slidesContainer.appendChild(slide);
-            })
-            this.showSlide(0, true);
+            if (this.elements.length) {
+                _.each(this.elements, () => {
+                    let slide = _.createHTML(this.settings.slideHTML);
+                    this.slidesContainer.appendChild(slide);
+                })
+                this.showSlide(0, true);
+            }
         }
     }
 
@@ -929,8 +935,7 @@ class GlightboxInit {
                     if (
                         !this.preventOutsideClick &&
                         !_.hasClass(document.body, 'glightbox-mobile') &&
-                        !_.closest(e.target, '.ginner-container') &&
-                        !_.hasClass(e.target, 'gslider')
+                        !_.closest(e.target, '.ginner-container')
                     ) {
                         if (!_.closest(e.target, '.gbtn') && !_.hasClass(e.target, 'gnext') && !_.hasClass(e.target, 'gprev')) {
                             this.close();
