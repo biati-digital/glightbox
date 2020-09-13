@@ -15,13 +15,48 @@ const folder = path.join(__dirname, '/..');
  */
 
 async function createFolder() {
-    const tmpfolder = path.join(os.tmpdir(), 'glightbox-master');
+    jetpack.remove(path.join(folder, 'glightbox-master.zip'));
 
-    await updateIndexVersion(args[0]);
-    await updatePackageVersion(args[0]);
+    const tmpfolder = path.join(os.tmpdir(), 'glightbox-master');
+    const newVersion = args[0];
+
+    await updateFileVersion({
+        file: path.join(folder, 'index.html'),
+        search: /download\/(.*)\/glightbox/g,
+        replace: newVersion
+    });
+
+    await updateFileVersion({
+        file: path.join(folder, 'package.json'),
+        search: /"version":\s?"(.*)",/g,
+        replace: newVersion
+    });
+
+    await updateFileVersion({
+        file: path.join(folder, 'README.md'),
+        search: /v([0-9-.]+)/g,
+        replace: newVersion
+    });
+
+    await updateFileVersion({
+        file: path.join(folder, 'src/js/glightbox.js'),
+        search: /version\s?=\s?'(.*)';/g,
+        replace: newVersion
+    });
 
     jetpack.copy(folder, tmpfolder, {
-        matching: ['!node_modules', '!node_modules/**/*', '!.git', '!.git/**/*', '!.github', '!.github/**/*', '!.vscode', '!.vscode/**/*', '!*.psd', '!.DS_Store']
+        matching: [
+            '!node_modules',
+            '!node_modules/**/*',
+            '!.git',
+            '!.git/**/*',
+            '!.github',
+            '!.github/**/*',
+            '!.vscode',
+            '!.vscode/**/*',
+            '!*.psd',
+            '!.DS_Store'
+        ]
     });
     notify('Created folder', `Created folder correctly`);
 
@@ -61,44 +96,19 @@ async function createZip(folder) {
 }
 
 
-async function updateIndexVersion(version) {
+async function updateFileVersion(data) {
     return new Promise((resolve, reject) => {
-        const file = path.join(folder, 'index.html');
-
-        jetpack.readAsync(file).then((str) => {
-            let regexp = /download\/(.*)\/glightbox/g;
+        jetpack.readAsync(data.file).then((str) => {
+            let regexp = new RegExp(data.search);
 
             while ((matches = regexp.exec(str)) !== null) {
                 let foundLine = matches[0];
-                let newLine = foundLine.replace(matches[1], version)
+                let newLine = foundLine.replace(matches[1], data.replace)
                 str = str.replace(foundLine, newLine);
             }
 
-            jetpack.writeAsync(file, str, ).then(() => {
-                notify('Updated index version', `Updated index version`);
-                resolve(file);
-            });
-        });
-    })
-}
-
-
-async function updatePackageVersion(version) {
-    return new Promise((resolve, reject) => {
-        const file = path.join(folder, 'package.json');
-
-        jetpack.readAsync(file).then((str) => {
-            let regexp = /"version":\s?"(.*)",/g;
-
-            while ((matches = regexp.exec(str)) !== null) {
-                let foundLine = matches[0];
-                let newLine = foundLine.replace(matches[1], version)
-                str = str.replace(foundLine, newLine);
-            }
-
-            jetpack.writeAsync(file, str, ).then(() => {
-                notify('Updated package version', `Updated package version`);
-                resolve(file);
+            jetpack.writeAsync(data.file, str).then(() => {
+                resolve(data.file);
             });
         });
     })

@@ -86,7 +86,7 @@ function filesWatcher() {
     const watcher = chokidar.watch(['src'], {
         ignored: ['.DS_Store', 'src/js/.jshintrc', 'src/js/.babelrc'],
         persistent: true,
-        depth: 1,
+        depth: 3,
         awaitWriteFinish: {
             stabilityThreshold: 500,
             pollInterval: 500
