@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2018 MC Studios
+Copyright (c) 2018 Biati Digital https://www.biati.digital
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
