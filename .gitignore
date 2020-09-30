@@ -18,6 +18,7 @@ Thumbs.db
 /release
 /release.zip
 /.vscode
+/.nova
 /dist/js/glightboxTest.min.js
 /dist/js/glightboxTest.js
 /src/js/glightboxTest.js
