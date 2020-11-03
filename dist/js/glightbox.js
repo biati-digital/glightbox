@@ -119,11 +119,12 @@
       return;
     }
 
-    if (isArrayLike(collection) && !isObject(collection)) {
-      var l = collection.length,
-          i = 0;
-
-      for (; i < l; i++) {
+    if (isNodeList(collection)) {
+      Array.prototype.forEach.call(collection, function (item, i) {
+        callback.call(item, item, i, collection);
+      });
+    } else if (isArrayLike(collection) && !isObject(collection)) {
+      for (var i = 0; i < collection.length; i++) {
         if (callback.call(collection[i], collection[i], i, collection) === false) {
           break;
         }
@@ -141,12 +142,14 @@
   function getNodeEvents(node) {
     var name = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
     var fn = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
-    var cache = node[uid] = node[uid] || [];
     var data = {
-      all: cache,
+      all: [],
       evt: null,
       found: null
     };
+    if (!(node instanceof HTMLElement)) return data;
+    var cache = node[uid] = node[uid] || [];
+    data.all = cache;
 
     if (name && fn && size(cache) > 0) {
       each(cache, function (cl, i) {
@@ -202,6 +205,7 @@
 
     each(element, function (el) {
       var events = getNodeEvents(el, eventName, handler);
+      if (!events) return;
 
       if (el.addEventListener && avoidDuplicate && !events.found || !avoidDuplicate) {
         el.addEventListener(eventName, handler, useCapture);
@@ -482,6 +486,9 @@
   }
   function isNode(el) {
     return !!(el && el.nodeType && el.nodeType == 1);
+  }
+  function isNodeList(collection) {
+    return NodeList.prototype.isPrototypeOf(collection);
   }
   function isArray(ar) {
     return Array.isArray(ar);
@@ -3394,7 +3401,14 @@
   function glightbox () {
     var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var instance = new GlightboxInit(options);
-    instance.init();
+
+    try {
+      instance.init();
+    } catch (error) {
+      console.error('[GLightbox init error]', error);
+      instance = undefined;
+    }
+
     return instance;
   }
 
