@@ -1202,7 +1202,7 @@ class GlightboxInit {
             }
         });
         if (onceTriggered.length) {
-           _.each(onceTriggered, i => this.apiEvents.splice(i, 1) );
+            _.each(onceTriggered, i => this.apiEvents.splice(i, 1));
         }
     }
 
@@ -1223,8 +1223,14 @@ class GlightboxInit {
 }
 
 export default function (options = {}) {
-    const instance = new GlightboxInit(options);
-    instance.init()
+    let instance = new GlightboxInit(options);
+
+    try {
+        instance.init()
+    } catch (error) {
+        console.error('[GLightbox init error]', error);
+        instance = undefined;
+    }
 
     return instance;
 }
