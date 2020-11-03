@@ -48,10 +48,16 @@ export function each(collection, callback) {
         return;
     }
 
-    if (isArrayLike(collection) && !isObject(collection)) {
-        let l = collection.length,
-            i = 0;
-        for (; i < l; i++) {
+    if (isNodeList(collection)) {
+        /**
+         * There is also an Internet Explorer compatible way to use Array.prototype.forEach for iteration.
+         * https://developer.mozilla.org/zh-TW/docs/Web/API/NodeList
+         */
+        Array.prototype.forEach.call(collection, function (item, i) {
+            callback.call(item, item, i, collection);
+        })
+    } else if (isArrayLike(collection) && !isObject(collection)) {
+        for (let i = 0; i < collection.length; i++) {
             if (callback.call(collection[i], collection[i], i, collection) === false) {
                 break;
             }
@@ -80,8 +86,12 @@ export function each(collection, callback) {
  * @returns {object}
  */
 export function getNodeEvents(node, name = null, fn = null) {
+    const data = { all: [], evt: null, found: null };
+
+    if (!(node instanceof HTMLElement)) return data;
+
     const cache = (node[uid] = node[uid] || []);
-    const data = { all: cache, evt: null, found: null };
+    data.all = cache;
     if (name && fn && size(cache) > 0) {
         each(cache, (cl, i) => {
             if (cl.eventName == name && cl.fn.toString() == fn.toString()) {
@@ -122,20 +132,25 @@ export function addEvent(eventName, {
             handler.destroy();
         }
     }
-    handler.destroy = function() {
+    handler.destroy = function () {
         each(element, (el) => {
             const events = getNodeEvents(el, eventName, handler);
             if (events.found) { events.all.splice(events.evt, 1); }
             if (el.removeEventListener) el.removeEventListener(eventName, handler, useCapture)
         })
     }
+
     each(element, (el) => {
         const events = getNodeEvents(el, eventName, handler);
+
+        if (!events) return;
+
         if (el.addEventListener && (avoidDuplicate && !events.found) || !avoidDuplicate) {
             el.addEventListener(eventName, handler, useCapture)
             events.all.push({ eventName: eventName, fn: handler });
         }
     })
+
     return handler
 }
 
@@ -341,7 +356,7 @@ export function createIframe(config) {
     if (allow) {
         iframe.setAttribute('allow', allow)
     }
-    iframe.onload = function() {
+    iframe.onload = function () {
         addClass(iframe, 'node-ready');
         if (isFunction(callback)) {
             callback()
@@ -480,6 +495,9 @@ export function isString(s) {
 }
 export function isNode(el) {
     return !!(el && el.nodeType && el.nodeType == 1)
+}
+export function isNodeList(collection) {
+    return NodeList.prototype.isPrototypeOf(collection)
 }
 export function isArray(ar) {
     return Array.isArray(ar)
