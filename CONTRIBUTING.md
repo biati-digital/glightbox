@@ -17,6 +17,8 @@ Remember the script's core philosophy is to stay simple and minimal, doing one t
 
 ## :pencil: Before you open a Pull Request
 - Follow Git best practices (especially use meaningful commit messages).
+- Follow the same conding style.
+- **DO NOT** commit changes in the dist directory, this are created automatically.
 - Describe thoroughly you work in a PR comment.
 - Be patient and understanding. It's a side project, done in free time.
 
