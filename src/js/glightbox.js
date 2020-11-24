@@ -1164,7 +1164,10 @@ class GlightboxInit {
     destroy() {
         this.close();
         this.clearAllEvents();
-        this.baseEvents.destroy();
+
+        if (this.baseEvents) {
+            this.baseEvents.destroy()
+        }
     }
 
     /**
