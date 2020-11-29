@@ -6,7 +6,7 @@
   "scripts": {
     "watch": "node development/watcher.js"
   },
-  "author": "MC Studios",
+  "author": "Biati Digital",
   "keywords": [
     "lightbox",
     "javascript",
