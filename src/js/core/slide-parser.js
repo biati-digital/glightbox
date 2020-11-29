@@ -1,9 +1,7 @@
 import { extend, has, each, isNil, isNode, isObject, isNumber } from '../utils/helpers.js';
 
 export default class SlideConfigParser {
-    constructor(el, settings) {
-        this.element = el;
-        this.settings = settings;
+    constructor(slideParamas = {}) {
         this.defaults = {
             href: '',
             title: '',
@@ -13,11 +11,14 @@ export default class SlideConfigParser {
             effect: '',
             width: '',
             height: '',
-            node: false,
             content: false,
             zoomable: true,
-            draggable: true,
+            draggable: true
         };
+
+        if (isObject(slideParamas)) {
+            this.defaults = extend(this.defaults, slideParamas);
+        }
     }
 
     /**
@@ -47,14 +48,14 @@ export default class SlideConfigParser {
         }
 
         // Check if inline content
-        if (url.indexOf("#") > -1) {
-            let hash = origin.split('#').pop()
+        if (url.indexOf('#') > -1) {
+            let hash = origin.split('#').pop();
             if (hash.trim() !== '') {
-                return 'inline'
+                return 'inline';
             }
         }
         // Ajax
-        if (url.indexOf("goajax=true") > -1) {
+        if (url.indexOf('goajax=true') > -1) {
             return 'ajax';
         }
 
@@ -79,12 +80,14 @@ export default class SlideConfigParser {
         }
 
         let url = '';
-        let config = element.getAttribute('data-glightbox')
+        let config = element.getAttribute('data-glightbox');
         let nodeType = element.nodeName.toLowerCase();
-        if (nodeType === 'a')
+        if (nodeType === 'a') {
             url = element.href;
-        if (nodeType === 'img')
+        }
+        if (nodeType === 'img') {
             url = element.src;
+        }
 
         data.href = url;
 
@@ -110,7 +113,7 @@ export default class SlideConfigParser {
             let cleanKeys = [];
             each(data, (v, k) => {
                 cleanKeys.push(';\\s?' + k);
-            })
+            });
             cleanKeys = cleanKeys.join('\\s?:|');
             if (config.trim() !== '') {
                 each(data, (val, key) => {
@@ -126,22 +129,24 @@ export default class SlideConfigParser {
                 });
             }
         } else {
-            if (nodeType == 'a') {
-                let title = element.title
-                if (!isNil(title) && title !== '') data.title = title;
+            if (!data.title && nodeType == 'a') {
+                let title = element.title;
+                if (!isNil(title) && title !== '') {
+                    data.title = title;
+                }
             }
-            if (nodeType == 'img') {
-                let alt = element.alt
-                if (!isNil(alt) && alt !== '') data.title = alt;
+            if (!data.title && nodeType == 'img') {
+                let alt = element.alt;
+                if (!isNil(alt) && alt !== '') {
+                    data.title = alt;
+                }
             }
-            let desc = element.getAttribute('data-description')
-            if (!isNil(desc) && desc !== '') data.description = desc;
         }
 
         if (data.description && data.description.substring(0, 1) == '.' && document.querySelector(data.description)) {
             data.description = document.querySelector(data.description).innerHTML;
         } else {
-            let nodeDesc = element.querySelector('.glightbox-desc')
+            let nodeDesc = element.querySelector('.glightbox-desc');
             if (nodeDesc) {
                 data.description = nodeDesc.innerHTML;
             }
