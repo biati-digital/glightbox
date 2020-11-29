@@ -196,7 +196,9 @@
           events.all.splice(events.evt, 1);
         }
 
-        if (el.removeEventListener) el.removeEventListener(eventName, handler, useCapture);
+        if (el.removeEventListener) {
+          el.removeEventListener(eventName, handler, useCapture);
+        }
       });
     };
 
@@ -235,7 +237,10 @@
       }
 
       var matches = typeof elem.matches == 'function' ? elem.matches(selector) : elem.msMatchesSelector(selector);
-      if (matches) return elem;
+
+      if (matches) {
+        return elem;
+      }
     }
   }
   function animateElement(element) {
@@ -247,7 +252,10 @@
     }
 
     if (animation == 'none') {
-      if (isFunction(callback)) callback();
+      if (isFunction(callback)) {
+        callback();
+      }
+
       return false;
     }
 
@@ -264,7 +272,10 @@
         each(animationNames, function (name) {
           removeClass(target, 'g' + name);
         });
-        if (isFunction(callback)) callback();
+
+        if (isFunction(callback)) {
+          callback();
+        }
       }
     });
   }
@@ -311,12 +322,12 @@
   }
   function whichAnimationEvent() {
     var t,
-        el = document.createElement("fakeelement");
+        el = document.createElement('fakeelement');
     var animations = {
-      animation: "animationend",
-      OAnimation: "oAnimationEnd",
-      MozAnimation: "animationend",
-      WebkitAnimation: "webkitAnimationEnd"
+      animation: 'animationend',
+      OAnimation: 'oAnimationEnd',
+      MozAnimation: 'animationend',
+      WebkitAnimation: 'webkitAnimationEnd'
     };
 
     for (t in animations) {
@@ -327,12 +338,12 @@
   }
   function whichTransitionEvent() {
     var t,
-        el = document.createElement("fakeelement");
+        el = document.createElement('fakeelement');
     var transitions = {
-      transition: "transitionend",
-      OTransition: "oTransitionEnd",
-      MozTransition: "transitionend",
-      WebkitTransition: "webkitTransitionEnd"
+      transition: 'transitionend',
+      OTransition: 'oTransitionEnd',
+      MozTransition: 'transitionend',
+      WebkitTransition: 'webkitTransitionEnd'
     };
 
     for (t in transitions) {
@@ -376,21 +387,34 @@
       return;
     }
 
-    if (!delay) delay = 100;
+    if (!delay) {
+      delay = 100;
+    }
+
     var timeoutPointer;
     var intervalPointer = setInterval(function () {
-      if (!check()) return;
+      if (!check()) {
+        return;
+      }
+
       clearInterval(intervalPointer);
-      if (timeoutPointer) clearTimeout(timeoutPointer);
+
+      if (timeoutPointer) {
+        clearTimeout(timeoutPointer);
+      }
+
       onComplete();
     }, delay);
-    if (timeout) timeoutPointer = setTimeout(function () {
-      clearInterval(intervalPointer);
-    }, timeout);
+
+    if (timeout) {
+      timeoutPointer = setTimeout(function () {
+        clearInterval(intervalPointer);
+      }, timeout);
+    }
   }
   function injectAssets(url, waitFor, callback) {
     if (isNil(url)) {
-      console.error('Inject videos api error');
+      console.error('Inject assets error');
       return;
     }
 
@@ -399,17 +423,28 @@
       waitFor = false;
     }
 
+    if (isString(waitFor) && waitFor in window) {
+      if (isFunction(callback)) {
+        callback();
+      }
+
+      return;
+    }
+
     var found;
 
     if (url.indexOf('.css') !== -1) {
       found = document.querySelectorAll('link[href="' + url + '"]');
 
       if (found && found.length > 0) {
-        if (isFunction(callback)) callback();
+        if (isFunction(callback)) {
+          callback();
+        }
+
         return;
       }
 
-      var head = document.getElementsByTagName("head")[0];
+      var head = document.getElementsByTagName('head')[0];
       var headStyles = head.querySelectorAll('link[rel="stylesheet"]');
       var link = document.createElement('link');
       link.rel = 'stylesheet';
@@ -423,7 +458,10 @@
         head.appendChild(link);
       }
 
-      if (isFunction(callback)) callback();
+      if (isFunction(callback)) {
+        callback();
+      }
+
       return;
     }
 
@@ -1657,10 +1695,10 @@
     var videoID = 'gvideo' + data.index;
     var slideMedia = slide.querySelector('.gslide-media');
     var videoPlayers = this.getAllPlayers();
-    addClass(slideContainer, "gvideo-container");
+    addClass(slideContainer, 'gvideo-container');
     slideMedia.insertBefore(createHTML('<div class="gvideo-wrapper"></div>'), slideMedia.firstChild);
     var videoWrapper = slide.querySelector('.gvideo-wrapper');
-    injectAssets(this.settings.plyr.css);
+    injectAssets(this.settings.plyr.css, 'Plyr');
     var url = data.href;
     var protocol = location.protocol.replace(':', '');
     var videoSource = '';
@@ -1843,11 +1881,11 @@
   }
 
   var SlideConfigParser = function () {
-    function SlideConfigParser(el, settings) {
+    function SlideConfigParser() {
+      var slideParamas = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
       _classCallCheck(this, SlideConfigParser);
 
-      this.element = el;
-      this.settings = settings;
       this.defaults = {
         href: '',
         title: '',
@@ -1857,11 +1895,14 @@
         effect: '',
         width: '',
         height: '',
-        node: false,
         content: false,
         zoomable: true,
         draggable: true
       };
+
+      if (isObject(slideParamas)) {
+        this.defaults = extend(this.defaults, slideParamas);
+      }
     }
 
     _createClass(SlideConfigParser, [{
@@ -1890,7 +1931,7 @@
           return 'audio';
         }
 
-        if (url.indexOf("#") > -1) {
+        if (url.indexOf('#') > -1) {
           var hash = origin.split('#').pop();
 
           if (hash.trim() !== '') {
@@ -1898,7 +1939,7 @@
           }
         }
 
-        if (url.indexOf("goajax=true") > -1) {
+        if (url.indexOf('goajax=true') > -1) {
           return 'ajax';
         }
 
@@ -1930,8 +1971,15 @@
         var url = '';
         var config = element.getAttribute('data-glightbox');
         var nodeType = element.nodeName.toLowerCase();
-        if (nodeType === 'a') url = element.href;
-        if (nodeType === 'img') url = element.src;
+
+        if (nodeType === 'a') {
+          url = element.href;
+        }
+
+        if (nodeType === 'img') {
+          url = element.src;
+        }
+
         data.href = url;
         each(data, function (val, key) {
           if (has(settings, key) && key !== 'width') {
@@ -1974,18 +2022,21 @@
             });
           }
         } else {
-          if (nodeType == 'a') {
+          if (!data.title && nodeType == 'a') {
             var title = element.title;
-            if (!isNil(title) && title !== '') data.title = title;
+
+            if (!isNil(title) && title !== '') {
+              data.title = title;
+            }
           }
 
-          if (nodeType == 'img') {
+          if (!data.title && nodeType == 'img') {
             var alt = element.alt;
-            if (!isNil(alt) && alt !== '') data.title = alt;
-          }
 
-          var desc = element.getAttribute('data-description');
-          if (!isNil(desc) && desc !== '') data.description = desc;
+            if (!isNil(alt) && alt !== '') {
+              data.title = alt;
+            }
+          }
         }
 
         if (data.description && data.description.substring(0, 1) == '.' && document.querySelector(data.description)) {
@@ -2249,7 +2300,7 @@
     }, {
       key: "getConfig",
       value: function getConfig() {
-        var parser = new SlideConfigParser();
+        var parser = new SlideConfigParser(this.instance.settings.slideExtraAttributes);
         this.slideConfig = parser.parseConfig(this.element, this.instance.settings);
         return this.slideConfig;
       }
@@ -2272,6 +2323,7 @@
     closeButton: true,
     startAt: null,
     autoplayVideos: true,
+    autofocusVideos: true,
     descPosition: 'bottom',
     width: '900px',
     height: '506px',
@@ -2282,6 +2334,7 @@
     afterSlideLoad: null,
     slideInserted: null,
     slideRemoved: null,
+    slideExtraAttributes: null,
     onOpen: null,
     onClose: null,
     loop: false,
@@ -2297,8 +2350,8 @@
     keyboardNavigation: true,
     closeOnOutsideClick: true,
     plyr: {
-      css: 'https://cdn.plyr.io/3.5.6/plyr.css',
-      js: 'https://cdn.plyr.io/3.5.6/plyr.js',
+      css: 'https://cdn.plyr.io/3.6.3/plyr.css',
+      js: 'https://cdn.plyr.io/3.6.3/plyr.js',
       config: {
         ratio: '16:9',
         youtube: {
@@ -2320,7 +2373,6 @@
     slideEffect: 'slide',
     moreText: 'See more',
     moreLength: 60,
-    lightboxHTML: '',
     cssEfects: {
       fade: {
         "in": 'fadeIn',
@@ -2334,7 +2386,7 @@
         "in": 'slideInRight',
         out: 'slideOutLeft'
       },
-      slide_back: {
+      slideBack: {
         "in": 'slideInLeft',
         out: 'slideOutRight'
       },
@@ -2390,7 +2442,11 @@
       value: function open() {
         var element = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
         var startAt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-        if (this.elements.length == 0) return false;
+
+        if (this.elements.length == 0) {
+          return false;
+        }
+
         this.activeSlide = null;
         this.prevActiveSlideIndex = null;
         this.prevActiveSlide = null;
@@ -2425,7 +2481,7 @@
         var scrollBar = window.innerWidth - document.documentElement.clientWidth;
 
         if (scrollBar > 0) {
-          var styleSheet = document.createElement("style");
+          var styleSheet = document.createElement('style');
           styleSheet.type = 'text/css';
           styleSheet.className = 'gcss-styles';
           styleSheet.innerText = ".gscrollbar-fixer {margin-right: ".concat(scrollBar, "px}");
@@ -2505,7 +2561,16 @@
           show(this.loader);
 
           var slide = this.elements[index];
-          this.trigger('slide_before_load', slide);
+          var slideData = {
+            index: this.index,
+            slide: slideNode,
+            slideNode: slideNode,
+            slideConfig: slide.slideConfig,
+            slideIndex: this.index,
+            trigger: slide.node,
+            player: null
+          };
+          this.trigger('slide_before_load', slideData);
           slide.instance.setContent(slideNode, function () {
             hide(_this2.loader);
 
@@ -2513,7 +2578,7 @@
 
             _this2.slideAnimateIn(slideNode, first);
 
-            _this2.trigger('slide_after_load', slide);
+            _this2.trigger('slide_after_load', slideData);
           });
         }
 
@@ -2549,17 +2614,26 @@
 
         var slide = this.elements[index];
         var type = slide.type;
-        this.trigger('slide_before_load', slide);
+        var slideData = {
+          index: index,
+          slide: slideNode,
+          slideNode: slideNode,
+          slideConfig: slide.slideConfig,
+          slideIndex: index,
+          trigger: slide.node,
+          player: null
+        };
+        this.trigger('slide_before_load', slideData);
 
         if (type == 'video' || type == 'external') {
           setTimeout(function () {
             slide.instance.setContent(slideNode, function () {
-              _this3.trigger('slide_after_load', slide);
+              _this3.trigger('slide_after_load', slideData);
             });
           }, 200);
         } else {
           slide.instance.setContent(slideNode, function () {
-            _this3.trigger('slide_after_load', slide);
+            _this3.trigger('slide_after_load', slideData);
           });
         }
       }
@@ -2599,6 +2673,9 @@
         var index = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : -1;
         var slide = new Slide(config, this);
         var data = slide.getConfig();
+
+        var slideInfo = extend({}, data);
+
         var newSlide = slide.create();
         var totalSlides = this.elements.length - 1;
 
@@ -2606,10 +2683,13 @@
           index = this.elements.length;
         }
 
-        data.index = index;
-        data.node = false;
-        data.instance = slide;
-        this.elements.splice(index, 0, data);
+        slideInfo.index = index;
+        slideInfo.node = false;
+        slideInfo.instance = slide;
+        slideInfo.slideConfig = data;
+        this.elements.splice(index, 0, slideInfo);
+        var addedSlideNode = null;
+        var addedSlidePlayer = null;
 
         if (this.slidesContainer) {
           if (index > totalSlides) {
@@ -2628,19 +2708,26 @@
           }
 
           this.updateNavigationClasses();
+          addedSlideNode = this.slidesContainer.querySelectorAll('.gslide')[index];
+          addedSlidePlayer = this.getSlidePlayerInstance(index);
+          slideInfo.slideNode = addedSlideNode;
         }
 
         this.trigger('slide_inserted', {
           index: index,
-          slide: this.slidesContainer.querySelectorAll('.gslide')[index],
-          player: this.getSlidePlayerInstance(index)
+          slide: addedSlideNode,
+          slideNode: addedSlideNode,
+          slideConfig: data,
+          slideIndex: index,
+          trigger: null,
+          player: addedSlidePlayer
         });
 
         if (isFunction(this.settings.slideInserted)) {
           this.settings.slideInserted({
             index: index,
-            slide: this.slidesContainer.querySelectorAll('.gslide')[index],
-            player: this.getSlidePlayerInstance(index)
+            slide: addedSlideNode,
+            player: addedSlidePlayer
           });
         }
       }
@@ -2684,11 +2771,19 @@
         var prevData = {
           index: this.prevActiveSlideIndex,
           slide: this.prevActiveSlide,
+          slideNode: this.prevActiveSlide,
+          slideIndex: this.prevActiveSlide,
+          slideConfig: isNil(this.prevActiveSlideIndex) ? null : this.elements[this.prevActiveSlideIndex].slideConfig,
+          trigger: isNil(this.prevActiveSlideIndex) ? null : this.elements[this.prevActiveSlideIndex].node,
           player: this.getSlidePlayerInstance(this.prevActiveSlideIndex)
         };
         var nextData = {
           index: this.index,
           slide: this.activeSlide,
+          slideNode: this.activeSlide,
+          slideConfig: this.elements[this.index].slideConfig,
+          slideIndex: this.index,
+          trigger: this.elements[this.index].node,
           player: this.getSlidePlayerInstance(this.index)
         };
 
@@ -2702,7 +2797,7 @@
 
         if (first) {
           animateElement(slide, this.settings.cssEfects[this.settings.openEffect]["in"], function () {
-            if (!isMobile$1 && _this4.settings.autoplayVideos) {
+            if (_this4.settings.autoplayVideos) {
               _this4.slidePlayerPlay(slide);
             }
 
@@ -2716,17 +2811,17 @@
             }
           });
         } else {
-          var effect_name = this.settings.slideEffect;
-          var animIn = effect_name !== 'none' ? this.settings.cssEfects[effect_name]["in"] : effect_name;
+          var effectName = this.settings.slideEffect;
+          var animIn = effectName !== 'none' ? this.settings.cssEfects[effectName]["in"] : effectName;
 
           if (this.prevActiveSlideIndex > this.index) {
             if (this.settings.slideEffect == 'slide') {
-              animIn = this.settings.cssEfects.slide_back["in"];
+              animIn = this.settings.cssEfects.slideBack["in"];
             }
           }
 
           animateElement(slide, animIn, function () {
-            if (!isMobile$1 && _this4.settings.autoplayVideos) {
+            if (_this4.settings.autoplayVideos) {
               _this4.slidePlayerPlay(slide);
             }
 
@@ -2767,11 +2862,19 @@
           prev: {
             index: this.prevActiveSlideIndex,
             slide: this.prevActiveSlide,
+            slideNode: this.prevActiveSlide,
+            slideIndex: this.prevActiveSlideIndex,
+            slideConfig: isNil(this.prevActiveSlideIndex) ? null : this.elements[this.prevActiveSlideIndex].slideConfig,
+            trigger: isNil(this.prevActiveSlideIndex) ? null : this.elements[this.prevActiveSlideIndex].node,
             player: this.getSlidePlayerInstance(this.prevActiveSlideIndex)
           },
           current: {
             index: this.index,
             slide: this.activeSlide,
+            slideNode: this.activeSlide,
+            slideIndex: this.index,
+            slideConfig: this.elements[this.index].slideConfig,
+            trigger: this.elements[this.index].node,
             player: this.getSlidePlayerInstance(this.index)
           }
         });
@@ -2789,7 +2892,7 @@
         }
 
         if (this.prevActiveSlideIndex > this.index && this.settings.slideEffect == 'slide') {
-          animOut = this.settings.cssEfects.slide_back.out;
+          animOut = this.settings.cssEfects.slideBack.out;
         }
 
         animateElement(prevSlide, animOut, function () {
@@ -2836,7 +2939,7 @@
           }
         }
 
-        console.log("stopSlideVideo is deprecated, use slidePlayerPause");
+        console.log('stopSlideVideo is deprecated, use slidePlayerPause');
         var player = this.getSlidePlayerInstance(slide);
 
         if (player && player.playing) {
@@ -2871,7 +2974,7 @@
           }
         }
 
-        console.log("playSlideVideo is deprecated, use slidePlayerPlay");
+        console.log('playSlideVideo is deprecated, use slidePlayerPlay');
         var player = this.getSlidePlayerInstance(slide);
 
         if (player && !player.playing) {
@@ -2893,6 +2996,10 @@
 
         if (player && !player.playing) {
           player.play();
+
+          if (this.settings.autofocusVideos) {
+            player.elements.container.focus();
+          }
         }
       }
     }, {
@@ -2907,9 +3014,13 @@
           each(elements, function (el, i) {
             var slide = new Slide(el, _this5);
             var data = slide.getConfig();
-            data.instance = slide;
-            data.index = i;
-            newElements.push(data);
+
+            var slideInfo = extend({}, data);
+
+            slideInfo.slideConfig = data;
+            slideInfo.instance = slide;
+            slideInfo.index = i;
+            newElements.push(slideInfo);
           });
         }
 
@@ -2955,10 +3066,14 @@
           each(this.settings.elements, function (el, i) {
             var slide = new Slide(el, _this6);
             var elData = slide.getConfig();
-            elData.node = false;
-            elData.index = i;
-            elData.instance = slide;
-            list.push(elData);
+
+            var slideInfo = extend({}, elData);
+
+            slideInfo.node = false;
+            slideInfo.index = i;
+            slideInfo.instance = slide;
+            slideInfo.slideConfig = elData;
+            list.push(slideInfo);
           });
         }
 
@@ -2976,11 +3091,15 @@
         each(nodes, function (el, i) {
           var slide = new Slide(el, _this6);
           var elData = slide.getConfig();
-          elData.node = el;
-          elData.index = i;
-          elData.instance = slide;
-          elData.gallery = el.getAttribute('data-gallery');
-          list.push(elData);
+
+          var slideInfo = extend({}, elData);
+
+          slideInfo.node = el;
+          slideInfo.index = i;
+          slideInfo.instance = slide;
+          slideInfo.slideConfig = elData;
+          slideInfo.gallery = el.getAttribute('data-gallery');
+          list.push(slideInfo);
         });
 
         return list;
@@ -3110,8 +3229,10 @@
           });
         }
 
-        each(this.elements, function (slide) {
+        each(this.elements, function (slide, i) {
           _this7.slidesContainer.appendChild(slide.instance.create());
+
+          slide.slideNode = _this7.slidesContainer.querySelectorAll('.gslide')[i];
         });
 
         if (isTouch$1) {
@@ -3178,17 +3299,15 @@
         if (video) {
           var ratio = has(this.settings.plyr.config, 'ratio') ? this.settings.plyr.config.ratio : '16:9';
           var videoRatio = ratio.split(':');
-          var _maxWidth = 900;
-
-          var maxHeight = _maxWidth / (parseInt(videoRatio[0]) / parseInt(videoRatio[1]));
-
+          var maxWidth = 900;
+          var maxHeight = maxWidth / (parseInt(videoRatio[0]) / parseInt(videoRatio[1]));
           maxHeight = Math.floor(maxHeight);
 
           if (descriptionResize) {
             winHeight = winHeight - description.offsetHeight;
           }
 
-          if (winHeight < maxHeight && winWidth > _maxWidth) {
+          if (winHeight < maxHeight && winWidth > maxWidth) {
             var vwidth = video.offsetWidth;
             var vheight = video.offsetHeight;
 
@@ -3204,10 +3323,10 @@
               description.setAttribute('style', "max-width: ".concat(vsize.width, "px;"));
             }
           } else {
-            video.parentNode.style.maxWidth = "".concat(_maxWidth, "px");
+            video.parentNode.style.maxWidth = "".concat(maxWidth, "px");
 
             if (descriptionResize) {
-              description.setAttribute('style', "max-width: ".concat(_maxWidth, "px;"));
+              description.setAttribute('style', "max-width: ".concat(maxWidth, "px;"));
             }
           }
         }
@@ -3322,10 +3441,7 @@
       value: function destroy() {
         this.close();
         this.clearAllEvents();
-
-        if (this.baseEvents) {
-          this.baseEvents.destroy();
-        }
+        this.baseEvents.destroy();
       }
     }, {
       key: "on",
@@ -3378,7 +3494,11 @@
     }, {
       key: "clearAllEvents",
       value: function clearAllEvents() {
-        this.apiEvents.splice(0, this.apiEvents.length);
+        this.apiEvents.push({
+          evt: evt,
+          once: once,
+          callback: callback
+        });
       }
     }, {
       key: "version",
