@@ -654,7 +654,7 @@ If you find this code useful, please consider a donation to keep this project gr
 
 ## Changelog
 
-#### Latest version v3.0.5
+#### Latest version v3.0.6
 
 See the [CHANGELOG.md](CHANGELOG.md) file for details
 
