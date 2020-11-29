@@ -2309,7 +2309,7 @@
     return Slide;
   }();
 
-  var _version = '3.0.5';
+  var _version = '3.0.6';
 
   var isMobile$1 = isMobile();
 
@@ -3441,7 +3441,10 @@
       value: function destroy() {
         this.close();
         this.clearAllEvents();
-        this.baseEvents.destroy();
+
+        if (this.baseEvents) {
+          this.baseEvents.destroy();
+        }
       }
     }, {
       key: "on",
@@ -3494,11 +3497,7 @@
     }, {
       key: "clearAllEvents",
       value: function clearAllEvents() {
-        this.apiEvents.push({
-          evt: evt,
-          once: once,
-          callback: callback
-        });
+        this.apiEvents.splice(0, this.apiEvents.length);
       }
     }, {
       key: "version",
