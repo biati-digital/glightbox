@@ -110,6 +110,7 @@ You can specify some options to each individual slide, the available options are
 * draggable
 
 ```html
+
 <!-- One line config -->
 <a href="large.jpg" data-glightbox="title: Your title; description: description here; descPosition: left; type: image; effect: fade; width: 900px; height: auto; zoomable: true; draggable: true;"></a>
 
@@ -195,7 +196,8 @@ cssEfects            | object   | 'See animations' | Define or adjust lightbox a
 lightboxHTML         | string   | 'See themes'     | You can completely change the html of GLightbox. See the Themeable section in the README.
 slideHTML            | string   | 'See themes'     | You can completely change the html of the individual slide. See the Themeable section in the README.
 autoplayVideos       | boolean  | `true`           | Autoplay videos on open.
-plyr                 | object   | `{}`             | [View video player options.](#player)
+autofocusVideos      | boolean  | `false`          | If true video will be focused on play to allow keyboard sortcuts for the player, this will deactivate prev and next arrows to change slide so use it only if you know what you are doing.
+plyr                 | object   | `{}`             | [View video player options.](#video-player)
 
 ## Events
 
@@ -228,16 +230,29 @@ const lightbox = GLightbox();
 lightbox.on('slide_before_change', ({ prev, current }) => {
     console.log("Prev slide", prev);
     console.log("Current slide", current);
+    
+    // Prev and current are objects that contain the following data
+    const { slideIndex, slideNode, slideConfig, player, trigger } = current;
+    
+    // slideIndex - the slide index
+    // slideNode - the node you can modify
+    // slideConfig - will contain the configuration of the slide like title, description, etc.
+    // player - the slide player if it exists otherwise will return false
+    // trigger - this will contain the element that triggers this slide, this can be a link, a button, etc in your HTML, it can be null if the elements in the gallery were set dinamically
 });
 
 lightbox.on('slide_changed', ({ prev, current }) => {
     console.log("Prev slide", prev);
     console.log("Current slide", current);
 
-    // This is an example of how you can
-    // access the current slide player (if any)
-    // to listen to custom player events
-    const { index, slide, player } = current;
+    // Prev and current are objects that contain the following data
+    const { slideIndex, slideNode, slideConfig, player, trigger } = current;
+    
+    // slideIndex - the slide index
+    // slideNode - the node you can modify
+    // slideConfig - will contain the configuration of the slide like title, description, etc.
+    // player - the slide player if it exists otherwise will return false
+    // trigger - this will contain the element that triggers this slide, this can be a link, a button, etc in your HTML, it can be null if the elements in the gallery were set dinamically
 
     if (player) {
         if (!player.ready) {
@@ -264,7 +279,14 @@ lightbox.on('slide_changed', ({ prev, current }) => {
 // Useful to modify the slide
 // before it's content is added
 lightbox.on('slide_before_load', (data) => {
-
+    // data is an object that contain the following
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    
+    // slideIndex - the slide index
+    // slideNode - the node you can modify
+    // slideConfig - will contain the configuration of the slide like title, description, etc.
+    // player - the slide player if it exists otherwise will return false
+    // trigger - this will contain the element that triggers this slide, this can be a link, a button, etc in your HTML, it can be null if the elements in the gallery were set dinamically
 });
 
 // Useful to execute scripts that depends
@@ -272,17 +294,31 @@ lightbox.on('slide_before_load', (data) => {
 // and already has a height
 // data will contain all the info about the slide
 lightbox.on('slide_after_load', (data) => {
-
+    // data is an object that contain the following
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    
+    // slideIndex - the slide index
+    // slideNode - the node you can modify
+    // slideConfig - will contain the configuration of the slide like title, description, etc.
+    // player - the slide player if it exists otherwise will return false
+    // trigger - this will contain the element that triggers this slide, this can be a link, a button, etc in your HTML, it can be null if the elements in the gallery were set dinamically
 });
 
 // Trigger a function when a slide is inserted
-lightbox.on('slide_inserted', ({ index, slide, player }) => {
-
+lightbox.on('slide_inserted', (data) => {
+    // data is an object that contain the following
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    
+    // slideIndex - the slide index
+    // slideNode - the node you can modify
+    // slideConfig - will contain the configuration of the slide like title, description, etc.
+    // player - the slide player if it exists otherwise will return false
+    // trigger - null
 });
 
 // Trigger a function when a slide is removed
 lightbox.on('slide_removed', (index) => {
-
+    // index is the position of the element in the gallery
 });
 ```
 
@@ -538,6 +574,10 @@ const glightbox = GLightbox({
     }
 }
 ```
+
+
+
+
 
 ## Themeable
 
