@@ -4,30 +4,30 @@ const uid = Date.now();
  * Merge two or more objects
  */
 export function extend() {
-    let extended = {}
-    let deep = true
-    let i = 0
-    let length = arguments.length
+    let extended = {};
+    let deep = true;
+    let i = 0;
+    let length = arguments.length;
     if (Object.prototype.toString.call(arguments[0]) === '[object Boolean]') {
-        deep = arguments[0]
-        i++
+        deep = arguments[0];
+        i++;
     }
     let merge = (obj) => {
         for (let prop in obj) {
             if (Object.prototype.hasOwnProperty.call(obj, prop)) {
                 if (deep && Object.prototype.toString.call(obj[prop]) === '[object Object]') {
-                    extended[prop] = extend(true, extended[prop], obj[prop])
+                    extended[prop] = extend(true, extended[prop], obj[prop]);
                 } else {
-                    extended[prop] = obj[prop]
+                    extended[prop] = obj[prop];
                 }
             }
         }
     };
     for (; i < length; i++) {
-        let obj = arguments[i]
-        merge(obj)
+        let obj = arguments[i];
+        merge(obj);
     }
-    return extended
+    return extended;
 }
 
 
@@ -89,7 +89,7 @@ export function getNodeEvents(node, name = null, fn = null) {
                 data.evt = i;
                 return false;
             }
-        })
+        });
     }
     return data;
 }
@@ -109,14 +109,14 @@ export function addEvent(eventName, {
     once = false,
     useCapture = false
 } = {}, thisArg) {
-    let element = onElement || []
+    let element = onElement || [];
     if (isString(element)) {
-        element = document.querySelectorAll(element)
+        element = document.querySelectorAll(element);
     }
 
     function handler(event) {
         if (isFunction(withCallback)) {
-            withCallback.call(thisArg, event, this)
+            withCallback.call(thisArg, event, this);
         }
         if (once) {
             handler.destroy();
@@ -125,18 +125,22 @@ export function addEvent(eventName, {
     handler.destroy = function() {
         each(element, (el) => {
             const events = getNodeEvents(el, eventName, handler);
-            if (events.found) { events.all.splice(events.evt, 1); }
-            if (el.removeEventListener) el.removeEventListener(eventName, handler, useCapture)
-        })
-    }
+            if (events.found) {
+                events.all.splice(events.evt, 1);
+            }
+            if (el.removeEventListener) {
+                el.removeEventListener(eventName, handler, useCapture);
+            }
+        });
+    };
     each(element, (el) => {
         const events = getNodeEvents(el, eventName, handler);
         if (el.addEventListener && (avoidDuplicate && !events.found) || !avoidDuplicate) {
-            el.addEventListener(eventName, handler, useCapture)
+            el.addEventListener(eventName, handler, useCapture);
             events.all.push({ eventName: eventName, fn: handler });
         }
-    })
-    return handler
+    });
+    return handler;
 }
 
 /**
@@ -146,7 +150,7 @@ export function addEvent(eventName, {
  * @param {string} class name
  */
 export function addClass(node, name) {
-    each(name.split(' '), cl => node.classList.add(cl))
+    each(name.split(' '), cl => node.classList.add(cl));
 }
 
 /**
@@ -156,7 +160,7 @@ export function addClass(node, name) {
  * @param {string} class name
  */
 export function removeClass(node, name) {
-    each(name.split(' '), cl => node.classList.remove(cl))
+    each(name.split(' '), cl => node.classList.remove(cl));
 }
 
 /**
@@ -183,7 +187,9 @@ export function closest(elem, selector) {
         }
         const matches = typeof elem.matches == 'function' ? elem.matches(selector) : elem.msMatchesSelector(selector);
 
-        if (matches) return elem;
+        if (matches) {
+            return elem;
+        }
     }
 }
 
@@ -199,43 +205,45 @@ export function animateElement(element, animation = '', callback = false) {
         return false;
     }
     if (animation == 'none') {
-        if (isFunction(callback))
-            callback()
+        if (isFunction(callback)) {
+            callback();
+        }
         return false;
     }
     const animationEnd = whichAnimationEvent();
-    const animationNames = animation.split(' ')
+    const animationNames = animation.split(' ');
     each(animationNames, (name) => {
-        addClass(element, 'g' + name)
-    })
+        addClass(element, 'g' + name);
+    });
     addEvent(animationEnd, {
         onElement: element,
         avoidDuplicate: false,
         once: true,
         withCallback: (event, target) => {
             each(animationNames, (name) => {
-                removeClass(target, 'g' + name)
-            })
-            if (isFunction(callback))
-                callback()
+                removeClass(target, 'g' + name);
+            });
+            if (isFunction(callback)) {
+                callback();
+            }
         }
-    })
+    });
 }
 
 export function cssTransform(node, translate = '') {
     if (translate == '') {
-        node.style.webkitTransform = ''
-        node.style.MozTransform = ''
-        node.style.msTransform = ''
-        node.style.OTransform = ''
-        node.style.transform = ''
-        return false
+        node.style.webkitTransform = '';
+        node.style.MozTransform = '';
+        node.style.msTransform = '';
+        node.style.OTransform = '';
+        node.style.transform = '';
+        return false;
     }
-    node.style.webkitTransform = translate
-    node.style.MozTransform = translate
-    node.style.msTransform = translate
-    node.style.OTransform = translate
-    node.style.transform = translate
+    node.style.webkitTransform = translate;
+    node.style.MozTransform = translate;
+    node.style.msTransform = translate;
+    node.style.OTransform = translate;
+    node.style.transform = translate;
 }
 
 /**
@@ -278,20 +286,20 @@ export function createHTML(htmlStr) {
 export function windowSize() {
     return {
         width: window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
-        height: window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight,
-    }
+        height: window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
+    };
 }
 
 /**
  * Determine animation events
  */
 export function whichAnimationEvent() {
-    let t, el = document.createElement("fakeelement");
+    let t, el = document.createElement('fakeelement');
     let animations = {
-        animation: "animationend",
-        OAnimation: "oAnimationEnd",
-        MozAnimation: "animationend",
-        WebkitAnimation: "webkitAnimationEnd"
+        animation: 'animationend',
+        OAnimation: 'oAnimationEnd',
+        MozAnimation: 'animationend',
+        WebkitAnimation: 'webkitAnimationEnd'
     };
     for (t in animations) {
         if (el.style[t] !== undefined) {
@@ -305,13 +313,13 @@ export function whichAnimationEvent() {
  */
 export function whichTransitionEvent() {
     let t,
-        el = document.createElement("fakeelement");
+        el = document.createElement('fakeelement');
 
     const transitions = {
-        transition: "transitionend",
-        OTransition: "oTransitionEnd",
-        MozTransition: "transitionend",
-        WebkitTransition: "webkitTransitionEnd"
+        transition: 'transitionend',
+        OTransition: 'oTransitionEnd',
+        MozTransition: 'transitionend',
+        WebkitTransition: 'webkitTransitionEnd'
     };
 
     for (t in transitions) {
@@ -339,12 +347,12 @@ export function createIframe(config) {
     iframe.style.height = '100%';
 
     if (allow) {
-        iframe.setAttribute('allow', allow)
+        iframe.setAttribute('allow', allow);
     }
     iframe.onload = function() {
         addClass(iframe, 'node-ready');
         if (isFunction(callback)) {
-            callback()
+            callback();
         }
     };
 
@@ -371,17 +379,25 @@ export function waitUntil(check, onComplete, delay, timeout) {
         return;
     }
 
-    if (!delay) delay = 100;
+    if (!delay) {
+        delay = 100;
+    }
     let timeoutPointer;
     let intervalPointer = setInterval(() => {
-        if (!check()) return;
+        if (!check()) {
+            return;
+        }
         clearInterval(intervalPointer);
-        if (timeoutPointer) clearTimeout(timeoutPointer);
+        if (timeoutPointer) {
+            clearTimeout(timeoutPointer);
+        }
         onComplete();
     }, delay);
-    if (timeout) timeoutPointer = setTimeout(() => {
-        clearInterval(intervalPointer);
-    }, timeout);
+    if (timeout) {
+        timeoutPointer = setTimeout(() => {
+            clearInterval(intervalPointer);
+        }, timeout);
+    }
 }
 
 /**
@@ -393,7 +409,7 @@ export function waitUntil(check, onComplete, delay, timeout) {
  */
 export function injectAssets(url, waitFor, callback) {
     if (isNil(url)) {
-        console.error('Inject videos api error');
+        console.error('Inject assets error');
         return;
     }
     if (isFunction(waitFor)) {
@@ -401,16 +417,25 @@ export function injectAssets(url, waitFor, callback) {
         waitFor = false;
     }
 
+    if (isString(waitFor) && (waitFor in window)) {
+        if (isFunction(callback)) {
+            callback();
+        }
+        return;
+    }
+
     let found;
 
     if (url.indexOf('.css') !== -1) {
-        found = document.querySelectorAll('link[href="' + url + '"]')
+        found = document.querySelectorAll('link[href="' + url + '"]');
         if (found && found.length > 0) {
-            if (isFunction(callback)) callback();
+            if (isFunction(callback)) {
+                callback();
+            }
             return;
         }
 
-        const head = document.getElementsByTagName("head")[0];
+        const head = document.getElementsByTagName('head')[0];
         const headStyles = head.querySelectorAll('link[rel="stylesheet"]');
         const link = document.createElement('link');
 
@@ -424,11 +449,13 @@ export function injectAssets(url, waitFor, callback) {
         } else {
             head.appendChild(link);
         }
-        if (isFunction(callback)) callback();
+        if (isFunction(callback)) {
+            callback();
+        }
         return;
     }
 
-    found = document.querySelectorAll('script[src="' + url + '"]')
+    found = document.querySelectorAll('script[src="' + url + '"]');
     if (found && found.length > 0) {
         if (isFunction(callback)) {
             if (isString(waitFor)) {
@@ -436,7 +463,7 @@ export function injectAssets(url, waitFor, callback) {
                     return typeof window[waitFor] !== 'undefined';
                 }, () => {
                     callback();
-                })
+                });
                 return false;
             }
             callback();
@@ -454,7 +481,7 @@ export function injectAssets(url, waitFor, callback) {
                     return typeof window[waitFor] !== 'undefined';
                 }, () => {
                     callback();
-                })
+                });
                 return false;
             }
             callback();
@@ -473,26 +500,26 @@ export function isTouch() {
 }
 
 export function isFunction(f) {
-    return typeof f === 'function'
+    return typeof f === 'function';
 }
 export function isString(s) {
-    return typeof s === 'string'
+    return typeof s === 'string';
 }
 export function isNode(el) {
-    return !!(el && el.nodeType && el.nodeType == 1)
+    return !!(el && el.nodeType && el.nodeType == 1);
 }
 export function isArray(ar) {
-    return Array.isArray(ar)
+    return Array.isArray(ar);
 }
 export function isArrayLike(ar) {
-    return (ar && ar.length && isFinite(ar.length))
+    return (ar && ar.length && isFinite(ar.length));
 }
 export function isObject(o) {
     let type = typeof o;
-    return type === 'object' && (o != null && !isFunction(o) && !isArray(o))
+    return type === 'object' && (o != null && !isFunction(o) && !isArray(o));
 }
 export function isNil(o) {
-    return o == null
+    return o == null;
 }
 export function has(obj, key) {
     return obj !== null && hasOwnProperty.call(obj, key);
@@ -505,14 +532,14 @@ export function size(o) {
         let l = 0;
         for (let k in o) {
             if (has(o, k)) {
-                l++
+                l++;
             }
         }
-        return l
+        return l;
     } else {
         return o.length;
     }
 }
 export function isNumber(n) {
-    return !isNaN(parseFloat(n)) && isFinite(n)
+    return !isNaN(parseFloat(n)) && isFinite(n);
 }
