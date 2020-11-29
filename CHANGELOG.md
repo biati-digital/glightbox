@@ -1,6 +1,19 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## 3.0.6
+
+- Fixed: Events cleanup on `destroy()` method causes exception #175
+- Fixed: "data-title" Getting Overwritten when "title" is present #178
+- Fixed: IE 11 "Multiple definitions of a property not allowed in strict mode when bundling and minifying glightbox #155
+- Fixed: Cannot add new slides #166
+- Fixed: Video not playing on mobile #160
+- Improved: Plyr will only be loaded if it's already used in the site
+- New: Updated PLYR version to 3.6.3
+- New: Added new option "autofocusVideos" to enable all Plyr shortcodes for the video player
+- New: Improved events to use a generic way to access data
+- New: Improved code
+
 ## 3.0.5
 
 - Fixed: IE11 does not support ".includes()"
