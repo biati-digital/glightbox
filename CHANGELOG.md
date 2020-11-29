@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file.
 - Fixed: Video not playing on mobile #160
 - Improved: Plyr will only be loaded if it's already used in the site
 - New: Updated PLYR version to 3.6.3
-- New: Added new option "autofocusVideos" to enable all Plyr shortcodes for the video player
+- New: Added new option "autofocusVideos" to enable all Plyr shortcuts for the video player
 - New: Improved events to use a generic way to access data
 - New: Improved code
 
