@@ -1164,10 +1164,7 @@ class GlightboxInit {
     destroy() {
         this.close();
         this.clearAllEvents();
-
-        if (this.baseEvents) {
-            this.baseEvents.destroy()
-        }
+        this.baseEvents.destroy();
     }
 
     /**
@@ -1214,7 +1211,7 @@ class GlightboxInit {
      * set using the API
      */
     clearAllEvents() {
-        this.apiEvents.splice(0, this.apiEvents.length);
+        this.apiEvents.push({ evt, once, callback });
     }
 
     /**
