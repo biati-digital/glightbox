@@ -28,7 +28,7 @@ export default class Slide {
      */
     setContent(slide = null, callback = false) {
         if (hasClass(slide, 'loaded')) {
-            return false
+            return false;
         }
 
         const settings = this.instance.settings;
@@ -57,13 +57,15 @@ export default class Slide {
 
         if (isFunction(settings.afterSlideLoad)) {
             finalCallback = () => {
-                if (isFunction(callback)) { callback() }
+                if (isFunction(callback)) {
+                    callback();
+                }
                 settings.afterSlideLoad({
                     index: slideConfig.index,
                     slide: slide,
                     player: this.instance.getSlidePlayerInstance(slideConfig.index)
                 });
-            }
+            };
         }
 
         if (slideConfig.title == '' && slideConfig.description == '') {
@@ -80,7 +82,7 @@ export default class Slide {
             if (slideText && slideConfig.description !== '') {
                 slideText.id = textID;
                 if (isMobileDevice && settings.moreLength > 0) {
-                    slideConfig.smallDescription = this.slideShortDesc(slideConfig.description, settings.moreLength, settings.moreText)
+                    slideConfig.smallDescription = this.slideShortDesc(slideConfig.description, settings.moreLength, settings.moreText);
                     slideText.innerHTML = slideConfig.smallDescription;
                     this.descriptionEvents(slideText, slideConfig);
                 } else {
@@ -93,31 +95,31 @@ export default class Slide {
             addClass(slideDesc.parentNode, `description-${position}`);
         }
 
-        addClass(slideMedia, `gslide-${type}`)
+        addClass(slideMedia, `gslide-${type}`);
         addClass(slide, 'loaded');
 
         if (type === 'video') {
-            slideVideo.apply(this.instance, [slide, slideConfig, finalCallback])
-            return
+            slideVideo.apply(this.instance, [slide, slideConfig, finalCallback]);
+            return;
         }
 
         if (type === 'external') {
-            slideIframe.apply(this, [slide, slideConfig, finalCallback])
-            return
+            slideIframe.apply(this, [slide, slideConfig, finalCallback]);
+            return;
         }
 
         if (type === 'inline') {
-            slideInline.apply(this.instance, [slide, slideConfig, finalCallback])
+            slideInline.apply(this.instance, [slide, slideConfig, finalCallback]);
             if (slideConfig.draggable) {
                 new DragSlides({
                     dragEl: slide.querySelector('.gslide-inline'),
                     toleranceX: settings.dragToleranceX,
                     toleranceY: settings.dragToleranceY,
                     slide: slide,
-                    instance: this.instance,
+                    instance: this.instance
                 });
             }
-            return
+            return;
         }
 
         if (type === 'image') {
@@ -130,83 +132,83 @@ export default class Slide {
                         toleranceX: settings.dragToleranceX,
                         toleranceY: settings.dragToleranceY,
                         slide: slide,
-                        instance: this.instance,
+                        instance: this.instance
                     });
                 }
                 if (slideConfig.zoomable && img.naturalWidth > img.offsetWidth) {
-                    addClass(img, 'zoomable')
+                    addClass(img, 'zoomable');
                     new ZoomImages(img, slide, () => {
                         this.instance.resize();
                     });
                 }
 
                 if (isFunction(finalCallback)) {
-                    finalCallback()
+                    finalCallback();
                 }
-            })
+            });
             return;
         }
 
         if (isFunction(finalCallback)) {
-            finalCallback()
+            finalCallback();
         }
     }
 
 
 
     slideShortDesc(string, n = 50, wordBoundary = false) {
-        let useWordBoundary = wordBoundary
-        string = string.trim()
+        let useWordBoundary = wordBoundary;
+        string = string.trim();
         if (string.length <= n) {
             return string;
         }
         let subString = string.substr(0, n - 1);
         if (!useWordBoundary) {
-            return subString
+            return subString;
         }
-        return subString + '... <a href="#" class="desc-more">' + wordBoundary + '</a>'
+        return subString + '... <a href="#" class="desc-more">' + wordBoundary + '</a>';
     }
 
 
 
     descriptionEvents(desc, data) {
-        let moreLink = desc.querySelector('.desc-more')
+        let moreLink = desc.querySelector('.desc-more');
         if (!moreLink) {
-            return false
+            return false;
         }
 
         addEvent('click', {
             onElement: moreLink,
             withCallback: (event, target) => {
                 event.preventDefault();
-                const body = document.body
+                const body = document.body;
 
-                let desc = closest(target, '.gslide-desc')
+                let desc = closest(target, '.gslide-desc');
                 if (!desc) {
-                    return false
+                    return false;
                 }
 
-                desc.innerHTML = data.description
-                addClass(body, 'gdesc-open')
+                desc.innerHTML = data.description;
+                addClass(body, 'gdesc-open');
 
                 let shortEvent = addEvent('click', {
                     onElement: [body, closest(desc, '.gslide-description')],
                     withCallback: (event, target) => {
                         if (event.target.nodeName.toLowerCase() !== 'a') {
-                            removeClass(body, 'gdesc-open')
-                            addClass(body, 'gdesc-closed')
-                            desc.innerHTML = data.smallDescription
-                            this.descriptionEvents(desc, data)
+                            removeClass(body, 'gdesc-open');
+                            addClass(body, 'gdesc-closed');
+                            desc.innerHTML = data.smallDescription;
+                            this.descriptionEvents(desc, data);
 
                             setTimeout(() => {
-                                removeClass(body, 'gdesc-closed')
+                                removeClass(body, 'gdesc-closed');
                             }, 400);
-                            shortEvent.destroy()
+                            shortEvent.destroy();
                         }
                     }
-                })
+                });
             }
-        })
+        });
     }
 
     /**
@@ -229,7 +231,7 @@ export default class Slide {
      * @return { object }
      */
     getConfig() {
-        const parser = new SlideConfigParser();
+        const parser = new SlideConfigParser(this.instance.settings.slideExtraAttributes);
         this.slideConfig = parser.parseConfig(this.element, this.instance.settings);
 
         return this.slideConfig;
