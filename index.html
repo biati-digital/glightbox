@@ -1,6 +1,5 @@
 <!doctype html>
 <html>
-
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=Edge">
@@ -72,7 +71,7 @@
                         <li class="box">
                             <div class="inner">
                                 <a href="demo/img/large/gm1.jpg" class="glightbox">
-                                    <img src="demo/img/small/gm1.jpg">
+                                    <img src="demo/img/small/gm1.jpg" alt="image">
                                 </a>
                             </div>
                         </li>
@@ -361,7 +360,7 @@
             console.log("Prev slide", prev);
             console.log("Current slide", current);
 
-            const { index, slide, player } = current;
+            const { slideIndex, slideNode, slideConfig, player } = current;
 
             if (player) {
                 if (!player.ready) {
