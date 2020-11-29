@@ -3322,7 +3322,10 @@
       value: function destroy() {
         this.close();
         this.clearAllEvents();
-        this.baseEvents.destroy();
+
+        if (this.baseEvents) {
+          this.baseEvents.destroy();
+        }
       }
     }, {
       key: "on",
@@ -3375,11 +3378,7 @@
     }, {
       key: "clearAllEvents",
       value: function clearAllEvents() {
-        this.apiEvents.push({
-          evt: evt,
-          once: once,
-          callback: callback
-        });
+        this.apiEvents.splice(0, this.apiEvents.length);
       }
     }, {
       key: "version",
