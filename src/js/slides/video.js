@@ -6,7 +6,7 @@
  * @param {object} data
  * @param {function} callback
  */
-import { has, closest, injectAssets, addClass, removeClass, createHTML, isFunction } from '../utils/helpers.js';;
+import { has, closest, injectAssets, addClass, removeClass, createHTML, isFunction } from '../utils/helpers.js';
 
 export default function slideVideo(slide, data, callback) {
     const slideContainer = slide.querySelector('.ginner-container');
@@ -14,13 +14,13 @@ export default function slideVideo(slide, data, callback) {
     const slideMedia = slide.querySelector('.gslide-media');
     const videoPlayers = this.getAllPlayers();
 
-    addClass(slideContainer, `gvideo-container`);
+    addClass(slideContainer, 'gvideo-container');
 
     slideMedia.insertBefore(createHTML('<div class="gvideo-wrapper"></div>'), slideMedia.firstChild);
 
     const videoWrapper = slide.querySelector('.gvideo-wrapper');
 
-    injectAssets(this.settings.plyr.css);
+    injectAssets(this.settings.plyr.css, 'Plyr');
 
     let url = data.href;
     let protocol = location.protocol.replace(':', '');
@@ -29,7 +29,7 @@ export default function slideVideo(slide, data, callback) {
     let customPlaceholder = false;
 
     if (protocol == 'file') {
-        protocol = 'http'
+        protocol = 'http';
     }
     slideMedia.style.maxWidth = data.width;
 
@@ -44,14 +44,14 @@ export default function slideVideo(slide, data, callback) {
 
         // Set youtube videos
         if (url.match(/(youtube\.com|youtube-nocookie\.com)\/watch\?v=([a-zA-Z0-9\-_]+)/) || url.match(/youtu\.be\/([a-zA-Z0-9\-_]+)/) || url.match(/(youtube\.com|youtube-nocookie\.com)\/embed\/([a-zA-Z0-9\-_]+)/)) {
-            const youtubeID = getYoutubeID(url)
+            const youtubeID = getYoutubeID(url);
             videoSource = 'youtube';
             embedID = youtubeID;
         }
 
         // Set local videos
         if (url.match(/\.(mp4|ogg|webm|mov)$/) !== null) {
-            videoSource = 'local'
+            videoSource = 'local';
             let html = '<video id="' + videoID + '" ';
             html += `style="background:#000; max-width: ${data.width};" `;
             html += 'preload="metadata" ';
@@ -60,16 +60,16 @@ export default function slideVideo(slide, data, callback) {
             html += 'controls ';
             html += 'class="gvideo-local">';
 
-            let format = url.toLowerCase().split('.').pop()
-            let sources = { 'mp4': '', 'ogg': '', 'webm': '' }
+            let format = url.toLowerCase().split('.').pop();
+            let sources = { 'mp4': '', 'ogg': '', 'webm': '' };
             format = (format == 'mov' ? 'mp4' : format);
             sources[format] = url;
 
             for (let key in sources) {
                 if (sources.hasOwnProperty(key)) {
-                    let videoFile = sources[key]
+                    let videoFile = sources[key];
                     if (data.hasOwnProperty(key)) {
-                        videoFile = data[key]
+                        videoFile = data[key];
                     }
                     if (videoFile !== '') {
                         html += `<source src="${videoFile}" type="video/${key}">`;
@@ -80,12 +80,12 @@ export default function slideVideo(slide, data, callback) {
             customPlaceholder = createHTML(html);
         }
 
-        const placeholder = customPlaceholder ? customPlaceholder : createHTML(`<div id="${videoID}" data-plyr-provider="${videoSource}" data-plyr-embed-id="${embedID}"></div>`)
+        const placeholder = customPlaceholder ? customPlaceholder : createHTML(`<div id="${videoID}" data-plyr-provider="${videoSource}" data-plyr-embed-id="${embedID}"></div>`);
 
-        addClass(videoWrapper, `${videoSource}-video gvideo`)
-        videoWrapper.appendChild(placeholder)
-        videoWrapper.setAttribute('data-id', videoID)
-        videoWrapper.setAttribute('data-index', data.index)
+        addClass(videoWrapper, `${videoSource}-video gvideo`);
+        videoWrapper.appendChild(placeholder);
+        videoWrapper.setAttribute('data-id', videoID);
+        videoWrapper.setAttribute('data-index', data.index);
 
         const playerConfig = has(this.settings.plyr, 'config') ? this.settings.plyr.config : {};
         const player = new Plyr('#' + videoID, playerConfig);
@@ -94,12 +94,12 @@ export default function slideVideo(slide, data, callback) {
             const instance = event.detail.plyr;
             videoPlayers[videoID] = instance;
             if (isFunction(callback)) {
-                callback()
+                callback();
             }
         });
         player.on('enterfullscreen', handleMediaFullScreen);
         player.on('exitfullscreen', handleMediaFullScreen);
-    })
+    });
 }
 
 
