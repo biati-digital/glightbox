@@ -192,8 +192,8 @@ dragAutoSnap         | boolean  | `false`          | If true the slide will auto
 preload              | boolean  | `true`           | Enable or disable preloading.
 svg                  | object   | `{}`             | Set your own svg icons.
 cssEfects            | object   | 'See animations' | Define or adjust lightbox animations. See the Animations section in the README.
-lightboxHtml         | string   | 'See themes'     | You can completely change the html of GLightbox. See the Themeable section in the README.
-slideHtml            | string   | 'See themes'     | You can completely change the html of the individual slide. See the Themeable section in the README.
+lightboxHTML         | string   | 'See themes'     | You can completely change the html of GLightbox. See the Themeable section in the README.
+slideHTML            | string   | 'See themes'     | You can completely change the html of the individual slide. See the Themeable section in the README.
 autoplayVideos       | boolean  | `true`           | Autoplay videos on open.
 plyr                 | object   | `{}`             | [View video player options.](#player)
 
@@ -573,7 +573,7 @@ let customSlideHTML = `<div class="gslide">
 
 const glightbox = GLightbox({
   lightboxHTML: customLightboxHTML,
-  slideHtml: customSlideHTML,
+  slideHTML: customSlideHTML,
   skin: 'supercool'
 });
 ```
