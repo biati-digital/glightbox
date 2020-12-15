@@ -652,6 +652,10 @@ If you find this code useful, please consider a donation to keep this project gr
 
 [![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://paypal.me/bdigital9816/5usd)
 
+## Support
+
+We only provide support for bugs and feature requests, so please only post issues about this two topics, if you need help implementing GLightbox or you are just starting and your HTML/CSS/Javascript knowledge it's really basic please use stackoverlow, you'll be able to find more help there. This will help us to keep the issues related to the library and solve issues faster.
+
 ## Changelog
 
 #### Latest version v3.0.6
