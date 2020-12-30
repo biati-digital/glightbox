@@ -2,6 +2,7 @@
  * GLightbox
  * Awesome pure javascript lightbox
  * made by https://www.biati.digital
+ * Github: https://github.com/biati-digital/glightbox
  */
 
 import keyboardNavigation from './core/keyboard-navigation.js';
@@ -18,6 +19,7 @@ const defaults = {
     selector: '.glightbox',
     elements: null,
     skin: 'clean',
+    theme: 'clean',
     closeButton: true,
     startAt: null,
     autoplayVideos: true,
@@ -47,6 +49,7 @@ const defaults = {
     touchFollowAxis: true,
     keyboardNavigation: true,
     closeOnOutsideClick: true,
+    plugins: false,
     plyr: {
         css: 'https://cdn.plyr.io/3.6.3/plyr.css',
         js: 'https://cdn.plyr.io/3.6.3/plyr.js',
@@ -79,14 +82,15 @@ const defaults = {
         none: { in: 'none', out: 'none' }
     },
     svg: {
-        close: '<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" xml:space="preserve"><g><g><path d="M505.943,6.058c-8.077-8.077-21.172-8.077-29.249,0L6.058,476.693c-8.077,8.077-8.077,21.172,0,29.249C10.096,509.982,15.39,512,20.683,512c5.293,0,10.586-2.019,14.625-6.059L505.943,35.306C514.019,27.23,514.019,14.135,505.943,6.058z"/></g></g><g><g><path d="M505.942,476.694L35.306,6.059c-8.076-8.077-21.172-8.077-29.248,0c-8.077,8.076-8.077,21.171,0,29.248l470.636,470.636c4.038,4.039,9.332,6.058,14.625,6.058c5.293,0,10.587-2.019,14.624-6.057C514.018,497.866,514.018,484.771,505.942,476.694z"/></g></g></svg>',
-        next: '<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 477.175 477.175" xml:space="preserve"> <g><path d="M360.731,229.075l-225.1-225.1c-5.3-5.3-13.8-5.3-19.1,0s-5.3,13.8,0,19.1l215.5,215.5l-215.5,215.5c-5.3,5.3-5.3,13.8,0,19.1c2.6,2.6,6.1,4,9.5,4c3.4,0,6.9-1.3,9.5-4l225.1-225.1C365.931,242.875,365.931,234.275,360.731,229.075z"/></g></svg>',
-        prev: '<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 477.175 477.175" xml:space="preserve"><g><path d="M145.188,238.575l215.5-215.5c5.3-5.3,5.3-13.8,0-19.1s-13.8-5.3-19.1,0l-225.1,225.1c-5.3,5.3-5.3,13.8,0,19.1l225.1,225c2.6,2.6,6.1,4,9.5,4s6.9-1.3,9.5-4c5.3-5.3,5.3-13.8,0-19.1L145.188,238.575z"/></g></svg>'
+        close:
+            '<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" xml:space="preserve"><g><g><path d="M505.943,6.058c-8.077-8.077-21.172-8.077-29.249,0L6.058,476.693c-8.077,8.077-8.077,21.172,0,29.249C10.096,509.982,15.39,512,20.683,512c5.293,0,10.586-2.019,14.625-6.059L505.943,35.306C514.019,27.23,514.019,14.135,505.943,6.058z"/></g></g><g><g><path d="M505.942,476.694L35.306,6.059c-8.076-8.077-21.172-8.077-29.248,0c-8.077,8.076-8.077,21.171,0,29.248l470.636,470.636c4.038,4.039,9.332,6.058,14.625,6.058c5.293,0,10.587-2.019,14.624-6.057C514.018,497.866,514.018,484.771,505.942,476.694z"/></g></g></svg>',
+        next:
+            '<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 477.175 477.175" xml:space="preserve"> <g><path d="M360.731,229.075l-225.1-225.1c-5.3-5.3-13.8-5.3-19.1,0s-5.3,13.8,0,19.1l215.5,215.5l-215.5,215.5c-5.3,5.3-5.3,13.8,0,19.1c2.6,2.6,6.1,4,9.5,4c3.4,0,6.9-1.3,9.5-4l225.1-225.1C365.931,242.875,365.931,234.275,360.731,229.075z"/></g></svg>',
+        prev:
+            '<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 477.175 477.175" xml:space="preserve"><g><path d="M145.188,238.575l215.5-215.5c5.3-5.3,5.3-13.8,0-19.1s-13.8-5.3-19.1,0l-225.1,225.1c-5.3,5.3-5.3,13.8,0,19.1l225.1,225c2.6,2.6,6.1,4,9.5,4s6.9-1.3,9.5-4c5.3-5.3,5.3-13.8,0-19.1L145.188,238.575z"/></g></svg>'
     }
 };
 
-
-/* jshint multistr: true */
 // You can pass your own slide structure
 // just make sure that add the same classes so they are populated
 // title class = gslide-title
@@ -120,13 +124,11 @@ defaults.lightboxHTML = `<div id="glightbox-body" class="glightbox-container">
 </div>
 </div>`;
 
-
 /**
  * GLightbox Class
  * Class and public methods
  */
 class GlightboxInit {
-
     constructor(options = {}) {
         this.settings = _.extend(defaults, options);
         this.effectsClasses = this.getAnimationClasses();
@@ -159,7 +161,7 @@ class GlightboxInit {
         this.activeSlide = null;
         this.prevActiveSlideIndex = null;
         this.prevActiveSlide = null;
-        let index = (_.isNumber(startAt) ? startAt : this.settings.startAt);
+        let index = _.isNumber(startAt) ? startAt : this.settings.startAt;
 
         if (_.isNode(element)) {
             const gallery = element.getAttribute('data-gallery');
@@ -167,7 +169,8 @@ class GlightboxInit {
                 this.fullElementsList = this.elements;
                 this.elements = this.getGalleryElements(this.elements, gallery);
             }
-            if (_.isNil(index)) { // get the index of the element
+            if (_.isNil(index)) {
+                // get the index of the element
                 index = this.getElementIndex(element);
                 if (index < 0) {
                     index = 0;
@@ -181,7 +184,7 @@ class GlightboxInit {
 
         this.build();
 
-        _.animateElement(this.overlay, (this.settings.openEffect == 'none' ? 'none' : this.settings.cssEfects.fade.in));
+        _.animateElement(this.overlay, this.settings.openEffect == 'none' ? 'none' : this.settings.cssEfects.fade.in);
 
         const body = document.body;
 
@@ -234,7 +237,6 @@ class GlightboxInit {
     openAt(index = 0) {
         this.open(null, index);
     }
-
 
     /**
      * Set Slide
@@ -297,7 +299,6 @@ class GlightboxInit {
         this.activeSlide = slideNode;
     }
 
-
     /**
      * Preload slides
      * @param  {Int}  index slide index
@@ -346,7 +347,6 @@ class GlightboxInit {
         }
     }
 
-
     /**
      * Load previous slide
      * calls goToslide
@@ -355,7 +355,6 @@ class GlightboxInit {
         this.goToSlide(this.index - 1);
     }
 
-
     /**
      * Load next slide
      * calls goToslide
@@ -363,7 +362,6 @@ class GlightboxInit {
     nextSlide() {
         this.goToSlide(this.index + 1);
     }
-
 
     /**
      * Go to sldei
@@ -385,7 +383,6 @@ class GlightboxInit {
         this.showSlide(index);
     }
 
-
     /**
      * Insert slide
      *
@@ -393,16 +390,16 @@ class GlightboxInit {
      * @param { numeric } position
      */
     insertSlide(config = {}, index = -1) {
-        const slide = new Slide(config, this);
-        const data = slide.getConfig();
-        const slideInfo = _.extend({}, data);
-        const newSlide = slide.create();
-        const totalSlides = this.elements.length - 1;
-
         // Append at the end
         if (index < 0) {
             index = this.elements.length;
         }
+
+        const slide = new Slide(config, this, index);
+        const data = slide.getConfig();
+        const slideInfo = _.extend({}, data);
+        const newSlide = slide.create();
+        const totalSlides = this.elements.length - 1;
 
         slideInfo.index = index;
         slideInfo.node = false;
@@ -424,7 +421,7 @@ class GlightboxInit {
                 this.slidesContainer.insertBefore(newSlide, existingSlide);
             }
 
-            if (this.settings.preload && this.index == 0 && index == 0 || this.index - 1 == index || this.index + 1 == index) {
+            if ((this.settings.preload && this.index == 0 && index == 0) || this.index - 1 == index || this.index + 1 == index) {
                 this.preloadSlide(index);
             }
 
@@ -459,7 +456,6 @@ class GlightboxInit {
         }
     }
 
-
     /**
      * Remove slide
      *
@@ -492,7 +488,6 @@ class GlightboxInit {
         }
     }
 
-
     /**
      * Slide In
      * @return {null}
@@ -505,8 +500,8 @@ class GlightboxInit {
             slide: this.prevActiveSlide, //this will be removed in the future
             slideNode: this.prevActiveSlide,
             slideIndex: this.prevActiveSlide,
-            slideConfig: (_.isNil(this.prevActiveSlideIndex) ? null : this.elements[this.prevActiveSlideIndex].slideConfig),
-            trigger: (_.isNil(this.prevActiveSlideIndex) ? null : this.elements[this.prevActiveSlideIndex].node),
+            slideConfig: _.isNil(this.prevActiveSlideIndex) ? null : this.elements[this.prevActiveSlideIndex].slideConfig,
+            trigger: _.isNil(this.prevActiveSlideIndex) ? null : this.elements[this.prevActiveSlideIndex].node,
             player: this.getSlidePlayerInstance(this.prevActiveSlideIndex)
         };
 
@@ -523,7 +518,9 @@ class GlightboxInit {
             _.hide(slideDesc);
             slideDesc.style.display = '';
         }
+
         _.removeClass(slide, this.effectsClasses);
+
         if (first) {
             _.animateElement(slide, this.settings.cssEfects[this.settings.openEffect].in, () => {
                 if (this.settings.autoplayVideos) {
@@ -542,7 +539,7 @@ class GlightboxInit {
             });
         } else {
             let effectName = this.settings.slideEffect;
-            let animIn = (effectName !== 'none' ? this.settings.cssEfects[effectName].in : effectName);
+            let animIn = effectName !== 'none' ? this.settings.cssEfects[effectName].in : effectName;
             if (this.prevActiveSlideIndex > this.index) {
                 if (this.settings.slideEffect == 'slide') {
                     animIn = this.settings.cssEfects.slideBack.in;
@@ -571,8 +568,6 @@ class GlightboxInit {
         _.addClass(slide, 'current');
     }
 
-
-
     /**
      * Slide out
      */
@@ -586,7 +581,7 @@ class GlightboxInit {
         _.addClass(prevSlide, 'prev');
 
         let animation = this.settings.slideEffect;
-        let animOut = (animation !== 'none' ? this.settings.cssEfects[animation].out : animation);
+        let animOut = animation !== 'none' ? this.settings.cssEfects[animation].out : animation;
 
         this.slidePlayerPause(prevSlide);
 
@@ -596,8 +591,8 @@ class GlightboxInit {
                 slide: this.prevActiveSlide, //this will be removed in the future
                 slideNode: this.prevActiveSlide,
                 slideIndex: this.prevActiveSlideIndex,
-                slideConfig: (_.isNil(this.prevActiveSlideIndex) ? null : this.elements[this.prevActiveSlideIndex].slideConfig),
-                trigger: (_.isNil(this.prevActiveSlideIndex) ? null : this.elements[this.prevActiveSlideIndex].node),
+                slideConfig: _.isNil(this.prevActiveSlideIndex) ? null : this.elements[this.prevActiveSlideIndex].slideConfig,
+                trigger: _.isNil(this.prevActiveSlideIndex) ? null : this.elements[this.prevActiveSlideIndex].node,
                 player: this.getSlidePlayerInstance(this.prevActiveSlideIndex)
             },
             current: {
@@ -613,17 +608,21 @@ class GlightboxInit {
 
         // settings.beforeSlideChange is deprecated and will be removed in a future update
         if (_.isFunction(this.settings.beforeSlideChange)) {
-            this.settings.beforeSlideChange.apply(this, [{
-                index: this.prevActiveSlideIndex,
-                slide: this.prevActiveSlide,
-                player: this.getSlidePlayerInstance(this.prevActiveSlideIndex)
-            }, {
-                index: this.index,
-                slide: this.activeSlide,
-                player: this.getSlidePlayerInstance(this.index)
-            }]);
+            this.settings.beforeSlideChange.apply(this, [
+                {
+                    index: this.prevActiveSlideIndex,
+                    slide: this.prevActiveSlide,
+                    player: this.getSlidePlayerInstance(this.prevActiveSlideIndex)
+                },
+                {
+                    index: this.index,
+                    slide: this.activeSlide,
+                    player: this.getSlidePlayerInstance(this.index)
+                }
+            ]);
         }
-        if (this.prevActiveSlideIndex > this.index && this.settings.slideEffect == 'slide') { // going back
+        if (this.prevActiveSlideIndex > this.index && this.settings.slideEffect == 'slide') {
+            // going back
             animOut = this.settings.cssEfects.slideBack.out;
         }
         _.animateElement(prevSlide, animOut, () => {
@@ -749,7 +748,6 @@ class GlightboxInit {
         }
     }
 
-
     /**
      * Set the entire elements
      * in the gallery, it replaces all
@@ -765,7 +763,7 @@ class GlightboxInit {
 
         if (elements && elements.length) {
             _.each(elements, (el, i) => {
-                const slide = new Slide(el, this);
+                const slide = new Slide(el, this, i);
                 const data = slide.getConfig();
                 const slideInfo = _.extend({}, data);
 
@@ -791,7 +789,6 @@ class GlightboxInit {
         }
     }
 
-
     /**
      * Return the index
      * of the specified node,
@@ -816,7 +813,6 @@ class GlightboxInit {
         return index;
     }
 
-
     /**
      * Get elements
      * returns an array containing all
@@ -827,11 +823,11 @@ class GlightboxInit {
      */
     getElements() {
         let list = [];
-        this.elements = (this.elements ? this.elements : []);
+        this.elements = this.elements ? this.elements : [];
 
         if (!_.isNil(this.settings.elements) && _.isArray(this.settings.elements) && this.settings.elements.length) {
             _.each(this.settings.elements, (el, i) => {
-                const slide = new Slide(el, this);
+                const slide = new Slide(el, this, i);
                 const elData = slide.getConfig();
                 const slideInfo = _.extend({}, elData);
 
@@ -855,7 +851,7 @@ class GlightboxInit {
         }
 
         _.each(nodes, (el, i) => {
-            const slide = new Slide(el, this);
+            const slide = new Slide(el, this, i);
             const elData = slide.getConfig();
             const slideInfo = _.extend({}, elData);
 
@@ -877,7 +873,7 @@ class GlightboxInit {
      * @return array
      */
     getGalleryElements(list, gallery) {
-        return list.filter(el => {
+        return list.filter((el) => {
             return el.gallery == gallery;
         });
     }
@@ -909,7 +905,6 @@ class GlightboxInit {
         return this.index;
     }
 
-
     /**
      * Get the defined
      * effects as string
@@ -925,7 +920,6 @@ class GlightboxInit {
         }
         return effects.join(' ');
     }
-
 
     /**
      * Build the structure
@@ -996,11 +990,7 @@ class GlightboxInit {
             this.events['outClose'] = _.addEvent('click', {
                 onElement: modal,
                 withCallback: (e, target) => {
-                    if (
-                        !this.preventOutsideClick &&
-                        !_.hasClass(document.body, 'glightbox-mobile') &&
-                        !_.closest(e.target, '.ginner-container')
-                    ) {
+                    if (!this.preventOutsideClick && !_.hasClass(document.body, 'glightbox-mobile') && !_.closest(e.target, '.ginner-container')) {
                         if (!_.closest(e.target, '.gbtn') && !_.hasClass(e.target, 'gnext') && !_.hasClass(e.target, 'gprev')) {
                             this.close();
                         }
@@ -1027,7 +1017,6 @@ class GlightboxInit {
         this.built = true;
     }
 
-
     /**
      * Handle resize
      * Create only to handle
@@ -1037,7 +1026,7 @@ class GlightboxInit {
      * and images with description
      */
     resize(slide = null) {
-        slide = (!slide ? this.activeSlide : slide);
+        slide = !slide ? this.activeSlide : slide;
 
         if (!slide || _.hasClass(slide, 'zoomed')) {
             return;
@@ -1080,7 +1069,7 @@ class GlightboxInit {
         }
 
         if (video) {
-            let ratio = (_.has(this.settings.plyr.config, 'ratio') ? this.settings.plyr.config.ratio : '16:9');
+            let ratio = _.has(this.settings.plyr.config, 'ratio') ? this.settings.plyr.config.ratio : '16:9';
             let videoRatio = ratio.split(':');
 
             // TODO: Verify if this is still required as with now accepts multiple values
@@ -1112,7 +1101,6 @@ class GlightboxInit {
         }
     }
 
-
     /**
      * Reload Lightbox
      * reload and apply events to nodes
@@ -1120,7 +1108,6 @@ class GlightboxInit {
     reload() {
         this.init();
     }
-
 
     /**
      * Update navigation classes on slide change
@@ -1141,17 +1128,15 @@ class GlightboxInit {
         }
     }
 
-
     /**
      * Handle loop config
      */
     loop() {
-        let loop = (_.has(this.settings, 'loopAtEnd') ? this.settings.loopAtEnd : null);
-        loop = (_.has(this.settings, 'loop') ? this.settings.loop : loop);
+        let loop = _.has(this.settings, 'loopAtEnd') ? this.settings.loopAtEnd : null;
+        loop = _.has(this.settings, 'loop') ? this.settings.loop : loop;
 
         return loop;
     }
-
 
     /**
      * Close Lightbox
@@ -1181,7 +1166,7 @@ class GlightboxInit {
             this.elements = this.fullElementsList;
         }
         _.addClass(this.modal, 'glightbox-closing');
-        _.animateElement(this.overlay, (this.settings.openEffect == 'none' ? 'none' : this.settings.cssEfects.fade.out));
+        _.animateElement(this.overlay, this.settings.openEffect == 'none' ? 'none' : this.settings.cssEfects.fade.out);
         _.animateElement(this.activeSlide, this.settings.cssEfects[this.settings.closeEffect].out, () => {
             this.activeSlide = null;
             this.prevActiveSlideIndex = null;
@@ -1266,7 +1251,7 @@ class GlightboxInit {
             }
         });
         if (onceTriggered.length) {
-           _.each(onceTriggered, i => this.apiEvents.splice(i, 1));
+            _.each(onceTriggered, (i) => this.apiEvents.splice(i, 1));
         }
     }
 
