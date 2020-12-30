@@ -1,16 +1,16 @@
-
 /**
  * Set slide video
  *
  * @param {node} slide
  * @param {object} data
+ * @param {int} index
  * @param {function} callback
  */
 import { has, closest, injectAssets, addClass, removeClass, createHTML, isFunction } from '../utils/helpers.js';
 
-export default function slideVideo(slide, data, callback) {
+export default function slideVideo(slide, data, index, callback) {
     const slideContainer = slide.querySelector('.ginner-container');
-    const videoID = 'gvideo' + data.index;
+    const videoID = 'gvideo' + index;
     const slideMedia = slide.querySelector('.gslide-media');
     const videoPlayers = this.getAllPlayers();
 
@@ -34,7 +34,6 @@ export default function slideVideo(slide, data, callback) {
     slideMedia.style.maxWidth = data.width;
 
     injectAssets(this.settings.plyr.js, 'Plyr', () => {
-
         // Set vimeo videos
         if (url.match(/vimeo\.com\/([0-9]*)/)) {
             const vimeoID = /vimeo.*\/(\d+)/i.exec(url);
@@ -43,7 +42,11 @@ export default function slideVideo(slide, data, callback) {
         }
 
         // Set youtube videos
-        if (url.match(/(youtube\.com|youtube-nocookie\.com)\/watch\?v=([a-zA-Z0-9\-_]+)/) || url.match(/youtu\.be\/([a-zA-Z0-9\-_]+)/) || url.match(/(youtube\.com|youtube-nocookie\.com)\/embed\/([a-zA-Z0-9\-_]+)/)) {
+        if (
+            url.match(/(youtube\.com|youtube-nocookie\.com)\/watch\?v=([a-zA-Z0-9\-_]+)/) ||
+            url.match(/youtu\.be\/([a-zA-Z0-9\-_]+)/) ||
+            url.match(/(youtube\.com|youtube-nocookie\.com)\/embed\/([a-zA-Z0-9\-_]+)/)
+        ) {
             const youtubeID = getYoutubeID(url);
             videoSource = 'youtube';
             embedID = youtubeID;
@@ -61,8 +64,8 @@ export default function slideVideo(slide, data, callback) {
             html += 'class="gvideo-local">';
 
             let format = url.toLowerCase().split('.').pop();
-            let sources = { 'mp4': '', 'ogg': '', 'webm': '' };
-            format = (format == 'mov' ? 'mp4' : format);
+            let sources = { mp4: '', ogg: '', webm: '' };
+            format = format == 'mov' ? 'mp4' : format;
             sources[format] = url;
 
             for (let key in sources) {
@@ -80,17 +83,18 @@ export default function slideVideo(slide, data, callback) {
             customPlaceholder = createHTML(html);
         }
 
+        // prettier-ignore
         const placeholder = customPlaceholder ? customPlaceholder : createHTML(`<div id="${videoID}" data-plyr-provider="${videoSource}" data-plyr-embed-id="${embedID}"></div>`);
 
         addClass(videoWrapper, `${videoSource}-video gvideo`);
         videoWrapper.appendChild(placeholder);
         videoWrapper.setAttribute('data-id', videoID);
-        videoWrapper.setAttribute('data-index', data.index);
+        videoWrapper.setAttribute('data-index', index);
 
         const playerConfig = has(this.settings.plyr, 'config') ? this.settings.plyr.config : {};
         const player = new Plyr('#' + videoID, playerConfig);
 
-        player.on('ready', event => {
+        player.on('ready', (event) => {
             const instance = event.detail.plyr;
             videoPlayers[videoID] = instance;
             if (isFunction(callback)) {
@@ -101,7 +105,6 @@ export default function slideVideo(slide, data, callback) {
         player.on('exitfullscreen', handleMediaFullScreen);
     });
 }
-
 
 /**
  * Get youtube ID
@@ -120,7 +123,6 @@ function getYoutubeID(url) {
     }
     return videoID;
 }
-
 
 /**
  * Handle fullscreen
