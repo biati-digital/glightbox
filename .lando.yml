@@ -1,0 +1,10 @@
+name: glightbox
+recipe: lemp
+config:
+  webroot: .
+services:
+  node:
+    type: node:14
+tooling:
+  npm:
+    service: node
