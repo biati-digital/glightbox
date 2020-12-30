@@ -1,4 +1,3 @@
-
 /**
  * ZoomImages
  * Allow imaes to zoom and drag
@@ -28,23 +27,27 @@ export default class ZoomImages {
         this.xOffset = 0;
         this.yOffset = 0;
 
-        this.img.addEventListener('mousedown', e => this.dragStart(e), false);
-        this.img.addEventListener('mouseup', e => this.dragEnd(e), false);
-        this.img.addEventListener('mousemove', e => this.drag(e), false);
+        this.img.addEventListener('mousedown', (e) => this.dragStart(e), false);
+        this.img.addEventListener('mouseup', (e) => this.dragEnd(e), false);
+        this.img.addEventListener('mousemove', (e) => this.drag(e), false);
 
-        this.img.addEventListener('click', (e) => {
-            if (this.slide.classList.contains('dragging-nav')) {
-                this.zoomOut();
-                return false;
-            }
+        this.img.addEventListener(
+            'click',
+            (e) => {
+                if (this.slide.classList.contains('dragging-nav')) {
+                    this.zoomOut();
+                    return false;
+                }
 
-            if (!this.zoomedIn) {
-                return this.zoomIn();
-            }
-            if (this.zoomedIn && !this.dragging) {
-                this.zoomOut();
-            }
-        }, false);
+                if (!this.zoomedIn) {
+                    return this.zoomIn();
+                }
+                if (this.zoomedIn && !this.dragging) {
+                    this.zoomOut();
+                }
+            },
+            false
+        );
 
         this.img.setZoomEvents = true;
     }
@@ -56,12 +59,12 @@ export default class ZoomImages {
         }
 
         const img = this.img;
-        img.setAttribute('data-style', img.getAttribute('style'))
+        img.setAttribute('data-style', img.getAttribute('style'));
         img.style.maxWidth = img.naturalWidth + 'px';
         img.style.maxHeight = img.naturalHeight + 'px';
 
-        if (img.naturalWidth > winWidth ) {
-            let centerX = (winWidth / 2) - (img.naturalWidth / 2)
+        if (img.naturalWidth > winWidth) {
+            let centerX = winWidth / 2 - img.naturalWidth / 2;
             this.setTranslate(this.img.parentNode, centerX, 0);
         }
         this.slide.classList.add('zoomed');
@@ -69,7 +72,7 @@ export default class ZoomImages {
     }
     zoomOut() {
         this.img.parentNode.setAttribute('style', '');
-        this.img.setAttribute('style', this.img.getAttribute('data-style'))
+        this.img.setAttribute('style', this.img.getAttribute('data-style'));
         this.slide.classList.remove('zoomed');
         this.zoomedIn = false;
         this.currentX = null;
@@ -89,7 +92,7 @@ export default class ZoomImages {
             this.active = false;
             return;
         }
-        if (e.type === "touchstart") {
+        if (e.type === 'touchstart') {
             this.initialX = e.touches[0].clientX - this.xOffset;
             this.initialY = e.touches[0].clientY - this.yOffset;
         } else {
@@ -139,13 +142,13 @@ export default class ZoomImages {
         if (!this.zoomedIn) {
             return;
         }
-        let xOffset = e.clientX - (this.img.naturalWidth / 2);
-        let yOffset = e.clientY - (this.img.naturalHeight / 2);
+        let xOffset = e.clientX - this.img.naturalWidth / 2;
+        let yOffset = e.clientY - this.img.naturalHeight / 2;
 
         this.setTranslate(this.img, xOffset, yOffset);
     }
     setTranslate(node, xPos, yPos) {
-        node.style.transform = "translate3d(" + xPos + "px, " + yPos + "px, 0)";
+        node.style.transform = 'translate3d(' + xPos + 'px, ' + yPos + 'px, 0)';
     }
     widowWidth() {
         return window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;

@@ -1,4 +1,3 @@
-
 /**
  * Set slide inline content
  * we'll extend this to make http
@@ -7,15 +6,16 @@
  *
  * @param {node} slide
  * @param {object} data
+ * @param {int} index
  * @param {function} callback
  */
 
-import { has, addClass, addEvent, createHTML, isString, isNode, isFunction } from '../utils/helpers.js';;
+import { has, addClass, addEvent, createHTML, isString, isNode, isFunction } from '../utils/helpers.js';
 
-export default function slideInline(slide, data, callback) {
+export default function slideInline(slide, data, index, callback) {
     const slideMedia = slide.querySelector('.gslide-media');
-    const hash = (has(data, 'href') && data.href ? data.href.split('#').pop().trim() : false);
-    const content = (has(data, 'content') && data.content ? data.content : false);
+    const hash = has(data, 'href') && data.href ? data.href.split('#').pop().trim() : false;
+    const content = has(data, 'content') && data.content ? data.content : false;
     let innerContent;
 
     if (content) {
@@ -29,7 +29,7 @@ export default function slideInline(slide, data, callback) {
 
             const container = document.createElement('div');
             container.className = 'ginlined-content';
-            container.appendChild(content)
+            container.appendChild(content);
             innerContent = container;
         }
     }
@@ -39,11 +39,11 @@ export default function slideInline(slide, data, callback) {
         if (!div) {
             return false;
         }
-        const cloned = div.cloneNode(true)
+        const cloned = div.cloneNode(true);
 
         cloned.style.height = data.height;
         cloned.style.maxWidth = data.width;
-        addClass(cloned, 'ginlined-content')
+        addClass(cloned, 'ginlined-content');
         innerContent = cloned;
     }
 
@@ -54,18 +54,18 @@ export default function slideInline(slide, data, callback) {
 
     slideMedia.style.height = data.height;
     slideMedia.style.width = data.width;
-    slideMedia.appendChild(innerContent)
+    slideMedia.appendChild(innerContent);
 
     this.events['inlineclose' + hash] = addEvent('click', {
         onElement: slideMedia.querySelectorAll('.gtrigger-close'),
-        withCallback: e => {
+        withCallback: (e) => {
             e.preventDefault();
             this.close();
         }
     });
 
     if (isFunction(callback)) {
-        callback()
+        callback();
     }
     return;
 }

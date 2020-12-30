@@ -1,4 +1,3 @@
-
 /**
  * Set slide inline content
  * we'll extend this to make http
@@ -7,31 +6,34 @@
  *
  * @param {node} slide
  * @param {object} data
+ * @param {int} index
  * @param {function} callback
  */
 
+import { isFunction } from '../utils/helpers.js';
 
-import { addClass, isFunction } from '../utils/helpers.js';;
-
-export default function slideImage(slide, data, callback) {
+export default function slideImage(slide, data, index, callback) {
     const slideMedia = slide.querySelector('.gslide-media');
 
     let img = new Image();
-    let titleID = 'gSlideTitle_' + data.index;
-    let textID = 'gSlideDesc_' + data.index;
+    let titleID = 'gSlideTitle_' + index;
+    let textID = 'gSlideDesc_' + index;
 
+    // prettier-ignore
     img.addEventListener('load', () => {
         if (isFunction(callback)) {
-            callback()
+            callback();
         }
     }, false);
+
     img.src = data.href;
     img.alt = ''; // https://davidwalsh.name/accessibility-tip-empty-alt-attributes
 
     if (data.title !== '') {
         img.setAttribute('aria-labelledby', titleID);
     }
-    if (data.description !== '') { // https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Techniques/Using_the_aria-describedby_attribute#Example_2_A_Close_Button
+    if (data.description !== '') {
+        // https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Techniques/Using_the_aria-describedby_attribute#Example_2_A_Close_Button
         img.setAttribute('aria-describedby', textID);
     }
 

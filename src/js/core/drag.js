@@ -1,4 +1,3 @@
-
 /**
  * DragSlides
  * Allow imaes to be dragged for prev and next
@@ -7,17 +6,11 @@
  * @param { object } config
  */
 
-import { closest } from '../utils/helpers.js';;
+import { closest } from '../utils/helpers.js';
 
 export default class DragSlides {
     constructor(config = {}) {
-        let {
-            dragEl,
-            toleranceX = 40,
-            toleranceY = 65,
-            slide = null,
-            instance = null,
-        } = config;
+        let { dragEl, toleranceX = 40, toleranceY = 65, slide = null, instance = null } = config;
 
         this.el = dragEl;
         this.active = false;
@@ -37,9 +30,9 @@ export default class DragSlides {
         this.slide = slide;
         this.instance = instance;
 
-        this.el.addEventListener('mousedown', e => this.dragStart(e), false);
-        this.el.addEventListener('mouseup', e => this.dragEnd(e), false);
-        this.el.addEventListener('mousemove', e => this.drag(e), false);
+        this.el.addEventListener('mousedown', (e) => this.dragStart(e), false);
+        this.el.addEventListener('mouseup', (e) => this.dragEnd(e), false);
+        this.el.addEventListener('mousemove', (e) => this.drag(e), false);
     }
     dragStart(e) {
         if (this.slide.classList.contains('zoomed')) {
@@ -57,14 +50,18 @@ export default class DragSlides {
 
         let clicked = e.target.nodeName.toLowerCase();
         let exludeClicks = ['input', 'select', 'textarea', 'button', 'a'];
-        if (e.target.classList.contains('nodrag') || closest(e.target, '.nodrag') || exludeClicks.indexOf(clicked) !== -1) {
+        if (
+            e.target.classList.contains('nodrag') ||
+            closest(e.target, '.nodrag') ||
+            exludeClicks.indexOf(clicked) !== -1
+        ) {
             this.active = false;
             return;
         }
 
         e.preventDefault();
 
-        if (e.target === this.el || clicked !== 'img' && closest(e.target, '.gslide-inline')) {
+        if (e.target === this.el || (clicked !== 'img' && closest(e.target, '.gslide-inline'))) {
             this.active = true;
             this.el.classList.add('dragging');
             this.dragContainer = closest(e.target, '.ginner-container');
@@ -104,8 +101,8 @@ export default class DragSlides {
             this.el.isDragging = false;
             this.el.classList.remove('dragging');
             this.slide.classList.remove('dragging-nav');
-            this.dragContainer.style.transform = "";
-            this.dragContainer.style.transition = "";
+            this.dragContainer.style.transform = '';
+            this.dragContainer.style.transition = '';
         }, 100);
     }
     drag(e) {
@@ -134,7 +131,11 @@ export default class DragSlides {
             let currentYInt = Math.abs(this.currentY);
 
             // Horizontal drag
-            if (currentXInt > 0 && currentXInt >= Math.abs(this.currentY) && (!this.lastDirection || this.lastDirection == 'x')) {
+            if (
+                currentXInt > 0 &&
+                currentXInt >= Math.abs(this.currentY) &&
+                (!this.lastDirection || this.lastDirection == 'x')
+            ) {
                 this.yOffset = 0;
                 this.lastDirection = 'x';
                 this.setTranslate(this.dragContainer, this.currentX, 0);
@@ -150,14 +151,19 @@ export default class DragSlides {
                     this.active = false;
                     this.instance.preventOutsideClick = true;
                     this.dragEnd(null);
-                    doChange == 'right' && this.instance.prevSlide()
-                    doChange == 'left' && this.instance.nextSlide()
+                    doChange == 'right' && this.instance.prevSlide();
+                    doChange == 'left' && this.instance.nextSlide();
                     return;
                 }
             }
 
             // Vertical drag
-            if (this.toleranceY > 0 && currentYInt > 0 && currentYInt >= currentXInt && (!this.lastDirection || this.lastDirection == 'y')) {
+            if (
+                this.toleranceY > 0 &&
+                currentYInt > 0 &&
+                currentYInt >= currentXInt &&
+                (!this.lastDirection || this.lastDirection == 'y')
+            ) {
                 this.xOffset = 0;
                 this.lastDirection = 'y';
                 this.setTranslate(this.dragContainer, 0, this.currentY);
@@ -180,7 +186,7 @@ export default class DragSlides {
         let currentXInt = Math.abs(this.currentX);
 
         if (currentXInt >= this.toleranceX) {
-            let dragDir = (this.currentX > 0 ? 'right' : 'left');
+            let dragDir = this.currentX > 0 ? 'right' : 'left';
 
             if (
                 (dragDir == 'left' && this.slide !== this.slide.parentNode.lastChild) ||
@@ -204,10 +210,10 @@ export default class DragSlides {
 
     setTranslate(node, xPos, yPos, animated = false) {
         if (animated) {
-            node.style.transition = "all .2s ease";
+            node.style.transition = 'all .2s ease';
         } else {
-            node.style.transition = "";
+            node.style.transition = '';
         }
-        node.style.transform = "translate3d(" + xPos + "px, " + yPos + "px, 0)";
+        node.style.transform = `translate3d(${xPos}px, ${yPos}px, 0)`;
     }
 }
