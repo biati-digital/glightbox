@@ -1,7 +1,7 @@
 {
   "trailingComma": "none",
   "tabWidth": 4,
-  "printWidth": 120,
+  "printWidth": 220,
   "proseWrap": "never",
   "semi": true,
   "singleQuote": true,
@@ -11,6 +11,18 @@
   "overrides": [
     {
       "files": "*.json",
+      "options": {
+        "tabWidth": 2
+      }
+    },
+    {
+      "files": "*.md",
+      "options": {
+        "tabWidth": 2
+      }
+    },
+    {
+      "files": "*.yml",
       "options": {
         "tabWidth": 2
       }
