@@ -12,8 +12,8 @@
     z-index: 999999 !important;
     overflow: hidden;
     touch-action: none;
-    -webkit-text-size-adjust: 100%;
-    -webkit-backface-visibility: hidden;
+    text-size-adjust: 100%;
+    backface-visibility: hidden;
     outline: none;
     overflow: hidden;
 
@@ -149,8 +149,6 @@
     img {
         max-height: 100vh;
         display: block;
-        max-width: 100%;
-        margin: 0;
         padding: 0;
         float: none;
         outline: none;
@@ -166,7 +164,6 @@
 
         @media (--medium-small-viewport) {
             max-height: 97vh;
-            max-width: calc(100% - 20px);
             max-width: 100%;
         }
 
@@ -201,10 +198,7 @@
 }
 
 .gslide-video {
-    width: 100%;
-    max-width: 100%;
     position: relative;
-    width: 100vh;
     max-width: 100vh;
     width: 100% !important;
 
@@ -284,8 +278,6 @@
 }
 
 .gslide-media {
-    display: block;
-    display: inline-flex;
     display: flex;
     width: auto;
 
