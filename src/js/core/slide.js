@@ -14,9 +14,10 @@ import SlideConfigParser from './slide-parser.js';
 import { addEvent, addClass, removeClass, hasClass, closest, isMobile, isFunction, createHTML } from '../utils/helpers.js';
 
 export default class Slide {
-    constructor(el, instance) {
+    constructor(el, instance, index) {
         this.element = el;
         this.instance = instance;
+        this.index = index;
     }
 
     /**
@@ -37,7 +38,7 @@ export default class Slide {
 
         if (isFunction(settings.beforeSlideLoad)) {
             settings.beforeSlideLoad({
-                index: slideConfig.index,
+                index: this.index,
                 slide: slide,
                 player: false
             });
@@ -52,8 +53,8 @@ export default class Slide {
         let finalCallback = callback;
 
         // used for image accessiblity
-        let titleID = 'gSlideTitle_' + slideConfig.index;
-        let textID = 'gSlideDesc_' + slideConfig.index;
+        let titleID = 'gSlideTitle_' + this.index;
+        let textID = 'gSlideDesc_' + this.index;
 
         if (isFunction(settings.afterSlideLoad)) {
             finalCallback = () => {
@@ -61,9 +62,9 @@ export default class Slide {
                     callback();
                 }
                 settings.afterSlideLoad({
-                    index: slideConfig.index,
+                    index: this.index,
                     slide: slide,
-                    player: this.instance.getSlidePlayerInstance(slideConfig.index)
+                    player: this.instance.getSlidePlayerInstance(this.index)
                 });
             };
         }
@@ -99,18 +100,18 @@ export default class Slide {
         addClass(slide, 'loaded');
 
         if (type === 'video') {
-            slideVideo.apply(this.instance, [slide, slideConfig, finalCallback]);
+            slideVideo.apply(this.instance, [slide, slideConfig, this.index, finalCallback]);
             return;
         }
 
         if (type === 'external') {
-            slideIframe.apply(this, [slide, slideConfig, finalCallback]);
+            slideIframe.apply(this, [slide, slideConfig, this.index, finalCallback]);
             return;
         }
 
         if (type === 'inline') {
-            slideInline.apply(this.instance, [slide, slideConfig, finalCallback]);
-            if (slideConfig.draggable) {
+            slideInline.apply(this.instance, [slide, slideConfig, this.index, finalCallback]);
+            if (settings.draggable) {
                 new DragSlides({
                     dragEl: slide.querySelector('.gslide-inline'),
                     toleranceX: settings.dragToleranceX,
@@ -123,10 +124,10 @@ export default class Slide {
         }
 
         if (type === 'image') {
-            slideImage(slide, slideConfig, () => {
+            slideImage(slide, slideConfig, this.index, () => {
                 const img = slide.querySelector('img');
 
-                if (slideConfig.draggable) {
+                if (settings.draggable) {
                     new DragSlides({
                         dragEl: img,
                         toleranceX: settings.dragToleranceX,
@@ -154,11 +155,13 @@ export default class Slide {
         }
     }
 
-
-
     slideShortDesc(string, n = 50, wordBoundary = false) {
+        let div = document.createElement('div');
+        div.innerHTML = string;
+        let cleanedString = div.innerText;
+
         let useWordBoundary = wordBoundary;
-        string = string.trim();
+        string = cleanedString.trim();
         if (string.length <= n) {
             return string;
         }
@@ -166,10 +169,10 @@ export default class Slide {
         if (!useWordBoundary) {
             return subString;
         }
+
+        div = null;
         return subString + '... <a href="#" class="desc-more">' + wordBoundary + '</a>';
     }
-
-
 
     descriptionEvents(desc, data) {
         let moreLink = desc.querySelector('.desc-more');
@@ -219,7 +222,6 @@ export default class Slide {
     create() {
         return createHTML(this.instance.settings.slideHTML);
     }
-
 
     /**
      * Get slide config
