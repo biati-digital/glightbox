@@ -8,11 +8,7 @@ const path = require('path');
 const fs = require('fs');
 
 function postcssCompiler(config) {
-    const {
-        file,
-        dest,
-        minify = true
-    } = config;
+    const { file, dest, minify = true } = config;
     const fileName = path.basename(file);
     const from = path.join(__dirname, '../', file);
     const to = path.join(__dirname, '../', dest, fileName);
@@ -22,27 +18,26 @@ function postcssCompiler(config) {
 
     return new Promise((resolve, reject) => {
         return postcss([
-                cssnested(),
-                cssnext({
-                    stage: 0,
-                    browsers: ['last 2 version'],
-                    features: {
-                        calc: false
-                    }
-                }),
-                cssmqpacker({
-                    sort: true
-                }),
-                cssprettify(),
-            ])
+            cssnested(),
+            cssnext({
+                stage: 0,
+                browsers: ['last 2 version'],
+                features: {
+                    calc: false
+                }
+            }),
+            cssmqpacker({
+                sort: true
+            }),
+            cssprettify()
+        ])
             .process(css, {
                 from,
                 to
             })
-            .then(result => {
+            .then((result) => {
                 if (result && result.css) {
                     fs.writeFile(to, result.css, 'utf8', (err) => reject(err));
-
 
                     if (minify) {
                         const minified = new cssclean({}).minify(result.css);
@@ -59,10 +54,10 @@ function postcssCompiler(config) {
                 }
             })
             .catch((err) => {
-                console.log(err)
+                console.log(err);
                 reject(err);
-            })
-    })
+            });
+    });
 }
 
 module.exports = postcssCompiler;
