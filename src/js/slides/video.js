@@ -42,11 +42,7 @@ export default function slideVideo(slide, data, index, callback) {
         }
 
         // Set youtube videos
-        if (
-            url.match(/(youtube\.com|youtube-nocookie\.com)\/watch\?v=([a-zA-Z0-9\-_]+)/) ||
-            url.match(/youtu\.be\/([a-zA-Z0-9\-_]+)/) ||
-            url.match(/(youtube\.com|youtube-nocookie\.com)\/embed\/([a-zA-Z0-9\-_]+)/)
-        ) {
+        if (url.match(/(youtube\.com|youtube-nocookie\.com)\/watch\?v=([a-zA-Z0-9\-_]+)/) || url.match(/youtu\.be\/([a-zA-Z0-9\-_]+)/) || url.match(/(youtube\.com|youtube-nocookie\.com)\/embed\/([a-zA-Z0-9\-_]+)/)) {
             const youtubeID = getYoutubeID(url);
             videoSource = 'youtube';
             embedID = youtubeID;
@@ -92,6 +88,13 @@ export default function slideVideo(slide, data, index, callback) {
         videoWrapper.setAttribute('data-index', index);
 
         const playerConfig = has(this.settings.plyr, 'config') ? this.settings.plyr.config : {};
+
+        if (this.settings.autoplayVideos) {
+            playerConfig.autoplay = true;
+            playerConfig.vimeo.autoplay = true;
+            playerConfig.youtube.autoplay = true;
+        }
+
         const player = new Plyr('#' + videoID, playerConfig);
 
         player.on('ready', (event) => {
