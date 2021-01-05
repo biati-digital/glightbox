@@ -53,6 +53,7 @@ async function createFolder() {
             '!.github',
             '!.github/**/*',
             '!.vscode',
+            '!icons.zip',
             '!.vscode/**/*',
             '!*.psd',
             '!.DS_Store'
