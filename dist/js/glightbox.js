@@ -1819,13 +1819,6 @@
       videoWrapper.setAttribute('data-id', videoID);
       videoWrapper.setAttribute('data-index', index);
       var playerConfig = has(_this.settings.plyr, 'config') ? _this.settings.plyr.config : {};
-
-      if (_this.settings.autoplayVideos) {
-        playerConfig.autoplay = true;
-        playerConfig.vimeo.autoplay = true;
-        playerConfig.youtube.autoplay = true;
-      }
-
       var player = new Plyr('#' + videoID, playerConfig);
       player.on('ready', function (event) {
         var instance = event.detail.plyr;
@@ -2375,7 +2368,7 @@
     return Slide;
   }();
 
-  var _version = '3.0.6';
+  var _version = '3.0.7';
 
   var isMobile$1 = isMobile();
 
@@ -3065,6 +3058,8 @@
         }
 
         var player = this.getSlidePlayerInstance(slide);
+        console.log('Player is');
+        console.log(player);
 
         if (player && !player.playing) {
           player.play();
