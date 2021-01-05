@@ -1,5 +1,16 @@
 # Change Log
+
 All notable changes to this project will be documented in this file.
+
+## 3.0.7
+
+- Fixed: Lightbox playing incorrect video with multiple videos in gallery #187
+- Fixed: Draggable: false option not working #192
+- Fixed: Links not working inside inline content in mobile devices
+- Fixed: moreLength not working correctly on mobile if description has HTML
+- Added: Added plugins option for a future release that will allow extending GLightbox with plugins
+- Changed: Plyr fullscreen set to iosNative
+- Changed: Renamed skin option to theme for a future release that will allow creating themes like plugins, skin still works but will be replaced in a future relase
 
 ## 3.0.6
 
@@ -68,7 +79,7 @@ All notable changes to this project will be documented in this file.
 
 - New: Now you can define width and height as 900px, 95%, 100vw, 100vh so you can have full screen content
 - New: Now you can define custom html or a node in the slide data to append it to the slide (view the API section)
-- New: Now you can use any attribute as selector for example '.glightbox' or 'data-glightbox' or '*[data-glightbox]'
+- New: Now you can use any attribute as selector for example '.glightbox' or 'data-glightbox' or '\*[data-glightbox]'
 - New: Method "openAt" you can open the lightbox at specific index eg: lightbox.openAt(2);
 - New: Method "insertSlide" that allows you to append a slide at specified index
 - Fixed Tab Key Doesn't Work on Form Within GLightbox Inline Content
@@ -133,6 +144,7 @@ All notable changes to this project will be documented in this file.
 - Removed demo folder from npm
 
 ## 1.0.8
+
 - New: You can define each slide option in a different data attribute (data-title="example" data-description="...")
 - Fixed youtube and vimeo autoplay when opened for the first time
 - Fixed global slide params not working
