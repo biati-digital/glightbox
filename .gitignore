@@ -17,6 +17,7 @@ Thumbs.db
 /node_modules
 /release
 /release.zip
+/icons.zip
 /.vscode
 /.nova
 /dist/js/glightboxTest.min.js
