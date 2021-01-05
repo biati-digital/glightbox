@@ -55,6 +55,7 @@ const defaults = {
         js: 'https://cdn.plyr.io/3.6.3/plyr.js',
         config: {
             ratio: '16:9', // or '4:3'
+            fullscreen: { enabled: true, iosNative: true },
             youtube: {
                 noCookie: true,
                 rel: 0,
@@ -208,11 +209,11 @@ class GlightboxInit {
         this.showSlide(index, true);
 
         if (this.elements.length == 1) {
-            _.hide(this.prevButton);
-            _.hide(this.nextButton);
+            _.addClass(this.prevButton, 'glightbox-button-hidden');
+            _.addClass(this.nextButton, 'glightbox-button-hidden');
         } else {
-            _.show(this.prevButton);
-            _.show(this.nextButton);
+            _.removeClass(this.prevButton, 'glightbox-button-hidden');
+            _.removeClass(this.nextButton, 'glightbox-button-hidden');
         }
         this.lightboxOpen = true;
 

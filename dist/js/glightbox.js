@@ -620,9 +620,17 @@
           }
         }
 
-        if (key == 39) instance.nextSlide();
-        if (key == 37) instance.prevSlide();
-        if (key == 27) instance.close();
+        if (key == 39) {
+          instance.nextSlide();
+        }
+
+        if (key == 37) {
+          instance.prevSlide();
+        }
+
+        if (key == 27) {
+          instance.close();
+        }
       }
     });
   }
@@ -637,9 +645,17 @@
 
   function getAngle(v1, v2) {
     var mr = getLen(v1) * getLen(v2);
-    if (mr === 0) return 0;
+
+    if (mr === 0) {
+      return 0;
+    }
+
     var r = dot(v1, v2) / mr;
-    if (r > 1) r = 1;
+
+    if (r > 1) {
+      r = 1;
+    }
+
     return Math.acos(r);
   }
 
@@ -673,7 +689,9 @@
     }, {
       key: "del",
       value: function del(handler) {
-        if (!handler) this.handlers = [];
+        if (!handler) {
+          this.handlers = [];
+        }
 
         for (var i = this.handlers.length; i >= 0; i--) {
           if (this.handlers[i] === handler) {
@@ -686,7 +704,10 @@
       value: function dispatch() {
         for (var i = 0, len = this.handlers.length; i < len; i++) {
           var handler = this.handlers[i];
-          if (typeof handler === 'function') handler.apply(this.el, arguments);
+
+          if (typeof handler === 'function') {
+            handler.apply(this.el, arguments);
+          }
         }
       }
     }]);
@@ -709,10 +730,10 @@
       this.move = this.move.bind(this);
       this.end = this.end.bind(this);
       this.cancel = this.cancel.bind(this);
-      this.element.addEventListener("touchstart", this.start, false);
-      this.element.addEventListener("touchmove", this.move, false);
-      this.element.addEventListener("touchend", this.end, false);
-      this.element.addEventListener("touchcancel", this.cancel, false);
+      this.element.addEventListener('touchstart', this.start, false);
+      this.element.addEventListener('touchmove', this.move, false);
+      this.element.addEventListener('touchend', this.end, false);
+      this.element.addEventListener('touchcancel', this.cancel, false);
       this.preV = {
         x: null,
         y: null
@@ -757,7 +778,10 @@
     _createClass(TouchEvents, [{
       key: "start",
       value: function start(evt) {
-        if (!evt.touches) return;
+        if (!evt.touches) {
+          return;
+        }
+
         this.now = Date.now();
         this.x1 = evt.touches[0].pageX;
         this.y1 = evt.touches[0].pageY;
@@ -766,7 +790,10 @@
 
         if (this.preTapPosition.x !== null) {
           this.isDoubleTap = this.delta > 0 && this.delta <= 250 && Math.abs(this.preTapPosition.x - this.x1) < 30 && Math.abs(this.preTapPosition.y - this.y1) < 30;
-          if (this.isDoubleTap) clearTimeout(this.singleTapTimeout);
+
+          if (this.isDoubleTap) {
+            clearTimeout(this.singleTapTimeout);
+          }
         }
 
         this.preTapPosition.x = this.x1;
@@ -799,7 +826,10 @@
     }, {
       key: "move",
       value: function move(evt) {
-        if (!evt.touches) return;
+        if (!evt.touches) {
+          return;
+        }
+
         var preV = this.preV,
             len = evt.touches.length,
             currentX = evt.touches[0].pageX,
@@ -870,7 +900,9 @@
     }, {
       key: "end",
       value: function end(evt) {
-        if (!evt.changedTouches) return;
+        if (!evt.changedTouches) {
+          return;
+        }
 
         this._cancelLongTap();
 
@@ -959,14 +991,26 @@
     }, {
       key: "destroy",
       value: function destroy() {
-        if (this.singleTapTimeout) clearTimeout(this.singleTapTimeout);
-        if (this.tapTimeout) clearTimeout(this.tapTimeout);
-        if (this.longTapTimeout) clearTimeout(this.longTapTimeout);
-        if (this.swipeTimeout) clearTimeout(this.swipeTimeout);
-        this.element.removeEventListener("touchstart", this.start);
-        this.element.removeEventListener("touchmove", this.move);
-        this.element.removeEventListener("touchend", this.end);
-        this.element.removeEventListener("touchcancel", this.cancel);
+        if (this.singleTapTimeout) {
+          clearTimeout(this.singleTapTimeout);
+        }
+
+        if (this.tapTimeout) {
+          clearTimeout(this.tapTimeout);
+        }
+
+        if (this.longTapTimeout) {
+          clearTimeout(this.longTapTimeout);
+        }
+
+        if (this.swipeTimeout) {
+          clearTimeout(this.swipeTimeout);
+        }
+
+        this.element.removeEventListener('touchstart', this.start);
+        this.element.removeEventListener('touchmove', this.move);
+        this.element.removeEventListener('touchend', this.end);
+        this.element.removeEventListener('touchcancel', this.cancel);
         this.rotate.del();
         this.touchStart.del();
         this.multipointStart.del();
@@ -996,8 +1040,8 @@
     var media = hasClass(slide, 'gslide-media') ? slide : slide.querySelector('.gslide-media');
     var desc = slide.querySelector('.gslide-description');
     addClass(media, 'greset');
-    cssTransform(media, "translate3d(0, 0, 0)");
-    var animation = addEvent(transitionEnd, {
+    cssTransform(media, 'translate3d(0, 0, 0)');
+    addEvent(transitionEnd, {
       onElement: media,
       once: true,
       withCallback: function withCallback(event, target) {
@@ -1048,29 +1092,39 @@
     var overlay = document.querySelector('.goverlay');
     var touchInstance = new TouchEvents(sliderWrapper, {
       touchStart: function touchStart(e) {
-        if (hasClass(e.targetTouches[0].target, 'ginner-container') || closest(e.targetTouches[0].target, '.gslide-desc')) {
-          process = false;
-          return false;
-        }
-
         process = true;
-        endCoords = e.targetTouches[0];
-        startCoords.pageX = e.targetTouches[0].pageX;
-        startCoords.pageY = e.targetTouches[0].pageY;
-        xDown = e.targetTouches[0].clientX;
-        yDown = e.targetTouches[0].clientY;
-        currentSlide = instance.activeSlide;
-        media = currentSlide.querySelector('.gslide-media');
-        isInlined = currentSlide.querySelector('.gslide-inline');
-        mediaImage = null;
 
-        if (hasClass(media, 'gslide-image')) {
-          mediaImage = media.querySelector('img');
+        if (hasClass(e.targetTouches[0].target, 'ginner-container') || closest(e.targetTouches[0].target, '.gslide-desc') || e.targetTouches[0].target.nodeName.toLowerCase() == 'a') {
+          process = false;
         }
 
-        removeClass(overlay, 'greset');
-        if (e.pageX > 20 && e.pageX < window.innerWidth - 20) return;
-        e.preventDefault();
+        if (closest(e.targetTouches[0].target, '.gslide-inline') && !hasClass(e.targetTouches[0].target.parentNode, 'gslide-inline')) {
+          process = false;
+        }
+
+        if (process) {
+          endCoords = e.targetTouches[0];
+          startCoords.pageX = e.targetTouches[0].pageX;
+          startCoords.pageY = e.targetTouches[0].pageY;
+          xDown = e.targetTouches[0].clientX;
+          yDown = e.targetTouches[0].clientY;
+          currentSlide = instance.activeSlide;
+          media = currentSlide.querySelector('.gslide-media');
+          isInlined = currentSlide.querySelector('.gslide-inline');
+          mediaImage = null;
+
+          if (hasClass(media, 'gslide-image')) {
+            mediaImage = media.querySelector('img');
+          }
+
+          removeClass(overlay, 'greset');
+
+          if (e.pageX > 20 && e.pageX < window.innerWidth - 20) {
+            return;
+          }
+
+          e.preventDefault();
+        }
       },
       touchMove: function touchMove(e) {
         if (!process) {
@@ -1355,7 +1409,7 @@
           return;
         }
 
-        if (e.type === "touchstart") {
+        if (e.type === 'touchstart') {
           this.initialX = e.touches[0].clientX - this.xOffset;
           this.initialY = e.touches[0].clientY - this.yOffset;
         } else {
@@ -1419,7 +1473,7 @@
     }, {
       key: "setTranslate",
       value: function setTranslate(node, xPos, yPos) {
-        node.style.transform = "translate3d(" + xPos + "px, " + yPos + "px, 0)";
+        node.style.transform = 'translate3d(' + xPos + 'px, ' + yPos + 'px, 0)';
       }
     }, {
       key: "widowWidth",
@@ -1549,8 +1603,8 @@
 
           _this2.slide.classList.remove('dragging-nav');
 
-          _this2.dragContainer.style.transform = "";
-          _this2.dragContainer.style.transition = "";
+          _this2.dragContainer.style.transform = '';
+          _this2.dragContainer.style.transition = '';
         }, 100);
       }
     }, {
@@ -1651,23 +1705,23 @@
         var animated = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
 
         if (animated) {
-          node.style.transition = "all .2s ease";
+          node.style.transition = 'all .2s ease';
         } else {
-          node.style.transition = "";
+          node.style.transition = '';
         }
 
-        node.style.transform = "translate3d(" + xPos + "px, " + yPos + "px, 0)";
+        node.style.transform = "translate3d(".concat(xPos, "px, ").concat(yPos, "px, 0)");
       }
     }]);
 
     return DragSlides;
   }();
 
-  function slideImage(slide, data, callback) {
+  function slideImage(slide, data, index, callback) {
     var slideMedia = slide.querySelector('.gslide-media');
     var img = new Image();
-    var titleID = 'gSlideTitle_' + data.index;
-    var textID = 'gSlideDesc_' + data.index;
+    var titleID = 'gSlideTitle_' + index;
+    var textID = 'gSlideDesc_' + index;
     img.addEventListener('load', function () {
       if (isFunction(callback)) {
         callback();
@@ -1688,11 +1742,11 @@
     return;
   }
 
-  function slideVideo(slide, data, callback) {
+  function slideVideo(slide, data, index, callback) {
     var _this = this;
 
     var slideContainer = slide.querySelector('.ginner-container');
-    var videoID = 'gvideo' + data.index;
+    var videoID = 'gvideo' + index;
     var slideMedia = slide.querySelector('.gslide-media');
     var videoPlayers = this.getAllPlayers();
     addClass(slideContainer, 'gvideo-container');
@@ -1734,9 +1788,9 @@
         html += 'class="gvideo-local">';
         var format = url.toLowerCase().split('.').pop();
         var sources = {
-          'mp4': '',
-          'ogg': '',
-          'webm': ''
+          mp4: '',
+          ogg: '',
+          webm: ''
         };
         format = format == 'mov' ? 'mp4' : format;
         sources[format] = url;
@@ -1763,8 +1817,15 @@
       addClass(videoWrapper, "".concat(videoSource, "-video gvideo"));
       videoWrapper.appendChild(placeholder);
       videoWrapper.setAttribute('data-id', videoID);
-      videoWrapper.setAttribute('data-index', data.index);
+      videoWrapper.setAttribute('data-index', index);
       var playerConfig = has(_this.settings.plyr, 'config') ? _this.settings.plyr.config : {};
+
+      if (_this.settings.autoplayVideos) {
+        playerConfig.autoplay = true;
+        playerConfig.vimeo.autoplay = true;
+        playerConfig.youtube.autoplay = true;
+      }
+
       var player = new Plyr('#' + videoID, playerConfig);
       player.on('ready', function (event) {
         var instance = event.detail.plyr;
@@ -1805,7 +1866,7 @@
     }
   }
 
-  function slideInline(slide, data, callback) {
+  function slideInline(slide, data, index, callback) {
     var _this = this;
 
     var slideMedia = slide.querySelector('.gslide-media');
@@ -1868,7 +1929,7 @@
     return;
   }
 
-  function slideIframe(slide, data, callback) {
+  function slideIframe(slide, data, index, callback) {
     var slideMedia = slide.querySelector('.gslide-media');
     var iframe = createIframe({
       url: data.href,
@@ -2082,11 +2143,12 @@
   }();
 
   var Slide = function () {
-    function Slide(el, instance) {
+    function Slide(el, instance, index) {
       _classCallCheck(this, Slide);
 
       this.element = el;
       this.instance = instance;
+      this.index = index;
     }
 
     _createClass(Slide, [{
@@ -2107,7 +2169,7 @@
 
         if (isFunction(settings.beforeSlideLoad)) {
           settings.beforeSlideLoad({
-            index: slideConfig.index,
+            index: this.index,
             slide: slide,
             player: false
           });
@@ -2120,8 +2182,8 @@
         var slideText = slide.querySelector('.gslide-desc');
         var slideDesc = slide.querySelector('.gdesc-inner');
         var finalCallback = callback;
-        var titleID = 'gSlideTitle_' + slideConfig.index;
-        var textID = 'gSlideDesc_' + slideConfig.index;
+        var titleID = 'gSlideTitle_' + this.index;
+        var textID = 'gSlideDesc_' + this.index;
 
         if (isFunction(settings.afterSlideLoad)) {
           finalCallback = function finalCallback() {
@@ -2130,9 +2192,9 @@
             }
 
             settings.afterSlideLoad({
-              index: slideConfig.index,
+              index: _this.index,
               slide: slide,
-              player: _this.instance.getSlidePlayerInstance(slideConfig.index)
+              player: _this.instance.getSlidePlayerInstance(_this.index)
             });
           };
         }
@@ -2171,19 +2233,19 @@
         addClass(slide, 'loaded');
 
         if (type === 'video') {
-          slideVideo.apply(this.instance, [slide, slideConfig, finalCallback]);
+          slideVideo.apply(this.instance, [slide, slideConfig, this.index, finalCallback]);
           return;
         }
 
         if (type === 'external') {
-          slideIframe.apply(this, [slide, slideConfig, finalCallback]);
+          slideIframe.apply(this, [slide, slideConfig, this.index, finalCallback]);
           return;
         }
 
         if (type === 'inline') {
-          slideInline.apply(this.instance, [slide, slideConfig, finalCallback]);
+          slideInline.apply(this.instance, [slide, slideConfig, this.index, finalCallback]);
 
-          if (slideConfig.draggable) {
+          if (settings.draggable) {
             new DragSlides({
               dragEl: slide.querySelector('.gslide-inline'),
               toleranceX: settings.dragToleranceX,
@@ -2197,10 +2259,10 @@
         }
 
         if (type === 'image') {
-          slideImage(slide, slideConfig, function () {
+          slideImage(slide, slideConfig, this.index, function () {
             var img = slide.querySelector('img');
 
-            if (slideConfig.draggable) {
+            if (settings.draggable) {
               new DragSlides({
                 dragEl: img,
                 toleranceX: settings.dragToleranceX,
@@ -2233,8 +2295,11 @@
       value: function slideShortDesc(string) {
         var n = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 50;
         var wordBoundary = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+        var div = document.createElement('div');
+        div.innerHTML = string;
+        var cleanedString = div.innerText;
         var useWordBoundary = wordBoundary;
-        string = string.trim();
+        string = cleanedString.trim();
 
         if (string.length <= n) {
           return string;
@@ -2246,6 +2311,7 @@
           return subString;
         }
 
+        div = null;
         return subString + '... <a href="#" class="desc-more">' + wordBoundary + '</a>';
       }
     }, {
@@ -2320,6 +2386,7 @@
     selector: '.glightbox',
     elements: null,
     skin: 'clean',
+    theme: 'clean',
     closeButton: true,
     startAt: null,
     autoplayVideos: true,
@@ -2349,11 +2416,16 @@
     touchFollowAxis: true,
     keyboardNavigation: true,
     closeOnOutsideClick: true,
+    plugins: false,
     plyr: {
       css: 'https://cdn.plyr.io/3.6.3/plyr.css',
       js: 'https://cdn.plyr.io/3.6.3/plyr.js',
       config: {
         ratio: '16:9',
+        fullscreen: {
+          enabled: true,
+          iosNative: true
+        },
         youtube: {
           noCookie: true,
           rel: 0,
@@ -2503,13 +2575,13 @@
         this.showSlide(index, true);
 
         if (this.elements.length == 1) {
-          hide(this.prevButton);
+          addClass(this.prevButton, 'glightbox-button-hidden');
 
-          hide(this.nextButton);
+          addClass(this.nextButton, 'glightbox-button-hidden');
         } else {
-          show(this.prevButton);
+          removeClass(this.prevButton, 'glightbox-button-hidden');
 
-          show(this.nextButton);
+          removeClass(this.nextButton, 'glightbox-button-hidden');
         }
 
         this.lightboxOpen = true;
@@ -2671,18 +2743,18 @@
       value: function insertSlide() {
         var config = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
         var index = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : -1;
-        var slide = new Slide(config, this);
+
+        if (index < 0) {
+          index = this.elements.length;
+        }
+
+        var slide = new Slide(config, this, index);
         var data = slide.getConfig();
 
         var slideInfo = extend({}, data);
 
         var newSlide = slide.create();
         var totalSlides = this.elements.length - 1;
-
-        if (index < 0) {
-          index = this.elements.length;
-        }
-
         slideInfo.index = index;
         slideInfo.node = false;
         slideInfo.instance = slide;
@@ -3012,7 +3084,7 @@
 
         if (elements && elements.length) {
           each(elements, function (el, i) {
-            var slide = new Slide(el, _this5);
+            var slide = new Slide(el, _this5, i);
             var data = slide.getConfig();
 
             var slideInfo = extend({}, data);
@@ -3064,7 +3136,7 @@
 
         if (!isNil(this.settings.elements) && isArray(this.settings.elements) && this.settings.elements.length) {
           each(this.settings.elements, function (el, i) {
-            var slide = new Slide(el, _this6);
+            var slide = new Slide(el, _this6, i);
             var elData = slide.getConfig();
 
             var slideInfo = extend({}, elData);
@@ -3089,7 +3161,7 @@
         }
 
         each(nodes, function (el, i) {
-          var slide = new Slide(el, _this6);
+          var slide = new Slide(el, _this6, i);
           var elData = slide.getConfig();
 
           var slideInfo = extend({}, elData);

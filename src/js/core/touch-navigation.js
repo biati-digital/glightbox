@@ -1,4 +1,3 @@
-
 /**
  * Touch Navigation
  * Allow navigation using touch events
@@ -7,33 +6,24 @@
  */
 
 import TouchEvents from './touch-events.js';
-import {
-    addEvent,
-    addClass,
-    removeClass,
-    hasClass,
-    closest,
-    whichTransitionEvent,
-    cssTransform,
-    windowSize
-} from '../utils/helpers.js';
+import { addEvent, addClass, removeClass, hasClass, closest, whichTransitionEvent, cssTransform, windowSize } from '../utils/helpers.js';
 
 function resetSlideMove(slide) {
     const transitionEnd = whichTransitionEvent();
-    let media = (hasClass(slide, 'gslide-media') ? slide : slide.querySelector('.gslide-media'))
-    let desc = slide.querySelector('.gslide-description')
+    let media = hasClass(slide, 'gslide-media') ? slide : slide.querySelector('.gslide-media');
+    let desc = slide.querySelector('.gslide-description');
 
-    addClass(media, 'greset')
-    cssTransform(media, `translate3d(0, 0, 0)`)
-    let animation = addEvent(transitionEnd, {
+    addClass(media, 'greset');
+    cssTransform(media, 'translate3d(0, 0, 0)');
+    addEvent(transitionEnd, {
         onElement: media,
         once: true,
         withCallback: (event, target) => {
-            removeClass(media, 'greset')
+            removeClass(media, 'greset');
         }
-    })
+    });
 
-    media.style.opacity = ''
+    media.style.opacity = '';
     if (desc) {
         desc.style.opacity = '';
     }
@@ -74,38 +64,45 @@ export default function touchNavigation(instance) {
     let isInlined;
 
     const sliderWrapper = document.getElementById('glightbox-slider');
-    const overlay = document.querySelector('.goverlay')
+    const overlay = document.querySelector('.goverlay');
 
     const touchInstance = new TouchEvents(sliderWrapper, {
         touchStart: (e) => {
-            if (
-                hasClass(e.targetTouches[0].target, 'ginner-container') ||
-                closest(e.targetTouches[0].target, '.gslide-desc')
-            ) {
-                process = false;
-                return false;
-            }
-
             process = true;
-            endCoords = e.targetTouches[0];
-            startCoords.pageX = e.targetTouches[0].pageX;
-            startCoords.pageY = e.targetTouches[0].pageY;
-            xDown = e.targetTouches[0].clientX;
-            yDown = e.targetTouches[0].clientY;
 
-            currentSlide = instance.activeSlide;
-            media = currentSlide.querySelector('.gslide-media');
-            isInlined = currentSlide.querySelector('.gslide-inline');
 
-            mediaImage = null;
-            if (hasClass(media, 'gslide-image')) {
-                mediaImage = media.querySelector('img');
+            // TODO: More tests for inline content slides
+            if (hasClass(e.targetTouches[0].target, 'ginner-container') || closest(e.targetTouches[0].target, '.gslide-desc') || e.targetTouches[0].target.nodeName.toLowerCase() == 'a') {
+                process = false;
             }
 
-            removeClass(overlay, 'greset');
+            if (closest(e.targetTouches[0].target, '.gslide-inline') && !hasClass(e.targetTouches[0].target.parentNode, 'gslide-inline')) {
+                process = false;
+            }
 
-            if (e.pageX > 20 && e.pageX < window.innerWidth - 20) return;
-            e.preventDefault();
+            if (process) {
+                endCoords = e.targetTouches[0];
+                startCoords.pageX = e.targetTouches[0].pageX;
+                startCoords.pageY = e.targetTouches[0].pageY;
+                xDown = e.targetTouches[0].clientX;
+                yDown = e.targetTouches[0].clientY;
+
+                currentSlide = instance.activeSlide;
+                media = currentSlide.querySelector('.gslide-media');
+                isInlined = currentSlide.querySelector('.gslide-inline');
+
+                mediaImage = null;
+                if (hasClass(media, 'gslide-image')) {
+                    mediaImage = media.querySelector('img');
+                }
+
+                removeClass(overlay, 'greset');
+
+                if (e.pageX > 20 && e.pageX < window.innerWidth - 20) {
+                    return;
+                }
+                e.preventDefault();
+            }
         },
         touchMove: (e) => {
             if (!process) {
@@ -116,7 +113,8 @@ export default function touchNavigation(instance) {
             if (doingZoom || imageZoomed) {
                 return;
             }
-            if (isInlined && isInlined.offsetHeight > winHeight) { // Allow scroll without moving the slide
+            if (isInlined && isInlined.offsetHeight > winHeight) {
+                // Allow scroll without moving the slide
                 const moved = startCoords.pageX - endCoords.pageX;
                 if (Math.abs(moved) <= 13) {
                     return false;
@@ -130,18 +128,18 @@ export default function touchNavigation(instance) {
             let yDiff = yDown - yUp;
 
             if (Math.abs(xDiff) > Math.abs(yDiff)) {
-                vSwipe = false
-                hSwipe = true
+                vSwipe = false;
+                hSwipe = true;
             } else {
-                hSwipe = false
-                vSwipe = true
+                hSwipe = false;
+                vSwipe = true;
             }
 
             hDistance = endCoords.pageX - startCoords.pageX;
-            hDistancePercent = hDistance * 100 / winWidth;
+            hDistancePercent = (hDistance * 100) / winWidth;
 
             vDistance = endCoords.pageY - startCoords.pageY;
-            vDistancePercent = vDistance * 100 / winHeight;
+            vDistancePercent = (vDistance * 100) / winHeight;
 
             let opacity;
             if (vSwipe && mediaImage) {
@@ -162,10 +160,10 @@ export default function touchNavigation(instance) {
             }
 
             if (!mediaImage) {
-                return cssTransform(media, `translate3d(${hDistancePercent}%, 0, 0)`)
+                return cssTransform(media, `translate3d(${hDistancePercent}%, 0, 0)`);
             }
 
-            cssTransform(media, `translate3d(${hDistancePercent}%, ${vDistancePercent}%, 0)`)
+            cssTransform(media, `translate3d(${hDistancePercent}%, ${vDistancePercent}%, 0)`);
         },
         touchEnd: () => {
             if (!process) {
@@ -185,13 +183,15 @@ export default function touchNavigation(instance) {
                 return;
             }
             if (v < 29 && h < 25) {
-                addClass(overlay, 'greset')
+                addClass(overlay, 'greset');
                 overlay.style.opacity = 1;
-                return resetSlideMove(media)
+                return resetSlideMove(media);
             }
         },
         multipointEnd: () => {
-            setTimeout(() => { doingZoom = false }, 50);
+            setTimeout(() => {
+                doingZoom = false;
+            }, 50);
         },
         multipointStart: () => {
             doingZoom = true;
@@ -215,14 +215,15 @@ export default function touchNavigation(instance) {
                 lastZoomedPosX = null;
                 zoomedPosX = null;
                 zoomedPosY = null;
-                mediaImage.setAttribute('style', '')
+                mediaImage.setAttribute('style', '');
                 return;
             }
-            if (scale > maxScale) { // max scale zoom
+            if (scale > maxScale) {
+                // max scale zoom
                 scale = maxScale;
             }
 
-            mediaImage.style.transform = `scale3d(${scale}, ${scale}, 1)`
+            mediaImage.style.transform = `scale3d(${scale}, ${scale}, 1)`;
             currentScale = scale;
         },
         pressMove: (e) => {
@@ -242,10 +243,10 @@ export default function touchNavigation(instance) {
 
                 let style = `translate3d(${mhDistance}px, ${mvDistance}px, 0)`;
                 if (currentScale) {
-                    style += ` scale3d(${currentScale}, ${currentScale}, 1)`
+                    style += ` scale3d(${currentScale}, ${currentScale}, 1)`;
                 }
 
-                cssTransform(mediaImage, style)
+                cssTransform(mediaImage, style);
             }
         },
         swipe: (evt) => {
@@ -258,13 +259,13 @@ export default function touchNavigation(instance) {
             }
             if (evt.direction == 'Left') {
                 if (instance.index == instance.elements.length - 1) {
-                    return resetSlideMove(media)
+                    return resetSlideMove(media);
                 }
                 instance.nextSlide();
             }
             if (evt.direction == 'Right') {
                 if (instance.index == 0) {
-                    return resetSlideMove(media)
+                    return resetSlideMove(media);
                 }
                 instance.prevSlide();
             }
