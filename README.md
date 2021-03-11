@@ -31,7 +31,7 @@ $ bower install glightbox
 ```
 
 ```javascript
-import GLightbox from 'glightbox';
+import 'glightbox';
 ```
 
 Or manually download and link `glightbox.min.js` in your HTML:
