@@ -48,6 +48,14 @@ OR CDN
 <script type="text/javascript">
   const lightbox = GLightbox({ ...options });
 </script>
+
+OR USING ES MODULES 
+
+<script type="module">
+  import 'https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js';
+
+  const lightbox = GLightbox({ ...options });
+</script>
 ```
 
 ## Examples
