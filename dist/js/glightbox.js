@@ -2467,7 +2467,7 @@
     }
   };
   defaults.slideHTML = "<div class=\"gslide\">\n    <div class=\"gslide-inner-content\">\n        <div class=\"ginner-container\">\n            <div class=\"gslide-media\">\n            </div>\n            <div class=\"gslide-description\">\n                <div class=\"gdesc-inner\">\n                    <h4 class=\"gslide-title\"></h4>\n                    <div class=\"gslide-desc\"></div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>";
-  defaults.lightboxHTML = "<div id=\"glightbox-body\" class=\"glightbox-container\">\n    <div class=\"gloader visible\"></div>\n    <div class=\"goverlay\"></div>\n    <div class=\"gcontainer\">\n    <div id=\"glightbox-slider\" class=\"gslider\"></div>\n    <button class=\"gnext gbtn\" tabindex=\"0\" aria-label=\"Next\">{nextSVG}</button>\n    <button class=\"gprev gbtn\" tabindex=\"1\" aria-label=\"Previous\">{prevSVG}</button>\n    <button class=\"gclose gbtn\" tabindex=\"2\" aria-label=\"Close\">{closeSVG}</button>\n</div>\n</div>";
+  defaults.lightboxHTML = "<div id=\"glightbox-body\" class=\"glightbox-container\">\n    <div class=\"gloader visible\"></div>\n    <div class=\"goverlay\"></div>\n    <div class=\"gcontainer\">\n    <div id=\"glightbox-slider\" class=\"gslider\"></div>\n    <button class=\"gclose gbtn\" tabindex=\"0\" aria-label=\"Close\">{closeSVG}</button>\n    <button class=\"gprev gbtn\" tabindex=\"0\" aria-label=\"Previous\">{prevSVG}</button>\n    <button class=\"gnext gbtn\" tabindex=\"0\" aria-label=\"Next\">{nextSVG}</button>\n</div>\n</div>";
 
   var GlightboxInit = function () {
     function GlightboxInit() {
