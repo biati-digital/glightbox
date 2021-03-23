@@ -31,7 +31,7 @@ $ bower install glightbox
 ```
 
 ```javascript
-import GLightbox from 'glightbox';
+import 'glightbox';
 ```
 
 Or manually download and link `glightbox.min.js` in your HTML:
@@ -46,6 +46,14 @@ OR CDN
 <script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
 
 <script type="text/javascript">
+  const lightbox = GLightbox({ ...options });
+</script>
+
+OR USING ES MODULES 
+
+<script type="module">
+  import 'https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js';
+
   const lightbox = GLightbox({ ...options });
 </script>
 ```
