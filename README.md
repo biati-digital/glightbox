@@ -683,7 +683,7 @@ We only provide support for bugs and feature requests, so please only post issue
 
 ## Changelog
 
-#### Latest version v3.0.7
+#### Latest version v3.0.8
 
 See the [CHANGELOG.md](CHANGELOG.md) file for details
 
