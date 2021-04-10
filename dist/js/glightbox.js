@@ -42,39 +42,6 @@
     return Constructor;
   }
 
-  function _toConsumableArray(arr) {
-    return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
-  }
-
-  function _arrayWithoutHoles(arr) {
-    if (Array.isArray(arr)) return _arrayLikeToArray(arr);
-  }
-
-  function _iterableToArray(iter) {
-    if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter);
-  }
-
-  function _unsupportedIterableToArray(o, minLen) {
-    if (!o) return;
-    if (typeof o === "string") return _arrayLikeToArray(o, minLen);
-    var n = Object.prototype.toString.call(o).slice(8, -1);
-    if (n === "Object" && o.constructor) n = o.constructor.name;
-    if (n === "Map" || n === "Set") return Array.from(o);
-    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
-  }
-
-  function _arrayLikeToArray(arr, len) {
-    if (len == null || len > arr.length) len = arr.length;
-
-    for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
-
-    return arr2;
-  }
-
-  function _nonIterableSpread() {
-    throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-  }
-
   var uid = Date.now();
   function extend() {
     var extended = {};
@@ -561,6 +528,39 @@
     return !isNaN(parseFloat(n)) && isFinite(n);
   }
 
+  function getNextFocusElement() {
+    var current = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : -1;
+    var btns = document.querySelectorAll('.gbtn[data-taborder]:not(.disabled)');
+
+    if (!btns.length) {
+      return false;
+    }
+
+    if (btns.length == 1) {
+      return btns[0];
+    }
+
+    if (typeof current == 'string') {
+      current = parseInt(current);
+    }
+
+    var newIndex = current < 0 ? 1 : current + 1;
+
+    if (newIndex > btns.length) {
+      newIndex = '1';
+    }
+
+    var orders = [];
+    each(btns, function (btn) {
+      orders.push(btn.getAttribute('data-taborder'));
+    });
+    var nextOrders = orders.filter(function (el) {
+      return el >= parseInt(newIndex);
+    });
+    var nextFocus = nextOrders.sort()[0];
+    return document.querySelector(".gbtn[data-taborder=\"".concat(nextFocus, "\"]"));
+  }
+
   function keyboardNavigation(instance) {
     if (instance.events.hasOwnProperty('keyboard')) {
       return false;
@@ -573,25 +573,25 @@
         var key = event.keyCode;
 
         if (key == 9) {
-          var activeElement = document.activeElement && document.activeElement.nodeName ? document.activeElement.nodeName.toLocaleLowerCase() : false;
+          var focusedButton = document.querySelector('.gbtn.focused');
 
-          if (activeElement == 'input' || activeElement == 'textarea' || activeElement == 'button') {
-            return;
+          if (!focusedButton) {
+            var activeElement = document.activeElement && document.activeElement.nodeName ? document.activeElement.nodeName.toLocaleLowerCase() : false;
+
+            if (activeElement == 'input' || activeElement == 'textarea' || activeElement == 'button') {
+              return;
+            }
           }
 
           event.preventDefault();
-          var btns = document.querySelectorAll('.gbtn');
+          var btns = document.querySelectorAll('.gbtn[data-taborder]');
 
           if (!btns || btns.length <= 0) {
             return;
           }
 
-          var focused = _toConsumableArray(btns).filter(function (item) {
-            return hasClass(item, 'focused');
-          });
-
-          if (!focused.length) {
-            var first = document.querySelector('.gbtn[tabindex="0"]');
+          if (!focusedButton) {
+            var first = getNextFocusElement();
 
             if (first) {
               first.focus();
@@ -601,22 +601,13 @@
             return;
           }
 
-          btns.forEach(function (element) {
-            return removeClass(element, 'focused');
-          });
-          var tabindex = focused[0].getAttribute('tabindex');
-          tabindex = tabindex ? tabindex : '0';
-          var newIndex = parseInt(tabindex) + 1;
+          var currentFocusOrder = focusedButton.getAttribute('data-taborder');
+          var nextFocus = getNextFocusElement(currentFocusOrder);
+          removeClass(focusedButton, 'focused');
 
-          if (newIndex > btns.length - 1) {
-            newIndex = '0';
-          }
-
-          var next = document.querySelector(".gbtn[tabindex=\"".concat(newIndex, "\"]"));
-
-          if (next) {
-            next.focus();
-            addClass(next, 'focused');
+          if (nextFocus) {
+            nextFocus.focus();
+            addClass(nextFocus, 'focused');
           }
         }
 
@@ -1828,6 +1819,11 @@
           callback();
         }
       });
+      waitUntil(function () {
+        return slide.querySelector('iframe') && slide.querySelector('iframe').dataset.ready == 'true';
+      }, function () {
+        _this.resize(slide);
+      });
       player.on('enterfullscreen', handleMediaFullScreen);
       player.on('exitfullscreen', handleMediaFullScreen);
     });
@@ -2368,7 +2364,7 @@
     return Slide;
   }();
 
-  var _version = '3.0.7';
+  var _version = '3.0.8';
 
   var isMobile$1 = isMobile();
 
@@ -2461,13 +2457,13 @@
       }
     },
     svg: {
-      close: '<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" xml:space="preserve"><g><g><path d="M505.943,6.058c-8.077-8.077-21.172-8.077-29.249,0L6.058,476.693c-8.077,8.077-8.077,21.172,0,29.249C10.096,509.982,15.39,512,20.683,512c5.293,0,10.586-2.019,14.625-6.059L505.943,35.306C514.019,27.23,514.019,14.135,505.943,6.058z"/></g></g><g><g><path d="M505.942,476.694L35.306,6.059c-8.076-8.077-21.172-8.077-29.248,0c-8.077,8.076-8.077,21.171,0,29.248l470.636,470.636c4.038,4.039,9.332,6.058,14.625,6.058c5.293,0,10.587-2.019,14.624-6.057C514.018,497.866,514.018,484.771,505.942,476.694z"/></g></g></svg>',
-      next: '<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 477.175 477.175" xml:space="preserve"> <g><path d="M360.731,229.075l-225.1-225.1c-5.3-5.3-13.8-5.3-19.1,0s-5.3,13.8,0,19.1l215.5,215.5l-215.5,215.5c-5.3,5.3-5.3,13.8,0,19.1c2.6,2.6,6.1,4,9.5,4c3.4,0,6.9-1.3,9.5-4l225.1-225.1C365.931,242.875,365.931,234.275,360.731,229.075z"/></g></svg>',
-      prev: '<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 477.175 477.175" xml:space="preserve"><g><path d="M145.188,238.575l215.5-215.5c5.3-5.3,5.3-13.8,0-19.1s-13.8-5.3-19.1,0l-225.1,225.1c-5.3,5.3-5.3,13.8,0,19.1l225.1,225c2.6,2.6,6.1,4,9.5,4s6.9-1.3,9.5-4c5.3-5.3,5.3-13.8,0-19.1L145.188,238.575z"/></g></svg>'
+      close: '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" xml:space="preserve"><g><g><path d="M505.943,6.058c-8.077-8.077-21.172-8.077-29.249,0L6.058,476.693c-8.077,8.077-8.077,21.172,0,29.249C10.096,509.982,15.39,512,20.683,512c5.293,0,10.586-2.019,14.625-6.059L505.943,35.306C514.019,27.23,514.019,14.135,505.943,6.058z"/></g></g><g><g><path d="M505.942,476.694L35.306,6.059c-8.076-8.077-21.172-8.077-29.248,0c-8.077,8.076-8.077,21.171,0,29.248l470.636,470.636c4.038,4.039,9.332,6.058,14.625,6.058c5.293,0,10.587-2.019,14.624-6.057C514.018,497.866,514.018,484.771,505.942,476.694z"/></g></g></svg>',
+      next: '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 477.175 477.175" xml:space="preserve"> <g><path d="M360.731,229.075l-225.1-225.1c-5.3-5.3-13.8-5.3-19.1,0s-5.3,13.8,0,19.1l215.5,215.5l-215.5,215.5c-5.3,5.3-5.3,13.8,0,19.1c2.6,2.6,6.1,4,9.5,4c3.4,0,6.9-1.3,9.5-4l225.1-225.1C365.931,242.875,365.931,234.275,360.731,229.075z"/></g></svg>',
+      prev: '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 477.175 477.175" xml:space="preserve"><g><path d="M145.188,238.575l215.5-215.5c5.3-5.3,5.3-13.8,0-19.1s-13.8-5.3-19.1,0l-225.1,225.1c-5.3,5.3-5.3,13.8,0,19.1l225.1,225c2.6,2.6,6.1,4,9.5,4s6.9-1.3,9.5-4c5.3-5.3,5.3-13.8,0-19.1L145.188,238.575z"/></g></svg>'
     }
   };
   defaults.slideHTML = "<div class=\"gslide\">\n    <div class=\"gslide-inner-content\">\n        <div class=\"ginner-container\">\n            <div class=\"gslide-media\">\n            </div>\n            <div class=\"gslide-description\">\n                <div class=\"gdesc-inner\">\n                    <h4 class=\"gslide-title\"></h4>\n                    <div class=\"gslide-desc\"></div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>";
-  defaults.lightboxHTML = "<div id=\"glightbox-body\" class=\"glightbox-container\">\n    <div class=\"gloader visible\"></div>\n    <div class=\"goverlay\"></div>\n    <div class=\"gcontainer\">\n    <div id=\"glightbox-slider\" class=\"gslider\"></div>\n    <button class=\"gnext gbtn\" tabindex=\"0\" aria-label=\"Next\">{nextSVG}</button>\n    <button class=\"gprev gbtn\" tabindex=\"1\" aria-label=\"Previous\">{prevSVG}</button>\n    <button class=\"gclose gbtn\" tabindex=\"2\" aria-label=\"Close\">{closeSVG}</button>\n</div>\n</div>";
+  defaults.lightboxHTML = "<div id=\"glightbox-body\" class=\"glightbox-container\" tabindex=\"-1\" role=\"dialog\" aria-hidden=\"false\">\n    <div class=\"gloader visible\"></div>\n    <div class=\"goverlay\"></div>\n    <div class=\"gcontainer\">\n    <div id=\"glightbox-slider\" class=\"gslider\"></div>\n    <button class=\"gclose gbtn\" aria-label=\"Close\" data-taborder=\"3\">{closeSVG}</button>\n    <button class=\"gprev gbtn\" aria-label=\"Previous\" data-taborder=\"2\">{prevSVG}</button>\n    <button class=\"gnext gbtn\" aria-label=\"Next\" data-taborder=\"1\">{nextSVG}</button>\n</div>\n</div>";
 
   var GlightboxInit = function () {
     function GlightboxInit() {
@@ -3058,8 +3054,6 @@
         }
 
         var player = this.getSlidePlayerInstance(slide);
-        console.log('Player is');
-        console.log(player);
 
         if (player && !player.playing) {
           player.play();
@@ -3225,6 +3219,16 @@
           return false;
         }
 
+        var children = document.body.childNodes;
+        var bodyChildElms = [];
+
+        each(children, function (el) {
+          if (el.parentNode == document.body && el.nodeName.charAt(0) !== '#' && el.hasAttribute && !el.hasAttribute('aria-hidden')) {
+            bodyChildElms.push(el);
+            el.setAttribute('aria-hidden', 'true');
+          }
+        });
+
         var nextSVG = has(this.settings.svg, 'next') ? this.settings.svg.next : '';
         var prevSVG = has(this.settings.svg, 'prev') ? this.settings.svg.prev : '';
         var closeSVG = has(this.settings.svg, 'close') ? this.settings.svg.close : '';
@@ -3242,6 +3246,7 @@
         this.overlay = modal.querySelector('.goverlay');
         this.loader = modal.querySelector('.gloader');
         this.slidesContainer = document.getElementById('glightbox-slider');
+        this.bodyHiddenChildElms = bodyChildElms;
         this.events = {};
 
         addClass(this.modal, 'glightbox-' + this.settings.skin);
@@ -3364,9 +3369,33 @@
         }
 
         if (video) {
-          var ratio = has(this.settings.plyr.config, 'ratio') ? this.settings.plyr.config.ratio : '16:9';
+          var ratio = has(this.settings.plyr.config, 'ratio') ? this.settings.plyr.config.ratio : '';
+
+          if (!ratio) {
+            var containerWidth = video.clientWidth;
+            var containerHeight = video.clientHeight;
+            var divisor = containerWidth / containerHeight;
+            ratio = "".concat(containerWidth / divisor, ":").concat(containerHeight / divisor);
+          }
+
           var videoRatio = ratio.split(':');
-          var maxWidth = 900;
+          var videoWidth = this.settings.videosWidth;
+          var maxWidth = this.settings.videosWidth;
+
+          if (isNumber(videoWidth) || videoWidth.indexOf('px') !== -1) {
+            maxWidth = parseInt(videoWidth);
+          } else {
+            if (videoWidth.indexOf('vw') !== -1) {
+              maxWidth = winWidth * parseInt(videoWidth) / 100;
+            } else if (videoWidth.indexOf('vh') !== -1) {
+              maxWidth = winHeight * parseInt(videoWidth) / 100;
+            } else if (videoWidth.indexOf('%') !== -1) {
+              maxWidth = winWidth * parseInt(videoWidth) / 100;
+            } else {
+              maxWidth = parseInt(video.clientWidth);
+            }
+          }
+
           var maxHeight = maxWidth / (parseInt(videoRatio[0]) / parseInt(videoRatio[1]));
           maxHeight = Math.floor(maxHeight);
 
@@ -3374,7 +3403,7 @@
             winHeight = winHeight - description.offsetHeight;
           }
 
-          if (winHeight < maxHeight && winWidth > maxWidth) {
+          if (maxWidth > winWidth || maxHeight > winHeight || winHeight < maxHeight && winWidth > maxWidth) {
             var vwidth = video.offsetWidth;
             var vheight = video.offsetHeight;
 
@@ -3390,10 +3419,10 @@
               description.setAttribute('style', "max-width: ".concat(vsize.width, "px;"));
             }
           } else {
-            video.parentNode.style.maxWidth = "".concat(maxWidth, "px");
+            video.parentNode.style.maxWidth = "".concat(maxWidth);
 
             if (descriptionResize) {
-              description.setAttribute('style', "max-width: ".concat(maxWidth, "px;"));
+              description.setAttribute('style', "max-width: ".concat(maxWidth, ";"));
             }
           }
         }
@@ -3457,6 +3486,12 @@
 
         if (this.fullElementsList) {
           this.elements = this.fullElementsList;
+        }
+
+        if (this.bodyHiddenChildElms.length) {
+          each(this.bodyHiddenChildElms, function (el) {
+            el.removeAttribute('aria-hidden');
+          });
         }
 
         addClass(this.modal, 'glightbox-closing');
