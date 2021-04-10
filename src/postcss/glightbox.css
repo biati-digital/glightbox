@@ -474,6 +474,10 @@
     }
 }
 
+.gbtn.focused {
+    outline: 2px solid #0f3d81;
+}
+
 iframe.wait-autoplay {
     opacity: 0;
 }
@@ -550,10 +554,6 @@ iframe.wait-autoplay {
         path {
             fill: #fff;
         }
-    }
-
-    button:focus:not(.focused):not(.disabled) {
-        outline: none;
     }
 
     .gprev {
