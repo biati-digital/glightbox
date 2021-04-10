@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## 3.0.8
+
+- New: Added Aria-hidden on all root elements except the glightbox-container
+- Fixed: Video in portrait mode is cropped
+- Fixed: Video always has maxWidth 900px because of hardcoded setting
+- Fixed: Removed explicit tabindex from navigation buttons
+
 ## 3.0.7
 
 - Fixed: Lightbox playing incorrect video with multiple videos in gallery #187
