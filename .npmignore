@@ -20,9 +20,11 @@ index.html
 /release
 /release.zip
 /.vscode
+/.nova
 /dist/js/glightboxTest.min.js
 /dist/js/glightboxTest.js
 /src/js/glightboxTest.js
 sitepsd.psd
 package-lock.json
 icons.zip
+glightbox-master.zip
