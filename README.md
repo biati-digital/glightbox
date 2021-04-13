@@ -31,7 +31,11 @@ $ bower install glightbox
 ```
 
 ```javascript
-import GLightbox from 'glightbox';
+// Using ESM specification
+import '/path/to/glightbox.js';
+
+// Using a bundler like webpack
+import Glightbox from 'glightbox';
 ```
 
 Or manually download and link `glightbox.min.js` in your HTML:
@@ -40,12 +44,20 @@ Or manually download and link `glightbox.min.js` in your HTML:
 <link rel="stylesheet" href="dist/css/glightbox.css" />
 <script src="dist/js/glightbox.min.js"></script>
 
-OR CDN
+<!-- USING A CDN -->
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
 <script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
 
 <script type="text/javascript">
+  const lightbox = GLightbox({ ...options });
+</script>
+
+<!-- USING ES MODULES -->
+
+<script type="module">
+  import 'https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js';
+
   const lightbox = GLightbox({ ...options });
 </script>
 ```
@@ -671,7 +683,7 @@ We only provide support for bugs and feature requests, so please only post issue
 
 ## Changelog
 
-#### Latest version v3.0.7
+#### Latest version v3.0.8
 
 See the [CHANGELOG.md](CHANGELOG.md) file for details
 

@@ -5,7 +5,36 @@
  * @param {object} instance
  */
 
-import { addEvent, addClass, removeClass, hasClass } from '../utils/helpers.js';
+import { addEvent, addClass, removeClass, each } from '../utils/helpers.js';
+
+function getNextFocusElement(current = -1) {
+    const btns = document.querySelectorAll('.gbtn[data-taborder]:not(.disabled)');
+    if (!btns.length) {
+        return false;
+    }
+
+    if (btns.length == 1) {
+        return btns[0];
+    }
+
+    if (typeof current == 'string') {
+        current = parseInt(current);
+    }
+
+    let newIndex = current < 0 ? 1 : current + 1;
+    if (newIndex > btns.length) {
+        newIndex = '1';
+    }
+
+    const orders = [];
+    each(btns, (btn) => {
+        orders.push(btn.getAttribute('data-taborder'));
+    });
+    const nextOrders = orders.filter((el) => el >= parseInt(newIndex));
+    const nextFocus = nextOrders.sort()[0];
+
+    return document.querySelector(`.gbtn[data-taborder="${nextFocus}"]`);
+}
 
 export default function keyboardNavigation(instance) {
     if (instance.events.hasOwnProperty('keyboard')) {
@@ -19,21 +48,23 @@ export default function keyboardNavigation(instance) {
             const key = event.keyCode;
             if (key == 9) {
                 //prettier-ignore
-                const activeElement = document.activeElement && document.activeElement.nodeName ? document.activeElement.nodeName.toLocaleLowerCase() : false;
+                const focusedButton = document.querySelector('.gbtn.focused');
 
-                if (activeElement == 'input' || activeElement == 'textarea' || activeElement == 'button') {
-                    return;
+                if (!focusedButton) {
+                    const activeElement = document.activeElement && document.activeElement.nodeName ? document.activeElement.nodeName.toLocaleLowerCase() : false;
+                    if (activeElement == 'input' || activeElement == 'textarea' || activeElement == 'button') {
+                        return;
+                    }
                 }
 
                 event.preventDefault();
-                const btns = document.querySelectorAll('.gbtn');
+                const btns = document.querySelectorAll('.gbtn[data-taborder]');
                 if (!btns || btns.length <= 0) {
                     return;
                 }
 
-                const focused = [...btns].filter((item) => hasClass(item, 'focused'));
-                if (!focused.length) {
-                    const first = document.querySelector('.gbtn[tabindex="0"]');
+                if (!focusedButton) {
+                    const first = getNextFocusElement();
                     if (first) {
                         first.focus();
                         addClass(first, 'focused');
@@ -41,18 +72,14 @@ export default function keyboardNavigation(instance) {
                     return;
                 }
 
-                btns.forEach((element) => removeClass(element, 'focused'));
+                let currentFocusOrder = focusedButton.getAttribute('data-taborder');
+                let nextFocus = getNextFocusElement(currentFocusOrder);
 
-                let tabindex = focused[0].getAttribute('tabindex');
-                tabindex = tabindex ? tabindex : '0';
-                let newIndex = parseInt(tabindex) + 1;
-                if (newIndex > btns.length - 1) {
-                    newIndex = '0';
-                }
-                let next = document.querySelector(`.gbtn[tabindex="${newIndex}"]`);
-                if (next) {
-                    next.focus();
-                    addClass(next, 'focused');
+                removeClass(focusedButton, 'focused');
+
+                if (nextFocus) {
+                    nextFocus.focus();
+                    addClass(nextFocus, 'focused');
                 }
             }
             if (key == 39) {

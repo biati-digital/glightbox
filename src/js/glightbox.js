@@ -10,7 +10,7 @@ import touchNavigation from './core/touch-navigation.js';
 import Slide from './core/slide.js';
 import * as _ from './utils/helpers.js';
 
-const version = '3.0.7';
+const version = '3.0.8';
 const isMobile = _.isMobile();
 const isTouch = _.isTouch();
 const html = document.getElementsByTagName('html')[0];
@@ -84,11 +84,11 @@ const defaults = {
     },
     svg: {
         close:
-            '<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" xml:space="preserve"><g><g><path d="M505.943,6.058c-8.077-8.077-21.172-8.077-29.249,0L6.058,476.693c-8.077,8.077-8.077,21.172,0,29.249C10.096,509.982,15.39,512,20.683,512c5.293,0,10.586-2.019,14.625-6.059L505.943,35.306C514.019,27.23,514.019,14.135,505.943,6.058z"/></g></g><g><g><path d="M505.942,476.694L35.306,6.059c-8.076-8.077-21.172-8.077-29.248,0c-8.077,8.076-8.077,21.171,0,29.248l470.636,470.636c4.038,4.039,9.332,6.058,14.625,6.058c5.293,0,10.587-2.019,14.624-6.057C514.018,497.866,514.018,484.771,505.942,476.694z"/></g></g></svg>',
+            '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" xml:space="preserve"><g><g><path d="M505.943,6.058c-8.077-8.077-21.172-8.077-29.249,0L6.058,476.693c-8.077,8.077-8.077,21.172,0,29.249C10.096,509.982,15.39,512,20.683,512c5.293,0,10.586-2.019,14.625-6.059L505.943,35.306C514.019,27.23,514.019,14.135,505.943,6.058z"/></g></g><g><g><path d="M505.942,476.694L35.306,6.059c-8.076-8.077-21.172-8.077-29.248,0c-8.077,8.076-8.077,21.171,0,29.248l470.636,470.636c4.038,4.039,9.332,6.058,14.625,6.058c5.293,0,10.587-2.019,14.624-6.057C514.018,497.866,514.018,484.771,505.942,476.694z"/></g></g></svg>',
         next:
-            '<svg version="1.1" id="Next_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 477.175 477.175" xml:space="preserve"> <g><path d="M360.731,229.075l-225.1-225.1c-5.3-5.3-13.8-5.3-19.1,0s-5.3,13.8,0,19.1l215.5,215.5l-215.5,215.5c-5.3,5.3-5.3,13.8,0,19.1c2.6,2.6,6.1,4,9.5,4c3.4,0,6.9-1.3,9.5-4l225.1-225.1C365.931,242.875,365.931,234.275,360.731,229.075z"/></g></svg>',
+            '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 477.175 477.175" xml:space="preserve"> <g><path d="M360.731,229.075l-225.1-225.1c-5.3-5.3-13.8-5.3-19.1,0s-5.3,13.8,0,19.1l215.5,215.5l-215.5,215.5c-5.3,5.3-5.3,13.8,0,19.1c2.6,2.6,6.1,4,9.5,4c3.4,0,6.9-1.3,9.5-4l225.1-225.1C365.931,242.875,365.931,234.275,360.731,229.075z"/></g></svg>',
         prev:
-            '<svg version="1.1" id="Prev_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 477.175 477.175" xml:space="preserve"><g><path d="M145.188,238.575l215.5-215.5c5.3-5.3,5.3-13.8,0-19.1s-13.8-5.3-19.1,0l-225.1,225.1c-5.3,5.3-5.3,13.8,0,19.1l225.1,225c2.6,2.6,6.1,4,9.5,4s6.9-1.3,9.5-4c5.3-5.3,5.3-13.8,0-19.1L145.188,238.575z"/></g></svg>'
+            '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 477.175 477.175" xml:space="preserve"><g><path d="M145.188,238.575l215.5-215.5c5.3-5.3,5.3-13.8,0-19.1s-13.8-5.3-19.1,0l-225.1,225.1c-5.3,5.3-5.3,13.8,0,19.1l225.1,225c2.6,2.6,6.1,4,9.5,4s6.9-1.3,9.5-4c5.3-5.3,5.3-13.8,0-19.1L145.188,238.575z"/></g></svg>'
     }
 };
 
@@ -114,14 +114,14 @@ defaults.slideHTML = `<div class="gslide">
     </div>
 </div>`;
 
-defaults.lightboxHTML = `<div id="glightbox-body" class="glightbox-container">
+defaults.lightboxHTML = `<div id="glightbox-body" class="glightbox-container" tabindex="-1" role="dialog" aria-hidden="false">
     <div class="gloader visible"></div>
     <div class="goverlay"></div>
     <div class="gcontainer">
     <div id="glightbox-slider" class="gslider"></div>
-    <button class="gclose gbtn" tabindex="0" aria-label="Close">{closeSVG}</button>
-    <button class="gprev gbtn" tabindex="0" aria-label="Previous">{prevSVG}</button>
-    <button class="gnext gbtn" tabindex="0" aria-label="Next">{nextSVG}</button>
+    <button class="gclose gbtn" aria-label="Close" data-taborder="3">{closeSVG}</button>
+    <button class="gprev gbtn" aria-label="Previous" data-taborder="2">{prevSVG}</button>
+    <button class="gnext gbtn" aria-label="Next" data-taborder="1">{nextSVG}</button>
 </div>
 </div>`;
 
@@ -742,9 +742,6 @@ class GlightboxInit {
 
         const player = this.getSlidePlayerInstance(slide);
 
-        console.log('Player is');
-        console.log(player);
-
         if (player && !player.playing) {
             player.play();
             if (this.settings.autofocusVideos) {
@@ -935,6 +932,18 @@ class GlightboxInit {
             return false;
         }
 
+        // TODO: :scope is not supported on IE or first Edge. so we'll
+        // update this when IE support is removed to use newer code
+        //const children = document.body.querySelectorAll(':scope > *');
+        const children = document.body.childNodes;
+        const bodyChildElms = [];
+        _.each(children, (el) => {
+            if (el.parentNode == document.body && el.nodeName.charAt(0) !== '#' && el.hasAttribute && !el.hasAttribute('aria-hidden')) {
+                bodyChildElms.push(el);
+                el.setAttribute('aria-hidden', 'true');
+            }
+        });
+
         const nextSVG = _.has(this.settings.svg, 'next') ? this.settings.svg.next : '';
         const prevSVG = _.has(this.settings.svg, 'prev') ? this.settings.svg.prev : '';
         const closeSVG = _.has(this.settings.svg, 'close') ? this.settings.svg.close : '';
@@ -955,6 +964,7 @@ class GlightboxInit {
         this.overlay = modal.querySelector('.goverlay');
         this.loader = modal.querySelector('.gloader');
         this.slidesContainer = document.getElementById('glightbox-slider');
+        this.bodyHiddenChildElms = bodyChildElms;
         this.events = {};
 
         _.addClass(this.modal, 'glightbox-' + this.settings.skin);
@@ -1074,12 +1084,37 @@ class GlightboxInit {
         }
 
         if (video) {
-            let ratio = _.has(this.settings.plyr.config, 'ratio') ? this.settings.plyr.config.ratio : '16:9';
-            let videoRatio = ratio.split(':');
+            let ratio = _.has(this.settings.plyr.config, 'ratio') ? this.settings.plyr.config.ratio : '';
 
-            // TODO: Verify if this is still required as with now accepts multiple values
-            // let maxWidth = slideData.width;
-            let maxWidth = 900;
+            if (!ratio) {
+                // If no ratio passed, calculate it using the video width and height
+                // generated by Plyr
+                const containerWidth = video.clientWidth;
+                const containerHeight = video.clientHeight;
+                const divisor = containerWidth / containerHeight;
+                ratio = `${containerWidth / divisor}:${containerHeight / divisor}`;
+            }
+
+            let videoRatio = ratio.split(':');
+            let videoWidth = this.settings.videosWidth;
+            let maxWidth = this.settings.videosWidth;
+
+            if (_.isNumber(videoWidth) || videoWidth.indexOf('px') !== -1) {
+                maxWidth = parseInt(videoWidth);
+            } else {
+                // If video size is vw, vh or % convert it to pixels,
+                // fallback to the current video size
+                if (videoWidth.indexOf('vw') !== -1) {
+                    maxWidth = (winWidth * parseInt(videoWidth)) / 100;
+                } else if (videoWidth.indexOf('vh') !== -1) {
+                    maxWidth = (winHeight * parseInt(videoWidth)) / 100;
+                } else if (videoWidth.indexOf('%') !== -1) {
+                    maxWidth = (winWidth * parseInt(videoWidth)) / 100;
+                } else {
+                    maxWidth = parseInt(video.clientWidth);
+                }
+            }
+
             let maxHeight = maxWidth / (parseInt(videoRatio[0]) / parseInt(videoRatio[1]));
             maxHeight = Math.floor(maxHeight);
 
@@ -1087,7 +1122,7 @@ class GlightboxInit {
                 winHeight = winHeight - description.offsetHeight;
             }
 
-            if (winHeight < maxHeight && winWidth > maxWidth) {
+            if (maxWidth > winWidth || maxHeight > winHeight || (winHeight < maxHeight && winWidth > maxWidth)) {
                 let vwidth = video.offsetWidth;
                 let vheight = video.offsetHeight;
                 let ratio = winHeight / vheight;
@@ -1098,9 +1133,9 @@ class GlightboxInit {
                     description.setAttribute('style', `max-width: ${vsize.width}px;`);
                 }
             } else {
-                video.parentNode.style.maxWidth = `${maxWidth}px`;
+                video.parentNode.style.maxWidth = `${maxWidth}`;
                 if (descriptionResize) {
-                    description.setAttribute('style', `max-width: ${maxWidth}px;`);
+                    description.setAttribute('style', `max-width: ${maxWidth};`);
                 }
             }
         }
@@ -1170,6 +1205,13 @@ class GlightboxInit {
         if (this.fullElementsList) {
             this.elements = this.fullElementsList;
         }
+
+        if (this.bodyHiddenChildElms.length) {
+            _.each(this.bodyHiddenChildElms, (el) => {
+                el.removeAttribute('aria-hidden');
+            });
+        }
+
         _.addClass(this.modal, 'glightbox-closing');
         _.animateElement(this.overlay, this.settings.openEffect == 'none' ? 'none' : this.settings.cssEfects.fade.out);
         _.animateElement(this.activeSlide, this.settings.cssEfects[this.settings.closeEffect].out, () => {

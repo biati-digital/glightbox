@@ -6,7 +6,7 @@
  * @param {int} index
  * @param {function} callback
  */
-import { has, closest, injectAssets, addClass, removeClass, createHTML, isFunction } from '../utils/helpers.js';
+import { has, closest, injectAssets, addClass, removeClass, createHTML, isFunction, waitUntil } from '../utils/helpers.js';
 
 export default function slideVideo(slide, data, index, callback) {
     const slideContainer = slide.querySelector('.ginner-container');
@@ -97,6 +97,14 @@ export default function slideVideo(slide, data, index, callback) {
                 callback();
             }
         });
+        waitUntil(
+            () => {
+                return slide.querySelector('iframe') && slide.querySelector('iframe').dataset.ready == 'true';
+            },
+            () => {
+                this.resize(slide);
+            }
+        );
         player.on('enterfullscreen', handleMediaFullScreen);
         player.on('exitfullscreen', handleMediaFullScreen);
     });
