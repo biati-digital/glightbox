@@ -1135,7 +1135,7 @@ class GlightboxInit {
             } else {
                 video.parentNode.style.maxWidth = `${maxWidth}`;
                 if (descriptionResize) {
-                    description.setAttribute('style', `max-width: ${maxWidth};`);
+                    description.setAttribute('style', `max-width: ${maxWidth}px;`);
                 }
             }
         }
