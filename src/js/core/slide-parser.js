@@ -143,9 +143,25 @@ export default class SlideConfigParser {
             }
         }
 
-        if (data.description && data.description.substring(0, 1) == '.' && document.querySelector(data.description)) {
-            data.description = document.querySelector(data.description).innerHTML;
-        } else {
+        // Try to get the description from a referenced element
+        if (data.description && data.description.substring(0, 1) === '.') {
+            let description;
+
+            try {
+                description = document.querySelector(data.description).innerHTML;
+            } catch (error) {
+                if (!(error instanceof DOMException)) {
+                    throw error;
+                }
+            }
+
+            if (description) {
+                data.description = description;
+            }
+        }
+
+        // Try to get the description from a .glightbox-desc element
+        if (!data.description) {
             let nodeDesc = element.querySelector('.glightbox-desc');
             if (nodeDesc) {
                 data.description = nodeDesc.innerHTML;
