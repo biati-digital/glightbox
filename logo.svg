@@ -28,7 +28,7 @@
 			</style>
 			<div class="container">
 				<h1>GLightbox</h1>
-				<p>Code name <strong>"Gie"</strong> A touchable Pure Javascript <br> lightbox with mobile and video support.</p>
+				<p>Code name <strong>"Gie"</strong> A touchable Pure Javascript <br /> lightbox with mobile and video support.</p>
 			</div>
 		</div>
 	</foreignObject>
