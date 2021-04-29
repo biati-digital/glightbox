@@ -24,6 +24,8 @@
 					font-size: 86px;
 					line-height: 1.2;
 					letter-spacing: normal;
+					margin:0;
+					padding:0;
 				}
 			</style>
 			<div class="container">
