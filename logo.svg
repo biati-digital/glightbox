@@ -3,8 +3,7 @@
 		<div xmlns="http://www.w3.org/1999/xhtml">
 			<style>
 				@import url('https://fonts.googleapis.com/css2?family=Lobster&display=swap');
-			</style>
-			<style>
+				
 				.container {
 					font-family: 'Lobster', cursive;
 					display: flex;
