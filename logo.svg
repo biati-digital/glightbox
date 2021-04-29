@@ -11,7 +11,7 @@
 					align-items: center;
 					margin: 0;
 					width: 100%;
-					height: auto;
+					height: 100%;
 					color: #000;
 					text-align: center;
 					background-color: #eeeff1;
