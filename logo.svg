@@ -14,11 +14,7 @@
 					height: auto;
 					color: #000;
 					text-align: center;
-				}
-				@media (prefers-color-scheme: dark) {
-					.container {
-						color: white;
-					}
+					background-color: #eeeff1;
 				}
 				h1 {
 					font-size: 86px;
