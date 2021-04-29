@@ -1,7 +1,7 @@
 # GLightbox
 
 <div>
-	<img src="./logo.svg" alt="GLightbox" width="349" height="85"/>
+	
 </div>
 
 GLightbox is a pure javascript lightbox. It can display images, iframes, inline content and videos with optional autoplay for YouTube, Vimeo and even self hosted videos.
