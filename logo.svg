@@ -9,6 +9,7 @@
 					justify-content: center;
 					margin: 0;
 					width: 100%;
+					padding-top: calc(120px - 0.5em);
 					height: 240px;
 					color: #000;
 					text-align: center;
