@@ -1,5 +1,3 @@
-# GLightbox
-
 <div align="center">
 	<br />
 	<img src="https://raw.githubusercontent.com/frankie-tech/glightbox/updated-docs/logo.svg" alt="GLightbox" width="500" height="240"/>
