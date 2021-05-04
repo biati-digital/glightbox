@@ -682,3 +682,63 @@ See the [CHANGELOG.md](CHANGELOG.md) file for details
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+
+# Draft
+
+## Usage/Examples
+
+GLightbox is designed to let you get started quickly, so all you need to get started is add the following HTML to your page.
+
+```html
+<a href="large.jpg" class="glightbox">
+  <img src="small.jpg" alt="image" />
+</a>
+```
+
+Then add the following Javascript, and you are all set to go.
+
+```js
+const lightbox = GLightbox();
+```
+
+### Video
+
+```html
+<a href="https://vimeo.com/115041822" class="glightbox">
+  <img src="..." alt="" />
+</a>
+```
+
+### Gallery
+
+The `data-gallery` attribute lets you set up a gallery from a set of slides.
+
+```html
+<!-- Add the data-gallery with the same value -->
+<a href="large.jpg" class="glightbox" data-gallery="my-gallery-name">
+  <img src="small.jpg" alt="image" />
+</a>
+<a href="video.mp4" class="glightbox" data-gallery="my-gallery-name">
+  <img src="small.jpg" alt="image" />
+</a>
+<a href="video2.mp4" class="glightbox">
+  <img src="small.jpg" alt="image" />
+</a>
+<button id="openGallery" data-gallery="my-gallery-name">Open The Gallery</button>
+```
+
+```js
+// Make a lightbox like normal
+// and all the links above will
+// open the  lightbox
+const lightbox = GLightbox();
+
+document.getElementById('openGallery').addEventListener('click', ({ target }) => {
+  // But if we pass in an element
+  // with a data-gallery attribute
+  // to the GLightbox.open() method,
+  // it will open a lightbox with
+  // only those slides
+  lightbox.open(target);
+});
+```
