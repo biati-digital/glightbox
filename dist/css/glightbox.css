@@ -4,7 +4,7 @@
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 999999 !important;
+  z-index: 9999999 !important;
   overflow: hidden;
   -ms-touch-action: none;
   touch-action: none;
