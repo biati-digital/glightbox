@@ -773,6 +773,13 @@
           return;
         }
 
+        var ignoreDragFor = ['a', 'button', 'input'];
+
+        if (evt.target && evt.target.nodeName && ignoreDragFor.indexOf(evt.target.nodeName.toLowerCase()) >= 0) {
+          console.log('ignore drag for this touched element', evt.target.nodeName.toLowerCase());
+          return;
+        }
+
         this.now = Date.now();
         this.x1 = evt.touches[0].pageX;
         this.y1 = evt.touches[0].pageY;
@@ -1713,6 +1720,7 @@
     var img = new Image();
     var titleID = 'gSlideTitle_' + index;
     var textID = 'gSlideDesc_' + index;
+    console.log(data);
     img.addEventListener('load', function () {
       if (isFunction(callback)) {
         callback();
@@ -1727,6 +1735,14 @@
 
     if (data.description !== '') {
       img.setAttribute('aria-describedby', textID);
+    }
+
+    if (data.width) {
+      img.style.width = data.width;
+    }
+
+    if (data.height) {
+      img.style.height = data.height;
     }
 
     slideMedia.insertBefore(img, slideMedia.firstChild);
@@ -2089,9 +2105,23 @@
           }
         }
 
-        if (data.description && data.description.substring(0, 1) == '.' && document.querySelector(data.description)) {
-          data.description = document.querySelector(data.description).innerHTML;
-        } else {
+        if (data.description && data.description.substring(0, 1) === '.') {
+          var description;
+
+          try {
+            description = document.querySelector(data.description).innerHTML;
+          } catch (error) {
+            if (!(error instanceof DOMException)) {
+              throw error;
+            }
+          }
+
+          if (description) {
+            data.description = description;
+          }
+        }
+
+        if (!data.description) {
           var nodeDesc = element.querySelector('.glightbox-desc');
 
           if (nodeDesc) {
@@ -2407,8 +2437,8 @@
     closeOnOutsideClick: true,
     plugins: false,
     plyr: {
-      css: 'https://cdn.plyr.io/3.6.3/plyr.css',
-      js: 'https://cdn.plyr.io/3.6.3/plyr.js',
+      css: 'https://cdn.plyr.io/3.6.8/plyr.css',
+      js: 'https://cdn.plyr.io/3.6.8/plyr.js',
       config: {
         ratio: '16:9',
         fullscreen: {
@@ -2471,6 +2501,7 @@
 
       _classCallCheck(this, GlightboxInit);
 
+      this.customOptions = options;
       this.settings = extend(defaults, options);
       this.effectsClasses = this.getAnimationClasses();
       this.videoPlayers = {};
@@ -3419,10 +3450,10 @@
               description.setAttribute('style', "max-width: ".concat(vsize.width, "px;"));
             }
           } else {
-            video.parentNode.style.maxWidth = "".concat(maxWidth);
+            video.parentNode.style.maxWidth = "".concat(videoWidth);
 
             if (descriptionResize) {
-              description.setAttribute('style', "max-width: ".concat(maxWidth, ";"));
+              description.setAttribute('style', "max-width: ".concat(videoWidth, ";"));
             }
           }
         }
