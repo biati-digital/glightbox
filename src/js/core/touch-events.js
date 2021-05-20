@@ -122,17 +122,21 @@ export default class TouchEvents {
         if (!evt.touches) {
             return;
         }
+
+        // Fix Media Buttons Not responding on Android #233
+        const ignoreDragFor = ['a', 'button', 'input'];
+        if (evt.target && evt.target.nodeName && ignoreDragFor.indexOf(evt.target.nodeName.toLowerCase()) >= 0) {
+            console.log('ignore drag for this touched element', evt.target.nodeName.toLowerCase());
+            return;
+        }
+
         this.now = Date.now();
         this.x1 = evt.touches[0].pageX;
         this.y1 = evt.touches[0].pageY;
         this.delta = this.now - (this.last || this.now);
         this.touchStart.dispatch(evt, this.element);
         if (this.preTapPosition.x !== null) {
-            this.isDoubleTap =
-                this.delta > 0 &&
-                this.delta <= 250 &&
-                Math.abs(this.preTapPosition.x - this.x1) < 30 &&
-                Math.abs(this.preTapPosition.y - this.y1) < 30;
+            this.isDoubleTap = this.delta > 0 && this.delta <= 250 && Math.abs(this.preTapPosition.x - this.x1) < 30 && Math.abs(this.preTapPosition.y - this.y1) < 30;
             if (this.isDoubleTap) {
                 clearTimeout(this.singleTapTimeout);
             }
@@ -334,7 +338,38 @@ export default class TouchEvents {
         this.touchEnd.del();
         this.touchCancel.del();
 
-        this.preV = this.pinchStartLen = this.zoom = this.isDoubleTap = this.delta = this.last = this.now = this.tapTimeout = this.singleTapTimeout = this.longTapTimeout = this.swipeTimeout = this.x1 = this.x2 = this.y1 = this.y2 = this.preTapPosition = this.rotate = this.touchStart = this.multipointStart = this.multipointEnd = this.pinch = this.swipe = this.tap = this.doubleTap = this.longTap = this.singleTap = this.pressMove = this.touchMove = this.touchEnd = this.touchCancel = this.twoFingerPressMove = null;
+        this.preV =
+            this.pinchStartLen =
+            this.zoom =
+            this.isDoubleTap =
+            this.delta =
+            this.last =
+            this.now =
+            this.tapTimeout =
+            this.singleTapTimeout =
+            this.longTapTimeout =
+            this.swipeTimeout =
+            this.x1 =
+            this.x2 =
+            this.y1 =
+            this.y2 =
+            this.preTapPosition =
+            this.rotate =
+            this.touchStart =
+            this.multipointStart =
+            this.multipointEnd =
+            this.pinch =
+            this.swipe =
+            this.tap =
+            this.doubleTap =
+            this.longTap =
+            this.singleTap =
+            this.pressMove =
+            this.touchMove =
+            this.touchEnd =
+            this.touchCancel =
+            this.twoFingerPressMove =
+                null;
 
         window.removeEventListener('scroll', this._cancelAllHandler);
         return null;
