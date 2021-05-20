@@ -750,6 +750,7 @@
       this.touchMove = wrapFunc(this.element, option.touchMove || noop);
       this.touchEnd = wrapFunc(this.element, option.touchEnd || noop);
       this.touchCancel = wrapFunc(this.element, option.touchCancel || noop);
+      this.translateContainer = this.element;
       this._cancelAllHandler = this.cancelAll.bind(this);
       window.addEventListener('scroll', this._cancelAllHandler);
       this.delta = null;
@@ -1035,8 +1036,15 @@
 
   function resetSlideMove(slide) {
     var transitionEnd = whichTransitionEvent();
+    var windowWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
     var media = hasClass(slide, 'gslide-media') ? slide : slide.querySelector('.gslide-media');
+    var container = closest(media, '.ginner-container');
     var desc = slide.querySelector('.gslide-description');
+
+    if (windowWidth > 769) {
+      media = container;
+    }
+
     addClass(media, 'greset');
     cssTransform(media, 'translate3d(0, 0, 0)');
     addEvent(transitionEnd, {
@@ -1113,6 +1121,12 @@
 
           if (hasClass(media, 'gslide-image')) {
             mediaImage = media.querySelector('img');
+          }
+
+          var windowWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+
+          if (windowWidth > 769) {
+            media = currentSlide.querySelector('.ginner-container');
           }
 
           removeClass(overlay, 'greset');
@@ -1737,11 +1751,11 @@
       img.setAttribute('aria-describedby', textID);
     }
 
-    if (data.width) {
+    if (data._hasCustomWidth) {
       img.style.width = data.width;
     }
 
-    if (data.height) {
+    if (data._hasCustomHeight) {
       img.style.height = data.height;
     }
 
@@ -2077,7 +2091,7 @@
           if (config.trim() !== '') {
             each(data, function (val, key) {
               var str = config;
-              var match = '\s?' + key + '\s?:\s?(.*?)(' + cleanKeys + '\s?:|$)';
+              var match = 's?' + key + 's?:s?(.*?)(' + cleanKeys + 's?:|$)';
               var regex = new RegExp(match);
               var matches = str.match(regex);
 
@@ -2129,17 +2143,24 @@
           }
         }
 
-        this.setSize(data, settings);
+        this.setSize(data, settings, element);
         this.slideConfig = data;
         return data;
       }
     }, {
       key: "setSize",
       value: function setSize(data, settings) {
+        var element = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
         var defaultWith = data.type == 'video' ? this.checkSize(settings.videosWidth) : this.checkSize(settings.width);
         var defaultHeight = this.checkSize(settings.height);
         data.width = has(data, 'width') && data.width !== '' ? this.checkSize(data.width) : defaultWith;
         data.height = has(data, 'height') && data.height !== '' ? this.checkSize(data.height) : defaultHeight;
+
+        if (element && data.type == 'image') {
+          data._hasCustomWidth = element.dataset.width ? true : false;
+          data._hasCustomHeight = element.dataset.height ? true : false;
+        }
+
         return data;
       }
     }, {
@@ -2988,8 +3009,10 @@
         }
 
         animateElement(prevSlide, animOut, function () {
+          var container = prevSlide.querySelector('.ginner-container');
           var media = prevSlide.querySelector('.gslide-media');
           var desc = prevSlide.querySelector('.gslide-description');
+          container.style.transform = '';
           media.style.transform = '';
 
           removeClass(media, 'greset');
@@ -3387,7 +3410,6 @@
         if (image) {
           if (winWidth <= 768) {
             var imgNode = image.querySelector('img');
-            imgNode.setAttribute('style', '');
           } else if (descriptionResize) {
             var descHeight = description.offsetHeight;
 

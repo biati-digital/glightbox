@@ -103,6 +103,7 @@ export default class TouchEvents {
         this.touchMove = wrapFunc(this.element, option.touchMove || noop);
         this.touchEnd = wrapFunc(this.element, option.touchEnd || noop);
         this.touchCancel = wrapFunc(this.element, option.touchCancel || noop);
+        this.translateContainer = this.element;
 
         this._cancelAllHandler = this.cancelAll.bind(this);
 

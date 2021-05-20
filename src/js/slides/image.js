@@ -19,6 +19,8 @@ export default function slideImage(slide, data, index, callback) {
     let titleID = 'gSlideTitle_' + index;
     let textID = 'gSlideDesc_' + index;
 
+    console.log(data);
+
     // prettier-ignore
     img.addEventListener('load', () => {
         if (isFunction(callback)) {
@@ -35,6 +37,13 @@ export default function slideImage(slide, data, index, callback) {
     if (data.description !== '') {
         // https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Techniques/Using_the_aria-describedby_attribute#Example_2_A_Close_Button
         img.setAttribute('aria-describedby', textID);
+    }
+
+    if (data._hasCustomWidth) {
+        img.style.width = data.width;
+    }
+    if (data._hasCustomHeight) {
+        img.style.height = data.height;
     }
 
     slideMedia.insertBefore(img, slideMedia.firstChild);

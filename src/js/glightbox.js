@@ -625,9 +625,11 @@ class GlightboxInit {
             animOut = this.settings.cssEfects.slideBack.out;
         }
         _.animateElement(prevSlide, animOut, () => {
+            let container = prevSlide.querySelector('.ginner-container');
             let media = prevSlide.querySelector('.gslide-media');
             let desc = prevSlide.querySelector('.gslide-description');
 
+            container.style.transform = '';
             media.style.transform = '';
             _.removeClass(media, 'greset');
             media.style.opacity = '';
@@ -1071,7 +1073,7 @@ class GlightboxInit {
         if (image) {
             if (winWidth <= 768) {
                 let imgNode = image.querySelector('img');
-                imgNode.setAttribute('style', '');
+                //imgNode.setAttribute('style', '');
             } else if (descriptionResize) {
                 let descHeight = description.offsetHeight;
                 let imgNode = image.querySelector('img');

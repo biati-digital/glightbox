@@ -10,8 +10,15 @@ import { addEvent, addClass, removeClass, hasClass, closest, whichTransitionEven
 
 function resetSlideMove(slide) {
     const transitionEnd = whichTransitionEvent();
+    const windowWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+
     let media = hasClass(slide, 'gslide-media') ? slide : slide.querySelector('.gslide-media');
+    let container = closest(media, '.ginner-container');
     let desc = slide.querySelector('.gslide-description');
+
+    if (windowWidth > 769) {
+        media = container;
+    }
 
     addClass(media, 'greset');
     cssTransform(media, 'translate3d(0, 0, 0)');
@@ -70,7 +77,6 @@ export default function touchNavigation(instance) {
         touchStart: (e) => {
             process = true;
 
-
             // TODO: More tests for inline content slides
             if (hasClass(e.targetTouches[0].target, 'ginner-container') || closest(e.targetTouches[0].target, '.gslide-desc') || e.targetTouches[0].target.nodeName.toLowerCase() == 'a') {
                 process = false;
@@ -94,6 +100,12 @@ export default function touchNavigation(instance) {
                 mediaImage = null;
                 if (hasClass(media, 'gslide-image')) {
                     mediaImage = media.querySelector('img');
+                }
+
+                const windowWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+
+                if (windowWidth > 769) {
+                    media = currentSlide.querySelector('.ginner-container');
                 }
 
                 removeClass(overlay, 'greset');
@@ -245,7 +257,6 @@ export default function touchNavigation(instance) {
                 if (currentScale) {
                     style += ` scale3d(${currentScale}, ${currentScale}, 1)`;
                 }
-
                 cssTransform(mediaImage, style);
             }
         },
