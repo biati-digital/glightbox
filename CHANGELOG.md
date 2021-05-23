@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## 3.0.9
+
+- Updated: Plyr to 3.6.8
+- Improved: JS error when the description attribute is an invalid selector
+- Fixed: Media Buttons Not responding on Android #233
+- Fixed: When touch is activated images swipe independently of their descriptions #238
+- Fixed: Width / Height data attributes do not work for image types #234
+- Fixed: Adds missing size unit of video description on resize #229
+
 ## 3.0.8
 
 - New: Added Aria-hidden on all root elements except the glightbox-container
