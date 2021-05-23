@@ -1734,7 +1734,6 @@
     var img = new Image();
     var titleID = 'gSlideTitle_' + index;
     var textID = 'gSlideDesc_' + index;
-    console.log(data);
     img.addEventListener('load', function () {
       if (isFunction(callback)) {
         callback();
@@ -1751,11 +1750,11 @@
       img.setAttribute('aria-describedby', textID);
     }
 
-    if (data._hasCustomWidth) {
+    if (data.hasOwnProperty('_hasCustomWidth') && data._hasCustomWidth) {
       img.style.width = data.width;
     }
 
-    if (data._hasCustomHeight) {
+    if (data.hasOwnProperty('_hasCustomHeight') && data._hasCustomHeight) {
       img.style.height = data.height;
     }
 
@@ -2415,7 +2414,7 @@
     return Slide;
   }();
 
-  var _version = '3.0.8';
+  var _version = '3.0.9';
 
   var isMobile$1 = isMobile();
 
