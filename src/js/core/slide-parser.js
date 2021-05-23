@@ -118,7 +118,7 @@ export default class SlideConfigParser {
             if (config.trim() !== '') {
                 each(data, (val, key) => {
                     const str = config;
-                    const match = '\s?' + key + '\s?:\s?(.*?)(' + cleanKeys + '\s?:|$)';
+                    const match = 's?' + key + 's?:s?(.*?)(' + cleanKeys + 's?:|$)';
                     const regex = new RegExp(match);
                     const matches = str.match(regex);
 
@@ -168,12 +168,11 @@ export default class SlideConfigParser {
             }
         }
 
-        this.setSize(data, settings);
+        this.setSize(data, settings, element);
         this.slideConfig = data;
 
         return data;
     }
-
 
     /**
      * Set slide data size
@@ -184,16 +183,20 @@ export default class SlideConfigParser {
      * @param { object } settings
      * @return { object }
      */
-    setSize(data, settings) {
-        const defaultWith = (data.type == 'video' ? this.checkSize(settings.videosWidth) : this.checkSize(settings.width));
+    setSize(data, settings, element = null) {
+        const defaultWith = data.type == 'video' ? this.checkSize(settings.videosWidth) : this.checkSize(settings.width);
         const defaultHeight = this.checkSize(settings.height);
 
-        data.width = (has(data, 'width') && data.width !== '' ? this.checkSize(data.width) : defaultWith);
-        data.height = (has(data, 'height') && data.height !== '' ? this.checkSize(data.height) : defaultHeight);
+        data.width = has(data, 'width') && data.width !== '' ? this.checkSize(data.width) : defaultWith;
+        data.height = has(data, 'height') && data.height !== '' ? this.checkSize(data.height) : defaultHeight;
+
+        if (element && data.type == 'image') {
+            data._hasCustomWidth = element.dataset.width ? true : false;
+            data._hasCustomHeight = element.dataset.height ? true : false;
+        }
 
         return data;
     }
-
 
     /**
      * [checkSize size
@@ -203,9 +206,8 @@ export default class SlideConfigParser {
      * @return {string}
      */
     checkSize(size) {
-        return (isNumber(size) ? `${size}px` : size);
+        return isNumber(size) ? `${size}px` : size;
     }
-
 
     /**
      * Sanitize data attributes value
@@ -217,6 +219,6 @@ export default class SlideConfigParser {
         if (val !== 'true' && val !== 'false') {
             return val;
         }
-        return (val === 'true');
+        return val === 'true';
     }
 }
