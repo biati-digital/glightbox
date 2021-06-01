@@ -10,7 +10,6 @@
     top: 0;
     left: 0;
     z-index: 999999 !important;
-    overflow: hidden;
     touch-action: none;
     text-size-adjust: 100%;
     backface-visibility: hidden;
@@ -46,7 +45,6 @@
     .gslide {
         width: 100%;
         position: absolute;
-        opacity: 1;
         user-select: none;
         display: flex;
         align-items: center;
@@ -202,7 +200,6 @@
 
     &::before {
         content: '';
-        display: block;
         position: absolute;
         width: 100%;
         height: 100%;
@@ -328,7 +325,6 @@
     .gslide-description {
         height: auto !important;
         width: 100%;
-        background: transparent;
         position: absolute;
         bottom: 15px;
         padding: 19px 11px;
