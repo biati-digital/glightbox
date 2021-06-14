@@ -1974,6 +1974,7 @@
         title: '',
         type: '',
         description: '',
+        alt: '',
         descPosition: 'bottom',
         effect: '',
         width: '',
@@ -2054,7 +2055,6 @@
         var url = '';
         var config = element.getAttribute('data-glightbox');
         var nodeType = element.nodeName.toLowerCase();
-        data.alt = '';
 
         if (nodeType === 'a') {
           url = element.href;
