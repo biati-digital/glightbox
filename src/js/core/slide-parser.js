@@ -82,11 +82,16 @@ export default class SlideConfigParser {
         let url = '';
         let config = element.getAttribute('data-glightbox');
         let nodeType = element.nodeName.toLowerCase();
+        
+        //alt attribute propagation - this allow to use tag a as a weapper of an img and set text alternates with config
+        data.alt = '';
         if (nodeType === 'a') {
             url = element.href;
         }
         if (nodeType === 'img') {
             url = element.src;
+            //alt attribute propagation
+            data.alt = element.alt;
         }
 
         data.href = url;

@@ -113,6 +113,7 @@ Or manually download and link `glightbox.min.js` in your HTML:
 You can specify some options to each individual slide, the available options are:
 
 - title
+- alt
 - description
 - descPosition
 - type
@@ -163,7 +164,8 @@ const myGallery = GLightbox({
         },
         {
             'href': 'https://picsum.photos/1200/800',
-            'type': 'image'
+            'type': 'image',
+            'alt': 'image text alternatives'
         },
         {
             'href': 'https://www.youtube.com/watch?v=Ga6RYejo6Hk',

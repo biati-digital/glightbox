@@ -1742,6 +1742,10 @@
     img.src = data.href;
     img.alt = '';
 
+    if (!isNil(data.alt) && data.alt !== '') {
+      img.alt = data.alt;
+    }
+
     if (data.title !== '') {
       img.setAttribute('aria-labelledby', titleID);
     }
@@ -2050,6 +2054,7 @@
         var url = '';
         var config = element.getAttribute('data-glightbox');
         var nodeType = element.nodeName.toLowerCase();
+        data.alt = '';
 
         if (nodeType === 'a') {
           url = element.href;
@@ -2057,6 +2062,7 @@
 
         if (nodeType === 'img') {
           url = element.src;
+          data.alt = element.alt;
         }
 
         data.href = url;
