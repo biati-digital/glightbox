@@ -35,7 +35,7 @@ $ bower install glightbox
 import '/path/to/glightbox.js';
 
 // Using a bundler like webpack
-import Glightbox from 'glightbox';
+import GLightbox from 'glightbox';
 ```
 
 Or manually download and link `glightbox.min.js` in your HTML:
