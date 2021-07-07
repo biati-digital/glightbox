@@ -27,6 +27,10 @@ export default function slideImage(slide, data, index, callback) {
     }, false);
 
     img.src = data.href;
+    if (data.sizes != '' && data.srcset != '') {
+        img.sizes = data.sizes;
+        img.srcset = data.srcset;
+    }
     img.alt = ''; // https://davidwalsh.name/accessibility-tip-empty-alt-attributes
 
     if (data.title !== '') {
