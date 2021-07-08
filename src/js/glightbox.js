@@ -1230,8 +1230,11 @@ class GlightboxInit {
             }
 
             const body = document.body;
-            _.removeClass(html, 'glightbox-open');
-            _.removeClass(body, 'glightbox-open touching gdesc-open glightbox-touch glightbox-mobile gscrollbar-fixer');
+            const onlyOneGLightbox = document.querySelectorAll('#glightbox-body').length <= 1;
+            if (onlyOneGLightbox) {
+                _.removeClass(html, 'glightbox-open');
+                _.removeClass(body, 'glightbox-open touching gdesc-open glightbox-touch glightbox-mobile gscrollbar-fixer');
+            }
             this.modal.parentNode.removeChild(this.modal);
 
             this.trigger('close');
@@ -1241,10 +1244,13 @@ class GlightboxInit {
                 this.settings.onClose();
             }
 
-            const styles = document.querySelector('.gcss-styles');
-            if (styles) {
-                styles.parentNode.removeChild(styles);
+            if (onlyOneGLightbox) {
+                const styles = document.querySelector('.gcss-styles');
+                if (styles) {
+                    styles.parentNode.removeChild(styles);
+                }
             }
+
             this.lightboxOpen = false;
             this.closing = null;
         });
