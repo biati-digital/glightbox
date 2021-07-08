@@ -956,14 +956,14 @@ class GlightboxInit {
         lightboxHTML = _.createHTML(lightboxHTML);
         document.body.appendChild(lightboxHTML);
 
-        const modal = document.getElementById('glightbox-body');
+        const modal = document.body.lastElementChild;
         this.modal = modal;
         let closeButton = modal.querySelector('.gclose');
         this.prevButton = modal.querySelector('.gprev');
         this.nextButton = modal.querySelector('.gnext');
         this.overlay = modal.querySelector('.goverlay');
         this.loader = modal.querySelector('.gloader');
-        this.slidesContainer = document.getElementById('glightbox-slider');
+        this.slidesContainer = modal.querySelctor('.gslider');
         this.bodyHiddenChildElms = bodyChildElms;
         this.events = {};
 
