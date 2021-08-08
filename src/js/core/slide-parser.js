@@ -7,6 +7,7 @@ export default class SlideConfigParser {
             title: '',
             type: '',
             description: '',
+            alt: '',
             descPosition: 'bottom',
             effect: '',
             width: '',
@@ -82,11 +83,14 @@ export default class SlideConfigParser {
         let url = '';
         let config = element.getAttribute('data-glightbox');
         let nodeType = element.nodeName.toLowerCase();
+        
         if (nodeType === 'a') {
             url = element.href;
         }
         if (nodeType === 'img') {
             url = element.src;
+            //alt attribute propagation
+            data.alt = element.alt;
         }
 
         data.href = url;

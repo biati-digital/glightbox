@@ -10,7 +10,7 @@
  * @param {function} callback
  */
 
-import { isFunction } from '../utils/helpers.js';
+import { isNil, isFunction } from '../utils/helpers.js';
 
 export default function slideImage(slide, data, index, callback) {
     const slideMedia = slide.querySelector('.gslide-media');
@@ -28,6 +28,9 @@ export default function slideImage(slide, data, index, callback) {
 
     img.src = data.href;
     img.alt = ''; // https://davidwalsh.name/accessibility-tip-empty-alt-attributes
+    if (!isNil(data.alt) && data.alt !== '') {
+        img.alt = data.alt;
+    }
 
     if (data.title !== '') {
         img.setAttribute('aria-labelledby', titleID);
