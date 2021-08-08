@@ -7,6 +7,7 @@ GLightbox is a pure javascript lightbox. It can display images, iframes, inline 
 - **Small** - only 11KB Gzipped
 - **Fast and Responsive** - works with any screen size
 - **Gallery Support** - Create multiple galleries
+- **Response Images Support** - Let the browser use the optimal image for the current screen resolution
 - **Video Support** - Youtube, Vimeo and self hosted videos with autoplay
 - **Inline content support** - display any inline content
 - **Iframe support** - need to embed an iframe? no problem
@@ -104,6 +105,16 @@ Or manually download and link `glightbox.min.js` in your HTML:
 </a>
 <!-- OR using multiple data attributes -->
 <a href="https://picsum.photos/1200/800" data-type="image">
+  <img src="small.jpg" alt="image" />
+</a>
+
+<!-- Using responsive images: specify sizes and srcset through data attributes in the
+     same way you would with the img tag.
+     See: https://developer.mozilla.org/en-US/docs/Learn/HTML/Multimedia_and_embedding/Responsive_images -->
+<a href="deafult.jpg" class="glightbox6" data-title="Responsive example"
+data-description="Your browser will choose the optimal image for the resolution"
+data-sizes="(max-width: 600px) 480px, 800px"
+data-srcset="img480.jpx 480w img800.jpg 800w">
   <img src="small.jpg" alt="image" />
 </a>
 ```

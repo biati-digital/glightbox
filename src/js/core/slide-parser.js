@@ -4,6 +4,8 @@ export default class SlideConfigParser {
     constructor(slideParamas = {}) {
         this.defaults = {
             href: '',
+            sizes: '',
+            srcset: '',
             title: '',
             type: '',
             description: '',
