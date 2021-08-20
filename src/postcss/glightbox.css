@@ -153,6 +153,7 @@
         touch-action: none;
         margin: auto;
         min-width: 200px;
+        background-color: white;
 
         @media (--medium-small-viewport) {
             max-height: 97vh;
