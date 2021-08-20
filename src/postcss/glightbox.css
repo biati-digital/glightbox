@@ -330,7 +330,7 @@
         width: 100%;
         background: transparent;
         position: absolute;
-        bottom: 15px;
+        bottom: 0;
         padding: 19px 11px;
         max-width: 100vw !important;
         order: 2 !important;
