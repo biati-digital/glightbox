@@ -11,7 +11,7 @@ import slideVideo from '../slides/video.js';
 import slideInline from '../slides/inline.js';
 import slideIframe from '../slides/iframe.js';
 import SlideConfigParser from './slide-parser.js';
-import { addEvent, addClass, removeClass, hasClass, closest, isMobile, isFunction, createHTML } from '../utils/helpers.js';
+import { addEvent, addClass, removeClass, hasClass, closest, isMobile, isFunction, isNode, createHTML } from '../utils/helpers.js';
 
 export default class Slide {
     constructor(el, instance, index) {
@@ -111,7 +111,7 @@ export default class Slide {
 
         if (type === 'inline') {
             slideInline.apply(this.instance, [slide, slideConfig, this.index, finalCallback]);
-            if (settings.draggable) {
+            if (slideConfig.draggable) {
                 new DragSlides({
                     dragEl: slide.querySelector('.gslide-inline'),
                     toleranceX: settings.dragToleranceX,
@@ -127,7 +127,7 @@ export default class Slide {
             slideImage(slide, slideConfig, this.index, () => {
                 const img = slide.querySelector('img');
 
-                if (settings.draggable) {
+                if (slideConfig.draggable) {
                     new DragSlides({
                         dragEl: img,
                         toleranceX: settings.dragToleranceX,
@@ -233,6 +233,10 @@ export default class Slide {
      * @return { object }
      */
     getConfig() {
+        if (!isNode(this.element) && !this.element.hasOwnProperty('draggable')) {
+            this.element.draggable = this.instance.settings.draggable;
+        }
+
         const parser = new SlideConfigParser(this.instance.settings.slideExtraAttributes);
         this.slideConfig = parser.parseConfig(this.element, this.instance.settings);
 
