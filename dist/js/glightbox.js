@@ -2435,7 +2435,7 @@
     return Slide;
   }();
 
-  var _version = '3.1.0';
+  var _version = '3.1.1';
 
   var isMobile$1 = isMobile();
 
