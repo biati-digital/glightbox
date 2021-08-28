@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## 3.1.0
+
+- New: Added Avif image support [@dramspro](https://github.com/biati-digital/glightbox/pull/266)
+- New: Add support for responsive images [@gaborbsd](https://github.com/biati-digital/glightbox/pull/264)
+- Updated: playsinline video attribute
+- Updated: url check to allow query parameters in video and images
+- Fixed: Image description/shadow off on mobile device #268
+- Fixed: You can zoom next slide image if current slide is not full height #261
+- Fixed: Draggable option not working with "setElements" #257
+
+
 ## 3.0.9
 
 - Updated: Plyr to 3.6.8
