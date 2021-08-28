@@ -1740,6 +1740,12 @@
       }
     }, false);
     img.src = data.href;
+
+    if (data.sizes != '' && data.srcset != '') {
+      img.sizes = data.sizes;
+      img.srcset = data.srcset;
+    }
+
     img.alt = '';
 
     if (!isNil(data.alt) && data.alt !== '') {
@@ -1807,7 +1813,7 @@
         html += "style=\"background:#000; max-width: ".concat(data.width, ";\" ");
         html += 'preload="metadata" ';
         html += 'x-webkit-airplay="allow" ';
-        html += 'webkit-playsinline="" ';
+        html += 'playsinline ';
         html += 'controls ';
         html += 'class="gvideo-local">';
         var format = url.toLowerCase().split('.').pop();
@@ -1971,6 +1977,8 @@
 
       this.defaults = {
         href: '',
+        sizes: '',
+        srcset: '',
         title: '',
         type: '',
         description: '',
@@ -1995,7 +2003,7 @@
         var origin = url;
         url = url.toLowerCase();
 
-        if (url.match(/\.(jpeg|jpg|jpe|gif|png|apn|webp|svg)$/) !== null) {
+        if (url.match(/\.(jpeg|jpg|jpe|gif|png|apn|webp|avif|svg)/) !== null) {
           return 'image';
         }
 
@@ -2007,11 +2015,11 @@
           return 'video';
         }
 
-        if (url.match(/\.(mp4|ogg|webm|mov)$/) !== null) {
+        if (url.match(/\.(mp4|ogg|webm|mov)/) !== null) {
           return 'video';
         }
 
-        if (url.match(/\.(mp3|wav|wma|aac|ogg)$/) !== null) {
+        if (url.match(/\.(mp3|wav|wma|aac|ogg)/) !== null) {
           return 'audio';
         }
 
@@ -2290,7 +2298,7 @@
         if (type === 'inline') {
           slideInline.apply(this.instance, [slide, slideConfig, this.index, finalCallback]);
 
-          if (settings.draggable) {
+          if (slideConfig.draggable) {
             new DragSlides({
               dragEl: slide.querySelector('.gslide-inline'),
               toleranceX: settings.dragToleranceX,
@@ -2307,7 +2315,7 @@
           slideImage(slide, slideConfig, this.index, function () {
             var img = slide.querySelector('img');
 
-            if (settings.draggable) {
+            if (slideConfig.draggable) {
               new DragSlides({
                 dragEl: img,
                 toleranceX: settings.dragToleranceX,
@@ -2411,6 +2419,10 @@
     }, {
       key: "getConfig",
       value: function getConfig() {
+        if (!isNode(this.element) && !this.element.hasOwnProperty('draggable')) {
+          this.element.draggable = this.instance.settings.draggable;
+        }
+
         var parser = new SlideConfigParser(this.instance.settings.slideExtraAttributes);
         this.slideConfig = parser.parseConfig(this.element, this.instance.settings);
         return this.slideConfig;
@@ -2420,7 +2432,7 @@
     return Slide;
   }();
 
-  var _version = '3.0.9';
+  var _version = '3.1.1';
 
   var isMobile$1 = isMobile();
 
