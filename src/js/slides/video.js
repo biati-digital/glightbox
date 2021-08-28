@@ -55,7 +55,7 @@ export default function slideVideo(slide, data, index, callback) {
             html += `style="background:#000; max-width: ${data.width};" `;
             html += 'preload="metadata" ';
             html += 'x-webkit-airplay="allow" ';
-            html += 'webkit-playsinline="" ';
+            html += 'playsinline ';
             html += 'controls ';
             html += 'class="gvideo-local">';
 
