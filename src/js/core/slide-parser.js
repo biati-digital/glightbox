@@ -34,7 +34,7 @@ export default class SlideConfigParser {
         let origin = url;
         url = url.toLowerCase();
 
-        if (url.match(/\.(jpeg|jpg|jpe|gif|png|apn|webp|avif|svg)$/) !== null) {
+        if (url.match(/\.(jpeg|jpg|jpe|gif|png|apn|webp|avif|svg)/) !== null) {
             return 'image';
         }
         if (url.match(/(youtube\.com|youtube-nocookie\.com)\/watch\?v=([a-zA-Z0-9\-_]+)/) || url.match(/youtu\.be\/([a-zA-Z0-9\-_]+)/) || url.match(/(youtube\.com|youtube-nocookie\.com)\/embed\/([a-zA-Z0-9\-_]+)/)) {
@@ -43,10 +43,10 @@ export default class SlideConfigParser {
         if (url.match(/vimeo\.com\/([0-9]*)/)) {
             return 'video';
         }
-        if (url.match(/\.(mp4|ogg|webm|mov)$/) !== null) {
+        if (url.match(/\.(mp4|ogg|webm|mov)/) !== null) {
             return 'video';
         }
-        if (url.match(/\.(mp3|wav|wma|aac|ogg)$/) !== null) {
+        if (url.match(/\.(mp3|wav|wma|aac|ogg)/) !== null) {
             return 'audio';
         }
 
@@ -85,7 +85,7 @@ export default class SlideConfigParser {
         let url = '';
         let config = element.getAttribute('data-glightbox');
         let nodeType = element.nodeName.toLowerCase();
-        
+
         if (nodeType === 'a') {
             url = element.href;
         }
