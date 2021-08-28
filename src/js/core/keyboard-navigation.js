@@ -21,15 +21,17 @@ function getNextFocusElement(current = -1) {
         current = parseInt(current);
     }
 
-    let newIndex = current < 0 ? 1 : current + 1;
-    if (newIndex > btns.length) {
-        newIndex = '1';
-    }
-
     const orders = [];
     each(btns, (btn) => {
         orders.push(btn.getAttribute('data-taborder'));
     });
+    const highestOrder = Math.max.apply(Math, orders.map((order) => parseInt(order)));
+
+    let newIndex = current < 0 ? 1 : current + 1;
+    if (newIndex > highestOrder) {
+        newIndex = '1';
+    }
+
     const nextOrders = orders.filter((el) => el >= parseInt(newIndex));
     const nextFocus = nextOrders.sort()[0];
 
