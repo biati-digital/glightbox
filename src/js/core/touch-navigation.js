@@ -102,6 +102,10 @@ export default function touchNavigation(instance) {
                     mediaElement = media.querySelector('img');
                 }
 
+                if (instance.settings.touchVideoClosable && hasClass(media, 'gslide-video')) {
+                    mediaElement = media.querySelector('.gvideo');
+                }
+
                 const windowWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
 
                 if (windowWidth > 769) {
