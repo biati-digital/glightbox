@@ -212,7 +212,7 @@ myGallery.setElements([...]);
 | closeButton | boolean | `true` | Show or hide the close button. |
 | touchNavigation | boolean | `true` | Enable or disable the touch navigation (swipe). |
 | touchFollowAxis | boolean | `true` | Image follow axis when dragging on mobile. |
-| touchVideoClosable | boolean | `false` | Videos can be closed by swiping up or down. |
+| touchVideoClosable | boolean | `false` | Enable or disable the closing of videos by swiping. |
 | keyboardNavigation | boolean | `true` | Enable or disable the keyboard navigation. |
 | closeOnOutsideClick | boolean | `true` | Close the lightbox when clicking outside the active slide. |
 | startAt | number | `0` | Start lightbox at defined index. |
