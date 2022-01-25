@@ -70,8 +70,8 @@ const lightbox = GLightbox();
 ```
 
 ```html
-<a href="large.jpg" class="glightbox">
-	<img src="small.jpg" alt="image" />
+<a href="my-photograph.large.jpg" class="glightbox">
+	<img src="my-photograph.small.jpg" alt="photograph description" />
 </a>
 ```
 
@@ -79,7 +79,7 @@ const lightbox = GLightbox();
 
 ```html
 <a href="https://vimeo.com/115041822" class="glightbox">
-	<img src="..." alt="" />
+	<img src="video-thumbnail.jpg" alt="..." />
 </a>
 ```
 
@@ -88,28 +88,20 @@ const lightbox = GLightbox();
 Use the `data-gallery` attribute to create a gallery inside of an existing lightbox.
 
 ```html
-<!-- Add the data-gallery with the same value -->
-<a href="large.jpg" class="glightbox" data-gallery="Picasso">
-	<img src="small.jpg" alt="image" />
+<!-- Open a gallery of Picasso images -->
+<a href="the-weeping-woman.full-size.jpg" class="glightbox" data-gallery="Picasso">
+	<img src="the-weeping-woman.thumbnail.jpg" alt="image" />
 </a>
-<a href="video.mp4" class="glightbox" data-gallery="Picasso">
-	<img src="small.jpg" alt="image" />
+<a href="untitled-by-picasso.full-size.jpg" class="glightbox" data-gallery="Picasso">
+	<img src="untitled-by-picasso.thumbnail.jpg" alt="image" />
 </a>
-<a href="video2.mp4" class="glightbox" data-gallery="Van Gogh">
-	<img src="small.jpg" alt="image" />
+<!-- Open a gallery of Van Gogh images -->
+<a href="almond-blossoms.full-size.jpg" class="glightbox" data-gallery="Van Gogh">
+	<img src="almond-blossoms.thumbnail.jpg" alt="image" />
 </a>
-<button id="openGallery" data-gallery="Picasso">Open The Gallery</button>
-```
-
-```js
-// Create a lightbox
-const lightbox = GLightbox();
-const openGallery = document.getElementById('openGallery');
-
-// Using GLightbox.open(), pass an element with a data-gallery
-// attribute, and only slides with that same gallery name
-// will be included in that gallery
-openGallery.onclick = ({ target }) => lightbox.open(target);
+<a href="the-potato-eaters.full-size.jpg" class="glightbox" data-gallery="Van Gogh">
+	<img src="the-potato-eaters.thumbnail.jpg" alt="image" />
+</a>
 ```
 
 ### Use events to run callbacks
