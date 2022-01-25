@@ -136,6 +136,27 @@ lightbox.on('slide_before_change', (data) => {
 ### Options
 
 Options are passed to the GLightbox function as an object. A number of options can also be applied individually to the slides using `data-*` attributes or using `data-glightbox` on the element. [2] If not set on the element, then the options are inherited from the GLightbox instance.
+
+#### Slide Options 
+
+| Name | Type | Default | Description |
+| --- | --- | --- | --- |
+| title | `string` | `''` | Add a title to slides. |
+| alt | `string` | `''` | Passes the `alt` description of the image and adds it as an attribute to maintain accessibility. |
+| description | `string` | `''` | Add descriptions to slides. |
+| descPosition | `string` | `'bottom'` | Available Options: `'top'`, `'right'`, `'bottom'`, `'left'`. |
+| type | `string` | `'image'` | Available Options: `'image'`, `'external'`, `'video'`, `'inline'`. |
+| effect | `string` | `'fade'` | Available Options: `'fade'`, `'zoom'`, `'slide'`, `'none'`. |
+| width | `string\|number` | `'900px'` | Applies to inline elements and iframes. Any unit can be used, but numbers will be converted to `px`. |
+| height | `string\|number` | `'auto'` | Applies to inline elements and iframes. Any unit can be used, but numbers will be converted to `px`. |
+| zoomable | `boolean` | `true` | Enable/disable zoom for images. |
+| draggable | `boolean` | `true` | Enable/disable drag for images. |
+
+[2] To apply options using `data-glightbox` they must be formatted like in the example below:
+```html
+<a data-glightbox="title: Quarterly report;description: yikes it's not good;descPosition: left;type: image;" href="quarterly-graph.jpg">See Quarterly Reports</a>
+```
+
 ## Documentation
 
 GLightbox offers more methods and configuration options, and we encourage you to read the [documentation](https://linktodocumentation) here.
