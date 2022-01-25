@@ -179,10 +179,11 @@ Options are passed to the GLightbox function as an object. A number of options c
 | videosWidth | `string\|number` | `'960px'` | Default width for videos. Any unit can be used, but numbers will be converted to `px`. |
 | descPosition | `string` | `'bottom'` | Global position for slide descriptions. Available Options: `'top'`, `'right'`, `'bottom'`, `'left'`. |
 
+<!--
 ## Documentation
 
 GLightbox offers more methods and configuration options, and we encourage you to read the [documentation](https://linktodocumentation) here.
-
+-->
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
