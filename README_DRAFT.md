@@ -132,6 +132,10 @@ lightbox.on('slide_before_change', (data) => {
 
 [1] This can be the link, button, HTML element that opened this slide, or null if the slides were set dynamically
 
+
+### Options
+
+Options are passed to the GLightbox function as an object. A number of options can also be applied individually to the slides using `data-*` attributes or using `data-glightbox` on the element. [2] If not set on the element, then the options are inherited from the GLightbox instance.
 ## Documentation
 
 GLightbox offers more methods and configuration options, and we encourage you to read the [documentation](https://linktodocumentation) here.
