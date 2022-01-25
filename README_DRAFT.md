@@ -157,6 +157,28 @@ Options are passed to the GLightbox function as an object. A number of options c
 <a data-glightbox="title: Quarterly report;description: yikes it's not good;descPosition: left;type: image;" href="quarterly-graph.jpg">See Quarterly Reports</a>
 ```
 
+#### GLightbox Options
+| Name | Type | Default | Description |
+|---|---|---|---|
+| selector | `string` | `'.glightbox'` | A valid selector, e.g. `'[data-glightbox]'`, `'.my-lightbox'`. | 
+| elements | `array` | `null` | Option to pass in an array of elements, learn more [here](linktodocumentation). |
+| skin | `'string'` | `'clean'` | Name of a CSS theme. Adds a class to the lightbox `'.glightbox-${skin}'` for more customization. |
+| openEffect | `string` | `'zoom'` | Name of effect to run on lightbox open. Available Options: `'zoom'`, `'fade'`, `'none'`. |
+| closeEffect | `string` | `'zoom'` | Name of effect to run on lightbox close. Available Options: `'zoom'`, `'fade'`, `'none'`. |
+| slideEffect | `string` | `'slide'` | Name of effect to run on slide change. Available Options: `'slide'`, `'fade'`, `'zoom'`, `'none'`. |
+| moreText | `string` | `'See more'` | When descriptions are too long on mobile, this text will show as the toggle text. |
+| moreLength | `number` | `60` | Number of characters to display on the description before adding the moreText link. If set to `0`, then the entire description will always be shown. |
+| closeButton | `boolean` | `true` | Show/hide the close button. |
+| touchNavigation | `boolean` | `true` | Enable/disable ability to navigate by swipe/touch. |
+| touchFollowAxis | `boolean` | `true` | Enable/disable image following the axis when dragging. |
+| keyboardNavigation | `boolean` | `true` | Enable/disable ability to navigate by keyboard. |
+| closeOnOutsideClick | `boolean` | `true` | Enable/disable clicking outside of the active slide closing the lightbox. |
+| startAt | `number` | `0` | The slide index the lightbox should start at. |
+| width | `string\|number` | `'900px'` | Default width for inline elements and iframes. Any unit can be used, but numbers will be converted to `px`. |
+| height | `string\|number` | `'506px'` | Default height for inline elements and iframes. Any unit can be used, but numbers will be converted to `px`. **Inline elements can have their height set to 'auto'.** |
+| videosWidth | `string\|number` | `'960px'` | Default width for videos. Any unit can be used, but numbers will be converted to `px`. |
+| descPosition | `string` | `'bottom'` | Global position for slide descriptions. Available Options: `'top'`, `'right'`, `'bottom'`, `'left'`. |
+
 ## Documentation
 
 GLightbox offers more methods and configuration options, and we encourage you to read the [documentation](https://linktodocumentation) here.
