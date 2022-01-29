@@ -544,16 +544,19 @@
       current = parseInt(current);
     }
 
-    var newIndex = current < 0 ? 1 : current + 1;
-
-    if (newIndex > btns.length) {
-      newIndex = '1';
-    }
-
     var orders = [];
     each(btns, function (btn) {
       orders.push(btn.getAttribute('data-taborder'));
     });
+    var highestOrder = Math.max.apply(Math, orders.map(function (order) {
+      return parseInt(order);
+    }));
+    var newIndex = current < 0 ? 1 : current + 1;
+
+    if (newIndex > highestOrder) {
+      newIndex = '1';
+    }
+
     var nextOrders = orders.filter(function (el) {
       return el >= parseInt(newIndex);
     });
