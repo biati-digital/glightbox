@@ -350,12 +350,11 @@ export function createIframe(config) {
         iframe.setAttribute('allow', allow);
     }
     iframe.onload = function() {
+        iframe.onload = null;
         addClass(iframe, 'node-ready');
         if (isFunction(callback)) {
             callback();
         }
-
-        iframe.onload = null;
     };
 
     if (appendTo) {
