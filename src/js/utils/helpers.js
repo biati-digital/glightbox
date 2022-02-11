@@ -354,6 +354,8 @@ export function createIframe(config) {
         if (isFunction(callback)) {
             callback();
         }
+
+        iframe.onload = null;
     };
 
     if (appendTo) {
