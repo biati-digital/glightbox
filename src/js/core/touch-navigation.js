@@ -47,7 +47,7 @@ export default function touchNavigation(instance) {
     let process = false;
     let currentSlide = null;
     let media = null;
-    let mediaImage = null;
+    let mediaElement = null;
     let doingMove = false;
     let initScale = 1;
     let maxScale = 4.5;
@@ -97,9 +97,13 @@ export default function touchNavigation(instance) {
                 media = currentSlide.querySelector('.gslide-media');
                 isInlined = currentSlide.querySelector('.gslide-inline');
 
-                mediaImage = null;
+                mediaElement = null;
                 if (hasClass(media, 'gslide-image')) {
-                    mediaImage = media.querySelector('img');
+                    mediaElement = media.querySelector('img');
+                }
+
+                if (instance.settings.touchVideoClosable && hasClass(media, 'gslide-video')) {
+                    mediaElement = media.querySelector('.gvideo');
                 }
 
                 const windowWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
@@ -154,7 +158,7 @@ export default function touchNavigation(instance) {
             vDistancePercent = (vDistance * 100) / winHeight;
 
             let opacity;
-            if (vSwipe && mediaImage) {
+            if (vSwipe && mediaElement) {
                 opacity = 1 - Math.abs(vDistance) / winHeight;
                 overlay.style.opacity = opacity;
 
@@ -171,7 +175,7 @@ export default function touchNavigation(instance) {
                 }
             }
 
-            if (!mediaImage) {
+            if (!mediaElement) {
                 return cssTransform(media, `translate3d(${hDistancePercent}%, 0, 0)`);
             }
 
@@ -190,7 +194,7 @@ export default function touchNavigation(instance) {
             const v = Math.abs(parseInt(vDistancePercent));
             const h = Math.abs(parseInt(hDistancePercent));
 
-            if (v > 29 && mediaImage) {
+            if (v > 29 && mediaElement) {
                 instance.close();
                 return;
             }
@@ -210,12 +214,12 @@ export default function touchNavigation(instance) {
             initScale = currentScale ? currentScale : 1;
         },
         pinch: (evt) => {
-            if (!mediaImage || doingMove) {
+            if (!mediaElement || doingMove) {
                 return false;
             }
 
             doingZoom = true;
-            mediaImage.scaleX = mediaImage.scaleY = initScale * evt.zoom;
+            mediaElement.scaleX = mediaElement.scaleY = initScale * evt.zoom;
 
             let scale = initScale * evt.zoom;
             imageZoomed = true;
@@ -227,7 +231,7 @@ export default function touchNavigation(instance) {
                 lastZoomedPosX = null;
                 zoomedPosX = null;
                 zoomedPosY = null;
-                mediaImage.setAttribute('style', '');
+                mediaElement.setAttribute('style', '');
                 return;
             }
             if (scale > maxScale) {
@@ -235,7 +239,7 @@ export default function touchNavigation(instance) {
                 scale = maxScale;
             }
 
-            mediaImage.style.transform = `scale3d(${scale}, ${scale}, 1)`;
+            mediaElement.style.transform = `scale3d(${scale}, ${scale}, 1)`;
             currentScale = scale;
         },
         pressMove: (e) => {
@@ -257,7 +261,7 @@ export default function touchNavigation(instance) {
                 if (currentScale) {
                     style += ` scale3d(${currentScale}, ${currentScale}, 1)`;
                 }
-                cssTransform(mediaImage, style);
+                cssTransform(mediaElement, style);
             }
         },
         swipe: (evt) => {

@@ -47,6 +47,7 @@ const defaults = {
     oneSlidePerOpen: false,
     touchNavigation: true,
     touchFollowAxis: true,
+    touchVideoClosable: false,
     keyboardNavigation: true,
     closeOnOutsideClick: true,
     plugins: false,
