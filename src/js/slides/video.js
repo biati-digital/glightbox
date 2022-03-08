@@ -24,8 +24,7 @@ export default function slideVideo(slide, data, index, callback) {
 
     let url = data.href;
     let protocol = location.protocol.replace(':', '');
-    let videoSource = '';
-    let embedID = '';
+    let provider = data?.videoProvider;
     let customPlaceholder = false;
 
     if (protocol == 'file') {
@@ -35,22 +34,22 @@ export default function slideVideo(slide, data, index, callback) {
 
     injectAssets(this.settings.plyr.js, 'Plyr', () => {
         // Set vimeo videos
-        if (url.match(/vimeo\.com\/([0-9]*)/)) {
-            const vimeoID = /vimeo.*\/(\d+)/i.exec(url);
-            videoSource = 'vimeo';
-            embedID = vimeoID[1];
+        if (!provider && url.match(/vimeo\.com\/([0-9]*)/)) {
+            provider = 'vimeo';
         }
 
         // Set youtube videos
-        if (url.match(/(youtube\.com|youtube-nocookie\.com)\/watch\?v=([a-zA-Z0-9\-_]+)/) || url.match(/youtu\.be\/([a-zA-Z0-9\-_]+)/) || url.match(/(youtube\.com|youtube-nocookie\.com)\/embed\/([a-zA-Z0-9\-_]+)/)) {
-            const youtubeID = getYoutubeID(url);
-            videoSource = 'youtube';
-            embedID = youtubeID;
+        if (
+            !provider &&
+            (url.match(/(youtube\.com|youtube-nocookie\.com)\/watch\?v=([a-zA-Z0-9\-_]+)/) || url.match(/youtu\.be\/([a-zA-Z0-9\-_]+)/) || url.match(/(youtube\.com|youtube-nocookie\.com)\/embed\/([a-zA-Z0-9\-_]+)/))
+        ) {
+            provider = 'youtube';
         }
 
         // Set local videos
-        if (url.match(/\.(mp4|ogg|webm|mov)$/) !== null) {
-            videoSource = 'local';
+        // if no provider, default to local
+        if (provider === 'local' || !provider) {
+            provider = 'local';
             let html = '<video id="' + videoID + '" ';
             html += `style="background:#000; max-width: ${data.width};" `;
             html += 'preload="metadata" ';
@@ -58,31 +57,15 @@ export default function slideVideo(slide, data, index, callback) {
             html += 'playsinline ';
             html += 'controls ';
             html += 'class="gvideo-local">';
-
-            let format = url.toLowerCase().split('.').pop();
-            let sources = { mp4: '', ogg: '', webm: '' };
-            format = format == 'mov' ? 'mp4' : format;
-            sources[format] = url;
-
-            for (let key in sources) {
-                if (sources.hasOwnProperty(key)) {
-                    let videoFile = sources[key];
-                    if (data.hasOwnProperty(key)) {
-                        videoFile = data[key];
-                    }
-                    if (videoFile !== '') {
-                        html += `<source src="${videoFile}" type="video/${key}">`;
-                    }
-                }
-            }
+            html += `<source src="${url}">`;
             html += '</video>';
             customPlaceholder = createHTML(html);
         }
 
         // prettier-ignore
-        const placeholder = customPlaceholder ? customPlaceholder : createHTML(`<div id="${videoID}" data-plyr-provider="${videoSource}" data-plyr-embed-id="${embedID}"></div>`);
+        const placeholder = customPlaceholder ? customPlaceholder : createHTML(`<div id="${videoID}" data-plyr-provider="${provider}" data-plyr-embed-id="${url}"></div>`);
 
-        addClass(videoWrapper, `${videoSource}-video gvideo`);
+        addClass(videoWrapper, `${provider}-video gvideo`);
         videoWrapper.appendChild(placeholder);
         videoWrapper.setAttribute('data-id', videoID);
         videoWrapper.setAttribute('data-index', index);
@@ -108,24 +91,6 @@ export default function slideVideo(slide, data, index, callback) {
         player.on('enterfullscreen', handleMediaFullScreen);
         player.on('exitfullscreen', handleMediaFullScreen);
     });
-}
-
-/**
- * Get youtube ID
- *
- * @param {string} url
- * @returns {string} video id
- */
-function getYoutubeID(url) {
-    let videoID = '';
-    url = url.replace(/(>|<)/gi, '').split(/(vi\/|v=|\/v\/|youtu\.be\/|\/embed\/)/);
-    if (url[2] !== undefined) {
-        videoID = url[2].split(/[^0-9a-z_\-]/i);
-        videoID = videoID[0];
-    } else {
-        videoID = url;
-    }
-    return videoID;
 }
 
 /**

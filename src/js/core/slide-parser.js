@@ -8,6 +8,7 @@ export default class SlideConfigParser {
             srcset: '',
             title: '',
             type: '',
+            videoProvider: '',
             description: '',
             alt: '',
             descPosition: 'bottom',
