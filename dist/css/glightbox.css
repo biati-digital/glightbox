@@ -231,6 +231,7 @@
   max-height: calc(100vh - 40px);
   overflow: auto;
   max-width: 100%;
+  margin: auto;
 }
 
 .gslide-inline .ginlined-content {

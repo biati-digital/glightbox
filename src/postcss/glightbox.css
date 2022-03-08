@@ -235,6 +235,7 @@
     max-height: calc(100vh - 40px);
     overflow: auto;
     max-width: 100%;
+    margin: auto;
 
     @media (--medium-small-viewport) {
         max-height: 95vh;
