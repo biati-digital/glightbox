@@ -23,13 +23,9 @@ export default function slideVideo(slide, data, index, callback) {
     injectAssets(this.settings.plyr.css, 'Plyr');
 
     let url = data.href;
-    let protocol = location.protocol.replace(':', '');
     let provider = data?.videoProvider;
     let customPlaceholder = false;
 
-    if (protocol == 'file') {
-        protocol = 'http';
-    }
     slideMedia.style.maxWidth = data.width;
 
     injectAssets(this.settings.plyr.js, 'Plyr', () => {
@@ -74,8 +70,7 @@ export default function slideVideo(slide, data, index, callback) {
         const player = new Plyr('#' + videoID, playerConfig);
 
         player.on('ready', (event) => {
-            const instance = event.detail.plyr;
-            videoPlayers[videoID] = instance;
+            videoPlayers[videoID] = event.detail.plyr;
             if (isFunction(callback)) {
                 callback();
             }
@@ -101,10 +96,10 @@ export default function slideVideo(slide, data, index, callback) {
 function handleMediaFullScreen(event) {
     const media = closest(event.target, '.gslide-media');
 
-    if (event.type == 'enterfullscreen') {
+    if (event.type === 'enterfullscreen') {
         addClass(media, 'fullscreen');
     }
-    if (event.type == 'exitfullscreen') {
+    if (event.type === 'exitfullscreen') {
         removeClass(media, 'fullscreen');
     }
 }
