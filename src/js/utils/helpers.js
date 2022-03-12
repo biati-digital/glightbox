@@ -30,7 +30,6 @@ export function extend() {
     return extended;
 }
 
-
 /**
  * Each
  *
@@ -67,7 +66,6 @@ export function each(collection, callback) {
     }
 }
 
-
 /**
  * Get nde events
  * return node events and optionally
@@ -94,7 +92,6 @@ export function getNodeEvents(node, name = null, fn = null) {
     return data;
 }
 
-
 /**
  * Add Event
  * Add an event listener
@@ -102,13 +99,7 @@ export function getNodeEvents(node, name = null, fn = null) {
  * @param {string} eventName
  * @param {object} detials
  */
-export function addEvent(eventName, {
-    onElement,
-    withCallback,
-    avoidDuplicate = true,
-    once = false,
-    useCapture = false
-} = {}, thisArg) {
+export function addEvent(eventName, { onElement, withCallback, avoidDuplicate = true, once = false, useCapture = false } = {}, thisArg) {
     let element = onElement || [];
     if (isString(element)) {
         element = document.querySelectorAll(element);
@@ -122,7 +113,7 @@ export function addEvent(eventName, {
             handler.destroy();
         }
     }
-    handler.destroy = function() {
+    handler.destroy = function () {
         each(element, (el) => {
             const events = getNodeEvents(el, eventName, handler);
             if (events.found) {
@@ -135,7 +126,7 @@ export function addEvent(eventName, {
     };
     each(element, (el) => {
         const events = getNodeEvents(el, eventName, handler);
-        if (el.addEventListener && (avoidDuplicate && !events.found) || !avoidDuplicate) {
+        if ((el.addEventListener && avoidDuplicate && !events.found) || !avoidDuplicate) {
             el.addEventListener(eventName, handler, useCapture);
             events.all.push({ eventName: eventName, fn: handler });
         }
@@ -150,7 +141,7 @@ export function addEvent(eventName, {
  * @param {string} class name
  */
 export function addClass(node, name) {
-    each(name.split(' '), cl => node.classList.add(cl));
+    each(name.split(' '), (cl) => node.classList.add(cl));
 }
 
 /**
@@ -160,7 +151,7 @@ export function addClass(node, name) {
  * @param {string} class name
  */
 export function removeClass(node, name) {
-    each(name.split(' '), cl => node.classList.remove(cl));
+    each(name.split(' '), (cl) => node.classList.remove(cl));
 }
 
 /**
@@ -204,7 +195,7 @@ export function animateElement(element, animation = '', callback = false) {
     if (!element || animation === '') {
         return false;
     }
-    if (animation == 'none') {
+    if (animation === 'none') {
         if (isFunction(callback)) {
             callback();
         }
@@ -231,7 +222,7 @@ export function animateElement(element, animation = '', callback = false) {
 }
 
 export function cssTransform(node, translate = '') {
-    if (translate == '') {
+    if (translate === '') {
         node.style.webkitTransform = '';
         node.style.MozTransform = '';
         node.style.msTransform = '';
@@ -294,7 +285,8 @@ export function windowSize() {
  * Determine animation events
  */
 export function whichAnimationEvent() {
-    let t, el = document.createElement('fakeelement');
+    let t,
+        el = document.createElement('fakeelement');
     let animations = {
         animation: 'animationend',
         OAnimation: 'oAnimationEnd',
@@ -329,7 +321,6 @@ export function whichTransitionEvent() {
     }
 }
 
-
 /**
  * Create an iframe element
  *
@@ -349,7 +340,7 @@ export function createIframe(config) {
     if (allow) {
         iframe.setAttribute('allow', allow);
     }
-    iframe.onload = function() {
+    iframe.onload = function () {
         iframe.onload = null;
         addClass(iframe, 'node-ready');
         if (isFunction(callback)) {
@@ -362,7 +353,6 @@ export function createIframe(config) {
     }
     return iframe;
 }
-
 
 /**
  * Wait until
@@ -418,7 +408,7 @@ export function injectAssets(url, waitFor, callback) {
         waitFor = false;
     }
 
-    if (isString(waitFor) && (waitFor in window)) {
+    if (isString(waitFor) && waitFor in window) {
         if (isFunction(callback)) {
             callback();
         }
@@ -460,11 +450,14 @@ export function injectAssets(url, waitFor, callback) {
     if (found && found.length > 0) {
         if (isFunction(callback)) {
             if (isString(waitFor)) {
-                waitUntil(() => {
-                    return typeof window[waitFor] !== 'undefined';
-                }, () => {
-                    callback();
-                });
+                waitUntil(
+                    () => {
+                        return typeof window[waitFor] !== 'undefined';
+                    },
+                    () => {
+                        callback();
+                    }
+                );
                 return false;
             }
             callback();
@@ -478,26 +471,28 @@ export function injectAssets(url, waitFor, callback) {
     script.onload = () => {
         if (isFunction(callback)) {
             if (isString(waitFor)) {
-                waitUntil(() => {
-                    return typeof window[waitFor] !== 'undefined';
-                }, () => {
-                    callback();
-                });
+                waitUntil(
+                    () => {
+                        return typeof window[waitFor] !== 'undefined';
+                    },
+                    () => {
+                        callback();
+                    }
+                );
                 return false;
             }
             callback();
         }
     };
     document.body.appendChild(script);
-    return;
 }
 
 export function isMobile() {
-    return ('navigator' in window && window.navigator.userAgent.match(/(iPad)|(iPhone)|(iPod)|(Android)|(PlayBook)|(BB10)|(BlackBerry)|(Opera Mini)|(IEMobile)|(webOS)|(MeeGo)/i));
+    return 'navigator' in window && window.navigator.userAgent.match(/(iPad)|(iPhone)|(iPod)|(Android)|(PlayBook)|(BB10)|(BlackBerry)|(Opera Mini)|(IEMobile)|(webOS)|(MeeGo)/i);
 }
 
 export function isTouch() {
-    return isMobile() !== null || document.createTouch !== undefined || ('ontouchstart' in window) || ('onmsgesturechange' in window) || navigator.msMaxTouchPoints;
+    return isMobile() !== null || document.createTouch !== undefined || 'ontouchstart' in window || 'onmsgesturechange' in window || navigator.msMaxTouchPoints;
 }
 
 export function isFunction(f) {
@@ -513,11 +508,11 @@ export function isArray(ar) {
     return Array.isArray(ar);
 }
 export function isArrayLike(ar) {
-    return (ar && ar.length && isFinite(ar.length));
+    return ar && ar.length && isFinite(ar.length);
 }
 export function isObject(o) {
     let type = typeof o;
-    return type === 'object' && (o != null && !isFunction(o) && !isArray(o));
+    return type === 'object' && o != null && !isFunction(o) && !isArray(o);
 }
 export function isNil(o) {
     return o == null;

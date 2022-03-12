@@ -218,7 +218,7 @@
       return false;
     }
 
-    if (animation == 'none') {
+    if (animation === 'none') {
       if (isFunction(callback)) {
         callback();
       }
@@ -249,7 +249,7 @@
   function cssTransform(node) {
     var translate = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
 
-    if (translate == '') {
+    if (translate === '') {
       node.style.webkitTransform = '';
       node.style.MozTransform = '';
       node.style.msTransform = '';
@@ -335,6 +335,7 @@
     }
 
     iframe.onload = function () {
+      iframe.onload = null;
       addClass(iframe, 'node-ready');
 
       if (isFunction(callback)) {
@@ -471,7 +472,6 @@
     };
 
     document.body.appendChild(script);
-    return;
   }
   function isMobile() {
     return 'navigator' in window && window.navigator.userAgent.match(/(iPad)|(iPhone)|(iPod)|(Android)|(PlayBook)|(BB10)|(BlackBerry)|(Opera Mini)|(IEMobile)|(webOS)|(MeeGo)/i);
@@ -1787,31 +1787,20 @@
     var videoWrapper = slide.querySelector('.gvideo-wrapper');
     injectAssets(this.settings.plyr.css, 'Plyr');
     var url = data.href;
-    var protocol = location.protocol.replace(':', '');
-    var videoSource = '';
-    var embedID = '';
+    var provider = data === null || data === void 0 ? void 0 : data.videoProvider;
     var customPlaceholder = false;
-
-    if (protocol == 'file') {
-      protocol = 'http';
-    }
-
     slideMedia.style.maxWidth = data.width;
     injectAssets(this.settings.plyr.js, 'Plyr', function () {
-      if (url.match(/vimeo\.com\/([0-9]*)/)) {
-        var vimeoID = /vimeo.*\/(\d+)/i.exec(url);
-        videoSource = 'vimeo';
-        embedID = vimeoID[1];
+      if (!provider && url.match(/vimeo\.com\/([0-9]*)/)) {
+        provider = 'vimeo';
       }
 
-      if (url.match(/(youtube\.com|youtube-nocookie\.com)\/watch\?v=([a-zA-Z0-9\-_]+)/) || url.match(/youtu\.be\/([a-zA-Z0-9\-_]+)/) || url.match(/(youtube\.com|youtube-nocookie\.com)\/embed\/([a-zA-Z0-9\-_]+)/)) {
-        var youtubeID = getYoutubeID(url);
-        videoSource = 'youtube';
-        embedID = youtubeID;
+      if (!provider && (url.match(/(youtube\.com|youtube-nocookie\.com)\/watch\?v=([a-zA-Z0-9\-_]+)/) || url.match(/youtu\.be\/([a-zA-Z0-9\-_]+)/) || url.match(/(youtube\.com|youtube-nocookie\.com)\/embed\/([a-zA-Z0-9\-_]+)/))) {
+        provider = 'youtube';
       }
 
-      if (url.match(/\.(mp4|ogg|webm|mov)$/) !== null) {
-        videoSource = 'local';
+      if (provider === 'local' || !provider) {
+        provider = 'local';
         var html = '<video id="' + videoID + '" ';
         html += "style=\"background:#000; max-width: ".concat(data.width, ";\" ");
         html += 'preload="metadata" ';
@@ -1819,43 +1808,20 @@
         html += 'playsinline ';
         html += 'controls ';
         html += 'class="gvideo-local">';
-        var format = url.toLowerCase().split('.').pop();
-        var sources = {
-          mp4: '',
-          ogg: '',
-          webm: ''
-        };
-        format = format == 'mov' ? 'mp4' : format;
-        sources[format] = url;
-
-        for (var key in sources) {
-          if (sources.hasOwnProperty(key)) {
-            var videoFile = sources[key];
-
-            if (data.hasOwnProperty(key)) {
-              videoFile = data[key];
-            }
-
-            if (videoFile !== '') {
-              html += "<source src=\"".concat(videoFile, "\" type=\"video/").concat(key, "\">");
-            }
-          }
-        }
-
+        html += "<source src=\"".concat(url, "\">");
         html += '</video>';
         customPlaceholder = createHTML(html);
       }
 
-      var placeholder = customPlaceholder ? customPlaceholder : createHTML("<div id=\"".concat(videoID, "\" data-plyr-provider=\"").concat(videoSource, "\" data-plyr-embed-id=\"").concat(embedID, "\"></div>"));
-      addClass(videoWrapper, "".concat(videoSource, "-video gvideo"));
+      var placeholder = customPlaceholder ? customPlaceholder : createHTML("<div id=\"".concat(videoID, "\" data-plyr-provider=\"").concat(provider, "\" data-plyr-embed-id=\"").concat(url, "\"></div>"));
+      addClass(videoWrapper, "".concat(provider, "-video gvideo"));
       videoWrapper.appendChild(placeholder);
       videoWrapper.setAttribute('data-id', videoID);
       videoWrapper.setAttribute('data-index', index);
       var playerConfig = has(_this.settings.plyr, 'config') ? _this.settings.plyr.config : {};
       var player = new Plyr('#' + videoID, playerConfig);
       player.on('ready', function (event) {
-        var instance = event.detail.plyr;
-        videoPlayers[videoID] = instance;
+        videoPlayers[videoID] = event.detail.plyr;
 
         if (isFunction(callback)) {
           callback();
@@ -1871,28 +1837,14 @@
     });
   }
 
-  function getYoutubeID(url) {
-    var videoID = '';
-    url = url.replace(/(>|<)/gi, '').split(/(vi\/|v=|\/v\/|youtu\.be\/|\/embed\/)/);
-
-    if (url[2] !== undefined) {
-      videoID = url[2].split(/[^0-9a-z_\-]/i);
-      videoID = videoID[0];
-    } else {
-      videoID = url;
-    }
-
-    return videoID;
-  }
-
   function handleMediaFullScreen(event) {
     var media = closest(event.target, '.gslide-media');
 
-    if (event.type == 'enterfullscreen') {
+    if (event.type === 'enterfullscreen') {
       addClass(media, 'fullscreen');
     }
 
-    if (event.type == 'exitfullscreen') {
+    if (event.type === 'exitfullscreen') {
       removeClass(media, 'fullscreen');
     }
   }
@@ -1984,6 +1936,7 @@
         srcset: '',
         title: '',
         type: '',
+        videoProvider: '',
         description: '',
         alt: '',
         descPosition: 'bottom',
@@ -2435,7 +2388,7 @@
     return Slide;
   }();
 
-  var _version = '3.1.1';
+  var _version = '3.1.0';
 
   var isMobile$1 = isMobile();
 
@@ -2478,8 +2431,8 @@
     closeOnOutsideClick: true,
     plugins: false,
     plyr: {
-      css: 'https://cdn.plyr.io/3.6.8/plyr.css',
-      js: 'https://cdn.plyr.io/3.6.8/plyr.js',
+      css: 'https://cdn.plyr.io/3.6.12/plyr.css',
+      js: 'https://cdn.plyr.io/3.6.12/plyr.js',
       config: {
         ratio: '16:9',
         fullscreen: {
@@ -2528,9 +2481,9 @@
       }
     },
     svg: {
-      close: '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" xml:space="preserve"><g><g><path d="M505.943,6.058c-8.077-8.077-21.172-8.077-29.249,0L6.058,476.693c-8.077,8.077-8.077,21.172,0,29.249C10.096,509.982,15.39,512,20.683,512c5.293,0,10.586-2.019,14.625-6.059L505.943,35.306C514.019,27.23,514.019,14.135,505.943,6.058z"/></g></g><g><g><path d="M505.942,476.694L35.306,6.059c-8.076-8.077-21.172-8.077-29.248,0c-8.077,8.076-8.077,21.171,0,29.248l470.636,470.636c4.038,4.039,9.332,6.058,14.625,6.058c5.293,0,10.587-2.019,14.624-6.057C514.018,497.866,514.018,484.771,505.942,476.694z"/></g></g></svg>',
-      next: '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 477.175 477.175" xml:space="preserve"> <g><path d="M360.731,229.075l-225.1-225.1c-5.3-5.3-13.8-5.3-19.1,0s-5.3,13.8,0,19.1l215.5,215.5l-215.5,215.5c-5.3,5.3-5.3,13.8,0,19.1c2.6,2.6,6.1,4,9.5,4c3.4,0,6.9-1.3,9.5-4l225.1-225.1C365.931,242.875,365.931,234.275,360.731,229.075z"/></g></svg>',
-      prev: '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 477.175 477.175" xml:space="preserve"><g><path d="M145.188,238.575l215.5-215.5c5.3-5.3,5.3-13.8,0-19.1s-13.8-5.3-19.1,0l-225.1,225.1c-5.3,5.3-5.3,13.8,0,19.1l225.1,225c2.6,2.6,6.1,4,9.5,4s6.9-1.3,9.5-4c5.3-5.3,5.3-13.8,0-19.1L145.188,238.575z"/></g></svg>'
+      close: '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" xml:space="preserve"><g><g><path d="M505.943,6.058c-8.077-8.077-21.172-8.077-29.249,0L6.058,476.693c-8.077,8.077-8.077,21.172,0,29.249C10.096,509.982,15.39,512,20.683,512c5.293,0,10.586-2.019,14.625-6.059L505.943,35.306C514.019,27.23,514.019,14.135,505.943,6.058z"/></g></g><g><g><path d="M505.942,476.694L35.306,6.059c-8.076-8.077-21.172-8.077-29.248,0c-8.077,8.076-8.077,21.171,0,29.248l470.636,470.636c4.038,4.039,9.332,6.058,14.625,6.058c5.293,0,10.587-2.019,14.624-6.057C514.018,497.866,514.018,484.771,505.942,476.694z"/></g></g></svg>',
+      next: '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 477.175 477.175" xml:space="preserve"> <g><path d="M360.731,229.075l-225.1-225.1c-5.3-5.3-13.8-5.3-19.1,0s-5.3,13.8,0,19.1l215.5,215.5l-215.5,215.5c-5.3,5.3-5.3,13.8,0,19.1c2.6,2.6,6.1,4,9.5,4c3.4,0,6.9-1.3,9.5-4l225.1-225.1C365.931,242.875,365.931,234.275,360.731,229.075z"/></g></svg>',
+      prev: '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 477.175 477.175" xml:space="preserve"><g><path d="M145.188,238.575l215.5-215.5c5.3-5.3,5.3-13.8,0-19.1s-13.8-5.3-19.1,0l-225.1,225.1c-5.3,5.3-5.3,13.8,0,19.1l225.1,225c2.6,2.6,6.1,4,9.5,4s6.9-1.3,9.5-4c5.3-5.3,5.3-13.8,0-19.1L145.188,238.575z"/></g></svg>'
     }
   };
   defaults.slideHTML = "<div class=\"gslide\">\n    <div class=\"gslide-inner-content\">\n        <div class=\"ginner-container\">\n            <div class=\"gslide-media\">\n            </div>\n            <div class=\"gslide-description\">\n                <div class=\"gdesc-inner\">\n                    <h4 class=\"gslide-title\"></h4>\n                    <div class=\"gslide-desc\"></div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>";
@@ -2576,7 +2529,7 @@
         var element = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
         var startAt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 
-        if (this.elements.length == 0) {
+        if (this.elements.length === 0) {
           return false;
         }
 
@@ -2608,7 +2561,7 @@
 
         this.build();
 
-        animateElement(this.overlay, this.settings.openEffect == 'none' ? 'none' : this.settings.cssEfects.fade["in"]);
+        animateElement(this.overlay, this.settings.openEffect === 'none' ? 'none' : this.settings.cssEfects.fade["in"]);
 
         var body = document.body;
         var scrollBar = window.innerWidth - document.documentElement.clientWidth;
@@ -2635,7 +2588,7 @@
 
         this.showSlide(index, true);
 
-        if (this.elements.length == 1) {
+        if (this.elements.length === 1) {
           addClass(this.prevButton, 'glightbox-button-hidden');
 
           addClass(this.nextButton, 'glightbox-button-hidden');
@@ -2758,7 +2711,7 @@
         };
         this.trigger('slide_before_load', slideData);
 
-        if (type == 'video' || type == 'external') {
+        if (type === 'video' || type === 'external') {
           setTimeout(function () {
             slide.instance.setContent(slideNode, function () {
               _this3.trigger('slide_after_load', slideData);
@@ -2836,7 +2789,7 @@
             this.preloadSlide(index);
           }
 
-          if (this.index == 0 && index == 0) {
+          if (this.index === 0 && index === 0) {
             this.index = 1;
           }
 
@@ -3119,6 +3072,12 @@
     }, {
       key: "slidePlayerPlay",
       value: function slidePlayerPlay(slide) {
+        var _this$settings$plyr$c;
+
+        if (isMobile$1 && !((_this$settings$plyr$c = this.settings.plyr.config) !== null && _this$settings$plyr$c !== void 0 && _this$settings$plyr$c.muted)) {
+          return;
+        }
+
         if (isNode(slide)) {
           var node = slide.querySelector('.gvideo-wrapper');
 
