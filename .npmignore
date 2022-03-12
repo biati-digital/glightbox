@@ -21,6 +21,7 @@ index.html
 /release.zip
 /.vscode
 /.nova
+/.idea
 /dist/js/glightboxTest.min.js
 /dist/js/glightboxTest.js
 /src/js/glightboxTest.js

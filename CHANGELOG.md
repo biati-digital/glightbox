@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## 3.2.0
+
+- New: Support for videos without extension
+- Updated: Plyr to 3.6.12
+- Fixed: Inline content not centered on tablets #295
+- Fixed: Duplicated CSS properties #293
+- Fixed: YouTube video button not clickable on iOS #298
+
 ## 3.1.0
 
 - New: Added Avif image support [@dramspro](https://github.com/biati-digital/glightbox/pull/266)
