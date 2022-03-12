@@ -53,6 +53,10 @@ async function createFolder() {
             '!.github',
             '!.github/**/*',
             '!.vscode',
+            '!.idea',
+            '!.idea/**/*',
+            '!.nova',
+            '!.nova/**/*',
             '!icons.zip',
             '!.vscode/**/*',
             '!*.psd',
@@ -61,19 +65,17 @@ async function createFolder() {
     });
     notify('Created folder', `Created folder correctly`);
 
-    const zip = await createZip(tmpfolder).catch(error => {
+    const zip = await createZip(tmpfolder).catch((error) => {
         jetpack.remove(tmpfolder);
     });
 
     const folderName = path.basename(folder);
     jetpack.remove(tmpfolder);
-    jetpack.move(zip, path.join(folder, folderName +'-master.zip'));
+    jetpack.move(zip, path.join(folder, folderName + '-master.zip'));
 
     notify('Done', `Packaging process ended correctly`);
 }
 createFolder();
-
-
 
 async function createZip(folder) {
     return new Promise((resolve, reject) => {
@@ -86,16 +88,15 @@ async function createZip(folder) {
             resolve(name);
         });
         archive.on('error', (err) => {
-            notify('Package Error', `The was an error creating the zip.`)
+            notify('Package Error', `The was an error creating the zip.`);
             reject(err);
         });
 
         archive.pipe(output);
         archive.directory(folder, false);
         archive.finalize();
-    })
+    });
 }
-
 
 async function updateFileVersion(data) {
     return new Promise((resolve, reject) => {
@@ -104,7 +105,7 @@ async function updateFileVersion(data) {
 
             while ((matches = regexp.exec(str)) !== null) {
                 let foundLine = matches[0];
-                let newLine = foundLine.replace(matches[1], data.replace)
+                let newLine = foundLine.replace(matches[1], data.replace);
                 str = str.replace(foundLine, newLine);
             }
 
@@ -112,5 +113,5 @@ async function updateFileVersion(data) {
                 resolve(data.file);
             });
         });
-    })
+    });
 }
