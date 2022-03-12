@@ -192,6 +192,10 @@
   width: 100% !important;
 }
 
+.gslide-video .plyr__poster-enabled.plyr--loading .plyr__poster {
+  display: none;
+}
+
 .gslide-video .gvideo-wrapper {
   width: 100%;
         /* max-width: 160vmin; */
