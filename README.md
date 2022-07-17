@@ -216,7 +216,7 @@ myGallery.setElements([...]);
 | closeOnOutsideClick | boolean | `true` | Close the lightbox when clicking outside the active slide. |
 | startAt | number | `0` | Start lightbox at defined index. |
 | width | number | `900px` | Default width for inline elements and iframes, you can define a specific size on each slide. You can use any unit for example 90% or 100vw for full width |
-| height | number | `506px` | Default height for inline elements and iframes, you can define a specific size on each slide.You can use any unit for example 90% or 100vw **For inline elements you can set the height to auto**. |
+| height | number | `506px` | Default height for inline elements and iframes, you can define a specific size on each slide.You can use any unit for example 90% or 100vh **For inline elements you can set the height to auto**. |
 | videosWidth | number | `960px` | Default width for videos. Videos are responsive so height is not required. The width can be in px % or even vw for example, 500px, 90% or 100vw for full width videos |
 | descPosition | string | `bottom` | Global position for slides description, you can define a specific position on each slide (bottom, top, left, right). |
 | loop | boolean | `false` | Loop slides on end. |
