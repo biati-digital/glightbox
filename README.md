@@ -128,7 +128,8 @@ You can specify some options to each individual slide, the available options are
 - description
 - descPosition
 - type
-- effect
+- openEffect
+- closeEffect
 - width
 - height
 - zoomable
@@ -136,7 +137,7 @@ You can specify some options to each individual slide, the available options are
 
 ```html
 <!-- One line config -->
-<a href="large.jpg" data-glightbox="title: Your title; description: description here; descPosition: left; type: image; effect: fade; width: 900px; height: auto; zoomable: true; draggable: true;"></a>
+<a href="large.jpg" data-glightbox="title: Your title; description: description here; descPosition: left; type: image; openEffect: fade; closeEffect: fade; width: 900px; height: auto; zoomable: true; draggable: true;"></a>
 
 <!-- Multiple data attributes / You can use the options as separated data attributes -->
 <a
@@ -145,7 +146,8 @@ You can specify some options to each individual slide, the available options are
   data-description="description here"
   data-desc-position="right"
   data-type="image"
-  data-effect="fade"
+  data-open-effect="fade"
+  data-close-effect="fade"
   data-width="900px"
   data-height="auto"
   data-zoomable="true"

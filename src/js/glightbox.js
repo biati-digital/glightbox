@@ -183,7 +183,7 @@ class GlightboxInit {
 
         this.build();
 
-        _.animateElement(this.overlay, this.settings.openEffect === 'none' ? 'none' : this.settings.cssEfects.fade.in);
+        _.animateElement(this.overlay, this.elements[index].openEffect === 'none' ? 'none' : this.settings.cssEfects.fade.in);
 
         const body = document.body;
 
@@ -521,7 +521,7 @@ class GlightboxInit {
         _.removeClass(slide, this.effectsClasses);
 
         if (first) {
-            _.animateElement(slide, this.settings.cssEfects[this.settings.openEffect].in, () => {
+            _.animateElement(slide, this.settings.cssEfects[this.elements[this.index].openEffect].in, () => {
                 if (this.settings.autoplayVideos) {
                     this.slidePlayerPlay(slide);
                 }
@@ -1220,8 +1220,8 @@ class GlightboxInit {
         }
 
         _.addClass(this.modal, 'glightbox-closing');
-        _.animateElement(this.overlay, this.settings.openEffect == 'none' ? 'none' : this.settings.cssEfects.fade.out);
-        _.animateElement(this.activeSlide, this.settings.cssEfects[this.settings.closeEffect].out, () => {
+        _.animateElement(this.overlay, this.elements[this.index].openEffect == 'none' ? 'none' : this.settings.cssEfects.fade.out);
+        _.animateElement(this.activeSlide, this.settings.cssEfects[this.elements[this.index].closeEffect].out, () => {
             this.activeSlide = null;
             this.prevActiveSlideIndex = null;
             this.prevActiveSlide = null;

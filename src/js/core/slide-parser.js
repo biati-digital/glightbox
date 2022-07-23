@@ -67,7 +67,11 @@ export default class SlideConfigParser {
     }
 
     parseConfig(element, settings) {
-        let data = extend({ descPosition: settings.descPosition }, this.defaults);
+        let data = extend({
+            descPosition: settings.descPosition,
+            openEffect: settings.openEffect,
+            closeEffect: settings.closeEffect
+        }, this.defaults);
 
         if (isObject(element) && !isNode(element)) {
             if (!has(element, 'type')) {
