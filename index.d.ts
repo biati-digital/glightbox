@@ -86,45 +86,45 @@ declare namespace Glightbox {
          * Name of the selector for example '.glightbox' or 'data-glightbox'
          * or '*[data-glightbox]'
          * 
-         * @defaultValue '.glightbox'
+         * @default '.glightbox'
          */
         selector?: string;
         /**
          * Instead of passing a selector you can pass all the items
          * that you want in the gallery.
          * 
-         * @defaultValue null
+         * @default null
          */
         elements?: [] | null;
         /**
          * Name of the skin, it will add a class to the lightbox
          * so you can style it with css.
          * 
-         * @defaultValue 'clean'
+         * @default 'clean'
          */
         skin?: string;
         /**
          * Name of the effect on lightbox open. (zoom, fade, none)
          * 
-         * @defaultValue 'zoom'
+         * @default 'zoom'
          */
         openEffect?: string;
         /**
          * Name of the effect on lightbox close. (zoom, fade, none)
          * 
-         * @defaultValue 'zoom'
+         * @default 'zoom'
          */
         closeEffect?: string;
         /**
          * Name of the effect on slide change. (slide, fade, zoom, none)
          * 
-         * @defaultValue 'slide'
+         * @default 'slide'
          */
         slideEffect?: string;
         /**
          * More text for descriptions on mobile devices.
          * 
-         * @defaultValue 'See more'
+         * @default 'See more'
          */
         moreText?: string;
         /**
@@ -132,99 +132,99 @@ declare namespace Glightbox {
          * the moreText link (only for mobiles),
          * if 0 it will display the entire description.
          * 
-         * @defaultValue 60
+         * @default 60
          */
         moreLength?: number;
         /**
          * Show or hide the close button.
          * 
-         * @defaultValue true
+         * @default true
          */
         closeButton?: boolean;
         /**
          * Enable or disable the touch navigation (swipe).
          * 
-         * @defaultValue true
+         * @default true
          */
         touchNavigation?: boolean;
         /**
          * Image follow axis when dragging on mobile.
          * 
-         * @defaultValue true
+         * @default true
          */
         touchFollowAxis?: boolean;
         /**
          * Enable or disable the keyboard navigation.
          * 
-         * @defaultValue true
+         * @default true
          */
         keyboardNavigation?: boolean;
         /**
          * Close the lightbox when clicking outside the active slide.
          * 
-         * @defaultValue true
+         * @default true
          */
         closeOnOutsideClick?: boolean;
         /**
          * Start lightbox at defined index.
          * 
-         * @defaultValue 0
+         * @default 0
          */
         startAt?: number;
         /**
          * Default width for inline elements and iframes
          * 
-         * @defaultValue '900px'
+         * @default '900px'
          */
         width?: string;
         /**
          * Default height for inline elements and iframes
          * 
-         * @defaultValue '506px'
+         * @default '506px'
          */
         height?: string;
         /**
          * Default width for videos.
          * 
-         * @defaultValue '560px'
+         * @default '560px'
          */
         videosWidth?: string;
         /**
          * Global position for slides description
          * 
-         * @defaultValue 'bottom'
+         * @default 'bottom'
          */
         descPosition?: string;
         /**
          * Loop slides on end.
          * 
-         * @defaultValue false
+         * @default false
          */
         loop?: boolean;
         /**
          * Enable or disable zoomable images
          * 
-         * @defaultValue true
+         * @default true
          */
         zoomable?: boolean;
         /**
          * Enable or disable mouse drag to go prev and next slide
          * 
-         * @defaultValue true
+         * @default true
          */
         draggable?: boolean;
         /**
          * Used with draggable. Number of pixels the user
          * has to drag to go to prev or next slide.
          * 
-         * @defaultValue 40
+         * @default 40
          */
         dragToleranceX?: number;
         /**
          * Used with draggable. Number of pixels the user has to drag
          * up or down to close the lightbox
          * 
-         * @defaultValue 65
+         * @default 65
          */
         dragToleranceY?: number;
         /**
@@ -232,13 +232,13 @@ declare namespace Glightbox {
          * if dragToleranceX or dragToleranceY is reached,
          * otherwise it will wait till the mouse is released.
          * 
-         * @defaultValue false
+         * @default false
          */
         dragAutoSnap?: boolean;
         /**
          * Enable or disable preloading.
          * 
-         * @defaultValue true
+         * @default true
          */
         preload?: boolean;
         /**
@@ -262,7 +262,7 @@ declare namespace Glightbox {
         /**
          * Autoplay videos on open.
          * 
-         * @defaultValue true
+         * @default true
          */
         autoplayVideos?: boolean;
         /**
@@ -274,4 +274,248 @@ declare namespace Glightbox {
         autofocusVideos?: boolean;
         plyr?: PlyrOptions;
     }
+
+    type EventTypes =
+        | "open"
+        | "close"
+        | "slide_before_change"
+        | "slide_changed"
+        | "slide_before_load"
+        | "slide_after_load"
+        | "slide_inserted"
+        | "slide_removed"
 }
+
+declare class GlightboxInit<T extends HTMLElement> {
+    constructor(selector: T, options: Glightbox.Options)
+
+    /**
+     * Initialize lightbox
+     */
+    private init(): void;
+
+     /**
+     * Open at specific index
+     */
+    open(index: number): void
+
+    /**
+     * Open at specific index
+     */
+    openAt(index?: number): void;
+
+    /**
+     * Set Slide
+     */
+    private showSlide(index: number, first: boolean): void;
+
+    /**
+     * Preload slides
+     */
+    private preloadSlide(index: number): null;
+
+    /**
+     * Load previous slide
+     * calls goToslide
+     */
+    prevSlide(): void;
+
+    /**
+     * Load next slide
+     * calls goToslide
+     */
+    nextSlide(): void;
+
+    /**
+     * Go to slide
+     * calls set slide
+     */
+    goToSlide(index?: number): void;
+
+    /**
+     * Insert slide
+     */
+    insertSlide(config: Record<any, any>, index: number): void;
+
+    /**
+     * Remove slide
+     */
+    removeSlide(index: number): boolean | undefined;
+
+    /**
+     * Slide In
+     */
+    private slideAnimateIn(slide: Element, first: boolean): null;
+
+    /**
+     * Slide out
+     */
+    private slideAnimateOut(): void;
+
+    /**
+     * Get all defined players
+     */
+    getAllPlayers(): Record<string, any>;
+
+    /**
+     * Get player at index
+     */
+    getSlidePlayerInstance(index: number): boolean | Record<string, any>;
+
+    /**
+     * Stop video at specified
+     * node or index
+     */
+    stopSlideVideo(slide: Element | number): void;
+
+    /**
+     * Stop player at specified index
+     */
+    slidePlayerPause(slide: Element | number): void;
+
+    /**
+     * Stop video at specified
+     * node or index
+     */
+    stopSlide(slide: Element | index): void;
+
+    /**
+     * Play video at specified
+     * node or index
+     */
+    playSlideVideo(slide: Element): void;
+
+    /**
+     * Play media player at specified
+     * node or index
+     */
+    slidePlayerPlay(slide: Element | number): void;
+
+    /**
+     * Set the entire elements
+     * in the gallery, it replaces all
+     * the existing elements
+     * with the specified list
+     */
+    setElements(elements: any[]): void;
+
+    /**
+     * Return the index
+     * of the specified node,
+     * this node is for example an image, link, etc.
+     * that when clicked it opens the lightbox
+     * its position in the elements array can change
+     * when using insertSlide or removeSlide so we
+     * need to find it in the elements list
+     */
+    private getElementIndex(node): boolean | number;
+
+    /**
+     * Get elements
+     * returns an array containing all
+     * the elements that must be displayed in the
+     * lightbox
+     */
+    private getElements(): any[];
+
+    /**
+     * Return only the elements
+     * from a specific gallery
+     */
+    private getGalleryElements(list: any[], gallery: any[]): any[];
+
+    /**
+     * Get selector
+     */
+    private getSelector(): boolean | string;
+
+    /**
+     * Get the active slide
+     */
+    getActiveSlide(): Element;
+
+    /**
+     * Get the active index
+     */
+    getActiveSlideIndex(): number | undefined;
+
+    /**
+     * Get the defined
+     * effects as string
+     */
+    private getAnimationClasses(): string;
+
+    /**
+     * Build the structure
+     */
+    private build(): null;
+
+    /**
+     * Handle resize
+     * Create only to handle
+     * when the height of the screen
+     * is lower than the slide content
+     * this helps to resize videos vertically
+     * and images with description
+     */
+    private resize(slide?: null): void;
+
+    /**
+     * Reload Lightbox
+     * reload and apply events to nodes
+     */
+    reload(): void;
+
+    /**
+     * Update navigation classes on slide change
+     */
+    private updateNavigationClasses(): void;
+
+    /**
+     * Handle loop config
+     */
+    private loop(): void;
+
+    /**
+     * Close Lightbox
+     * closes the lightbox and removes the slides
+     * and some classes
+     */
+    close(): boolean | undefined;
+
+    /**
+     * Destroy lightbox
+     * and all events
+     */
+    destroy(): void;
+
+    /**
+     * Set event
+     */
+    on(evt: Glightbox.EventTypes, callback: () => void, once?: boolean): void;
+
+    /**
+     * Set event once
+     */
+    once(evt: Glightbox.EventTypes, callback: () => void): void;
+
+    /**
+     * Triggers an specific event
+     * with data
+     */
+    trigger(eventName: string, data?: null): void;
+
+    /**
+     * Removes all events
+     * set using the API
+     */
+    private clearAllEvents(): void;
+
+    /**
+     * Get Version
+     */
+    version(): string;
+}
+
+export = GlightboxInit;
+export as namespace GLightbox;
