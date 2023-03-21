@@ -519,5 +519,16 @@ declare class GlightboxInit {
     version(): string;
 }
 
-export = GlightboxInit;
+/**
+ * TODO
+ * How to type this default function?
+ * When trying to click imported file it goes to this exported function not the Options
+ */
+export default function (options = {}) {
+    const instance = new GlightboxInit(options);
+    instance.init();
+
+    return instance;
+}
+
 export as namespace GLightbox;
