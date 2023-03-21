@@ -286,8 +286,8 @@ declare namespace Glightbox {
         | "slide_removed"
 }
 
-declare class GlightboxInit<T extends HTMLElement> {
-    constructor(selector: T, options: Glightbox.Options)
+declare class GlightboxInit {
+    constructor(options: Glightbox.Options);
 
     /**
      * Initialize lightbox
@@ -376,8 +376,10 @@ declare class GlightboxInit<T extends HTMLElement> {
     /**
      * Stop video at specified
      * node or index
+     * 
+     * @deprecated use slidePlayerPause instead
      */
-    stopSlide(slide: Element | index): void;
+    stopSlide(slide: Element | number): void;
 
     /**
      * Play video at specified
@@ -408,7 +410,7 @@ declare class GlightboxInit<T extends HTMLElement> {
      * when using insertSlide or removeSlide so we
      * need to find it in the elements list
      */
-    private getElementIndex(node): boolean | number;
+    private getElementIndex(node: Node): boolean | number;
 
     /**
      * Get elements
