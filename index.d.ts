@@ -292,7 +292,7 @@ declare class GlightboxInit {
     /**
      * Initialize lightbox
      */
-    private init(): void;
+    init(): void;
 
      /**
      * Open at specific index
@@ -519,13 +519,10 @@ declare class GlightboxInit {
     version(): string;
 }
 
-/**
- * TODO
- * How to type this default function?
- * When trying to click imported file it goes to this exported function not the Options
- */
-export default function (options = {}) {
-    const instance = new GlightboxInit(options);
+export default function (options: Glightbox.Options) {
+    let instance: InstanceType<typeof GlightboxInit>;
+
+    instance = new GlightboxInit(options);
     instance.init();
 
     return instance;
