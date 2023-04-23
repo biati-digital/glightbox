@@ -114,7 +114,7 @@ Or manually download and link `glightbox.min.js` in your HTML:
 <a href="deafult.jpg" class="glightbox6" data-title="Responsive example"
 data-description="Your browser will choose the optimal image for the resolution"
 data-sizes="(max-width: 600px) 480px, 800px"
-data-srcset="img480.jpx 480w img800.jpg 800w">
+data-srcset="img480.jpg 480w, img800.jpg 800w">
   <img src="small.jpg" alt="image" />
 </a>
 ```
