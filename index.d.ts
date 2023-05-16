@@ -292,7 +292,7 @@ declare class GlightboxInit {
     /**
      * Initialize lightbox
      */
-    init(): void;
+    private init(): void;
 
      /**
      * Open at specific index
@@ -519,10 +519,9 @@ declare class GlightboxInit {
     version(): string;
 }
 
-export default function (options: Glightbox.Options) {
-    let instance: InstanceType<typeof GlightboxInit>;
+export default function () {
+    const instance: InstanceType<typeof GlightboxInit>;
 
-    instance = new GlightboxInit(options);
     instance.init();
 
     return instance;
