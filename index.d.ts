@@ -505,7 +505,7 @@ declare class GlightboxInit {
      * Triggers an specific event
      * with data
      */
-    trigger(eventName: string, data?: null): void;
+    trigger(eventName: Glightbox.EventTypes, data?: null): void;
 
     /**
      * Removes all events
