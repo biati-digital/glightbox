@@ -200,7 +200,7 @@ declare namespace Glightbox {
          * 
          * @default false
          */
-        loop?: boolean;
+        loop?: Exclude<boolean, undefined>;
         /**
          * Enable or disable zoomable images
          * 
@@ -292,7 +292,7 @@ declare class GlightboxInit {
     /**
      * Initialize lightbox
      */
-    private init(): void;
+    init(): void;
 
      /**
      * Open at specific index
