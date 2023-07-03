@@ -519,12 +519,7 @@ declare class GlightboxInit {
     version(): string;
 }
 
-export default function () {
-    const instance: InstanceType<typeof GlightboxInit>;
+declare function GLightbox(options: Glightbox.Options): InstanceType<typeof GlightboxInit>
 
-    instance.init();
-
-    return instance;
-}
-
+export = GLightbox;
 export as namespace GLightbox;
