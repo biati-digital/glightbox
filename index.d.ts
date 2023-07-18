@@ -284,6 +284,41 @@ declare namespace Glightbox {
         | "slide_after_load"
         | "slide_inserted"
         | "slide_removed"
+
+    interface SlideConfig {
+        href?: string;
+        sizes?: string;
+        srcset?: string;
+        title?: string;
+        type?: "image" | "video" | "inline";
+        videoProvider?: string;
+        description?: string;
+        alt?: string;
+        descPosition?: string;
+        effect?: string;
+        width?: string;
+        height?: string;
+        content?: boolean;
+        zoomable?: boolean;
+        draggable?: boolean;
+    }
+
+    type BaseData = {
+        index?: number;
+        slide?: Element;
+        slideNode?: Element;
+        slideConfig?: SlideConfig;
+        slideIndex?: number;
+        trigger?: Element;
+        player?: null | Record<any, any>;
+    }
+
+    type SlideData =
+        | BaseData
+        | {
+            prev?: BaseData,
+            current?: BaseData;
+        }
 }
 
 declare class GlightboxInit {
@@ -360,7 +395,7 @@ declare class GlightboxInit {
     /**
      * Get player at index
      */
-    getSlidePlayerInstance(index: number): boolean | Record<string, any>;
+    getSlidePlayerInstance(index: number): boolean | Record<any, any>;
 
     /**
      * Stop video at specified
@@ -505,7 +540,7 @@ declare class GlightboxInit {
      * Triggers an specific event
      * with data
      */
-    trigger(eventName: Glightbox.EventTypes, data?: null): void;
+    trigger(eventName: Glightbox.EventTypes, data?: Glightbox.SlideData): void;
 
     /**
      * Removes all events
