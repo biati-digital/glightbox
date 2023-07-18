@@ -303,7 +303,7 @@ declare namespace Glightbox {
         draggable?: boolean;
     }
 
-    type BaseData = {
+    interface BaseData {
         index?: number;
         slide?: Element;
         slideNode?: Element;
