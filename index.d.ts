@@ -537,12 +537,12 @@ declare class GlightboxInit {
     /**
      * Set event
      */
-    on(evt: Glightbox.EventTypes, callback: () => void, once?: boolean): void;
+    on(eventName: Glightbox.EventTypes, callback: () => void, once?: boolean): void;
 
     /**
      * Set event once
      */
-    once(evt: Glightbox.EventTypes, callback: () => void): void;
+    once(eventName: Glightbox.EventTypes, callback: () => void): void;
 
     /**
      * Triggers an specific event
