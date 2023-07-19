@@ -313,12 +313,20 @@ declare namespace Glightbox {
         player?: null | Record<any, any>;
     }
 
-    type SlideData =
-        | BaseData
-        | {
-            prev?: BaseData,
-            current?: BaseData;
-        }
+    type Payload<T extends EventTypes> = {
+        slide_before_change: {
+            prev: BaseData;
+            current: BaseData;
+        };
+        slide_changed: {
+            prev: BaseData;
+            current: BaseData;
+        };
+        slide_before_load: BaseData;
+        slide_after_load: BaseData;
+        slide_inserted: BaseData;
+        slide_removed: number;
+    }[T]
 }
 
 declare class GlightboxInit {
@@ -540,7 +548,7 @@ declare class GlightboxInit {
      * Triggers an specific event
      * with data
      */
-    trigger(eventName: Glightbox.EventTypes, data?: Glightbox.SlideData): void;
+    trigger<T extends Glightbox.EventTypes>(eventName: T, data?: Glightbox.Payload<T>): void;
 
     /**
      * Removes all events
