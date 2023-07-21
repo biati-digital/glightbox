@@ -294,7 +294,7 @@ declare namespace Glightbox {
         videoProvider?: string;
         description?: string;
         alt?: string;
-        descPosition?: string;
+        descPosition?: 'bottom' | 'top' | 'left' | 'right';
         effect?: string;
         width?: string;
         height?: string;
