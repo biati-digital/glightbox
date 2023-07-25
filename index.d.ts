@@ -338,9 +338,9 @@ declare class GlightboxInit {
     init(): void;
 
      /**
-     * Open at specific index
+     * Open lightbox
      */
-    open(index: number): void
+    open(element: Element, startAt: number): void
 
     /**
      * Open at specific index
