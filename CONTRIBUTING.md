@@ -19,7 +19,7 @@ When implementing a feature please create an issue first explaining your idea an
 
 ## :pencil: Before you open a Pull Request
 
-- Follow the same conding style.
+- Follow the same coding style.
 - Run eslint to verify your code, run the following command "eslint src/js" and fix any error you find in your code
 - **DO NOT** commit changes in the dist directory, this files are created automatically.
 - Follow Git best practices (especially use meaningful commit messages).
