@@ -200,7 +200,7 @@ class GlightboxInit {
         _.addClass(body, 'glightbox-open');
         _.addClass(html, 'glightbox-open');
         if (isMobile) {
-            _.addClass(document.body, 'glightbox-mobile');
+            _.addClass(body, 'glightbox-mobile');
             this.settings.slideEffect = 'slide';
         }
 
