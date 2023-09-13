@@ -185,7 +185,7 @@ class GlightboxInit {
 
         _.animateElement(this.overlay, this.settings.openEffect === 'none' ? 'none' : this.settings.cssEfects.fade.in);
 
-        const body = document.body;
+        const body = this.customOptions.root || document.body;
 
         const scrollBar = window.innerWidth - document.documentElement.clientWidth;
         if (scrollBar > 0) {
@@ -961,7 +961,10 @@ class GlightboxInit {
         lightboxHTML = lightboxHTML.replace(/{closeSVG}/g, closeSVG);
 
         lightboxHTML = _.createHTML(lightboxHTML);
-        document.body.appendChild(lightboxHTML);
+
+        const body = this.customOptions.root || document.body
+
+        body.appendChild(lightboxHTML);
 
         const modal = document.getElementById('glightbox-body');
         this.modal = modal;
@@ -1236,7 +1239,7 @@ class GlightboxInit {
                 this.events = null;
             }
 
-            const body = document.body;
+            const body = this.customOptions.root || document.body;
             _.removeClass(html, 'glightbox-open');
             _.removeClass(body, 'glightbox-open touching gdesc-open glightbox-touch glightbox-mobile gscrollbar-fixer');
             this.modal.parentNode.removeChild(this.modal);
