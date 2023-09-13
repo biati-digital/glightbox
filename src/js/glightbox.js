@@ -134,6 +134,7 @@ class GlightboxInit {
         this.videoPlayers = {};
         this.apiEvents = [];
         this.fullElementsList = false;
+        this.isMobile = this.customOptions.isMobile || isMobile
     }
 
     init() {
@@ -198,8 +199,7 @@ class GlightboxInit {
         }
 
         _.addClass(body, 'glightbox-open');
-        _.addClass(html, 'glightbox-open');
-        if (isMobile) {
+        if (this.isMobile) {
             _.addClass(body, 'glightbox-mobile');
             this.settings.slideEffect = 'slide';
         }
@@ -736,7 +736,7 @@ class GlightboxInit {
         // Do not autoplay on mobile
         // plyr does not handle well the errors
         // and the player becomes unplayable
-        if (isMobile && !this.settings.plyr.config?.muted) {
+        if (this.isMobile && !this.settings.plyr.config?.muted) {
             return;
         }
 
@@ -1240,7 +1240,6 @@ class GlightboxInit {
             }
 
             const body = this.customOptions.root || document.body;
-            _.removeClass(html, 'glightbox-open');
             _.removeClass(body, 'glightbox-open touching gdesc-open glightbox-touch glightbox-mobile gscrollbar-fixer');
             this.modal.parentNode.removeChild(this.modal);
 

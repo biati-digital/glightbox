@@ -2150,6 +2150,7 @@
       this.videoPlayers = {};
       this.apiEvents = [];
       this.fullElementsList = false;
+      this.isMobile = this.customOptions.isMobile || isMobile$1;
     }
     _createClass(GlightboxInit, [{
       key: "init",
@@ -2208,8 +2209,7 @@
           addClass(body, 'gscrollbar-fixer');
         }
         addClass(body, 'glightbox-open');
-        addClass(html, 'glightbox-open');
-        if (isMobile$1) {
+        if (this.isMobile) {
           addClass(body, 'glightbox-mobile');
           this.settings.slideEffect = 'slide';
         }
@@ -2619,7 +2619,7 @@
       key: "slidePlayerPlay",
       value: function slidePlayerPlay(slide) {
         var _this$settings$plyr$c;
-        if (isMobile$1 && !((_this$settings$plyr$c = this.settings.plyr.config) !== null && _this$settings$plyr$c !== void 0 && _this$settings$plyr$c.muted)) {
+        if (this.isMobile && !((_this$settings$plyr$c = this.settings.plyr.config) !== null && _this$settings$plyr$c !== void 0 && _this$settings$plyr$c.muted)) {
           return;
         }
         if (isNode(slide)) {
@@ -3006,7 +3006,6 @@
             _this8.events = null;
           }
           var body = _this8.customOptions.root || document.body;
-          removeClass(html, 'glightbox-open');
           removeClass(body, 'glightbox-open touching gdesc-open glightbox-touch glightbox-mobile gscrollbar-fixer');
           _this8.modal.parentNode.removeChild(_this8.modal);
           _this8.trigger('close');
