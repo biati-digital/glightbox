@@ -2210,7 +2210,7 @@
         addClass(body, 'glightbox-open');
         addClass(html, 'glightbox-open');
         if (isMobile$1) {
-          addClass(document.body, 'glightbox-mobile');
+          addClass(body, 'glightbox-mobile');
           this.settings.slideEffect = 'slide';
         }
         this.showSlide(index, true);
