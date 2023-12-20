@@ -129,13 +129,6 @@ defaults.lightboxHTML = `<div id="glightbox-body" class="glightbox-container" ta
  */
 class GlightboxInit {
     constructor(options = {}) {
-        if (options.direction === 'rtl') {
-            defaults.cssEfects = {
-                ...defaults.cssEfects,
-                slide: { in: 'slideInLeft', out: 'slideOutRight' },
-                slideBack: { in: 'slideInRight', out: 'slideOutLeft' }
-            };
-        }
         this.customOptions = options;
         this.settings = _.extend(defaults, options);
         this.effectsClasses = this.getAnimationClasses();
@@ -190,6 +183,13 @@ class GlightboxInit {
         }
 
         this.build();
+
+        if (this.settings.direction === 'rtl') {
+            // swap the slide and slideBack effects
+            const slideEffect = this.settings.cssEfects.slide;
+            this.settings.cssEfects.slide = this.settings.cssEfects.slideBack;
+            this.settings.cssEfects.slideBack = slideEffect;
+        }
 
         _.animateElement(this.overlay, this.settings.openEffect === 'none' ? 'none' : this.settings.cssEfects.fade.in);
 
