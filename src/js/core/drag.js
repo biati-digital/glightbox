@@ -29,6 +29,8 @@ export default class DragSlides {
         this.dragContainer = this.el;
         this.slide = slide;
         this.instance = instance;
+        this.prevSlideDirection = instance.settings.direction === 'rtl' ? 'left' : 'right';
+        this.nextSlideDirection = instance.settings.direction === 'rtl' ? 'right' : 'left';
 
         this.el.addEventListener('mousedown', (e) => this.dragStart(e), false);
         this.el.addEventListener('mouseup', (e) => this.dragEnd(e), false);
@@ -81,8 +83,8 @@ export default class DragSlides {
 
         if (this.doSlideChange) {
             this.instance.preventOutsideClick = true;
-            this.doSlideChange == 'right' && this.instance.prevSlide();
-            this.doSlideChange == 'left' && this.instance.nextSlide();
+            this.doSlideChange == this.prevSlideDirection && this.instance.prevSlide();
+            this.doSlideChange == this.nextSlideDirection && this.instance.nextSlide();
         }
 
         if (this.doSlideClose) {
@@ -151,8 +153,8 @@ export default class DragSlides {
                     this.active = false;
                     this.instance.preventOutsideClick = true;
                     this.dragEnd(null);
-                    doChange == 'right' && this.instance.prevSlide();
-                    doChange == 'left' && this.instance.nextSlide();
+                    doChange == this.prevSlideDirection && this.instance.prevSlide();
+                    doChange == this.nextSlideDirection && this.instance.nextSlide();
                     return;
                 }
             }
@@ -189,8 +191,8 @@ export default class DragSlides {
             let dragDir = this.currentX > 0 ? 'right' : 'left';
 
             if (
-                (dragDir == 'left' && this.slide !== this.slide.parentNode.lastChild) ||
-                (dragDir == 'right' && this.slide !== this.slide.parentNode.firstChild)
+                (dragDir == this.nextSlideDirection && this.slide !== this.slide.parentNode.lastChild) ||
+                (dragDir == this.prevSlideDirection && this.slide !== this.slide.parentNode.firstChild)
             ) {
                 doChange = dragDir;
             }

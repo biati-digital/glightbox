@@ -73,6 +73,9 @@ export default function touchNavigation(instance) {
     const sliderWrapper = document.getElementById('glightbox-slider');
     const overlay = document.querySelector('.goverlay');
 
+    const prevSlideDirection = instance.settings.direction === 'rtl' ? 'Right' : 'Left';
+    const nextSlideDirection = instance.settings.direction === 'rtl' ? 'Left' : 'Right';
+
     const touchInstance = new TouchEvents(sliderWrapper, {
         touchStart: (e) => {
             process = true;
@@ -268,13 +271,13 @@ export default function touchNavigation(instance) {
                 doingZoom = false;
                 return;
             }
-            if (evt.direction == 'Left') {
+            if (evt.direction == nextSlideDirection) {
                 if (instance.index == instance.elements.length - 1) {
                     return resetSlideMove(media);
                 }
                 instance.nextSlide();
             }
-            if (evt.direction == 'Right') {
+            if (evt.direction == prevSlideDirection) {
                 if (instance.index == 0) {
                     return resetSlideMove(media);
                 }
