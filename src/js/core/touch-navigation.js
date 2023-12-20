@@ -73,8 +73,8 @@ export default function touchNavigation(instance) {
     const sliderWrapper = document.getElementById('glightbox-slider');
     const overlay = document.querySelector('.goverlay');
 
-    const prevSlideDirection = instance.settings.direction === 'rtl' ? 'Right' : 'Left';
-    const nextSlideDirection = instance.settings.direction === 'rtl' ? 'Left' : 'Right';
+    const prevSlideDirection = instance.settings.direction === 'rtl' ? 'Left' : 'Right';
+    const nextSlideDirection = instance.settings.direction === 'rtl' ? 'Right' : 'Left';
 
     const touchInstance = new TouchEvents(sliderWrapper, {
         touchStart: (e) => {
