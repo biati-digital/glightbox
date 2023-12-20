@@ -974,10 +974,12 @@ class GlightboxInit {
         const modal = document.getElementById('glightbox-body');
         this.modal = modal;
         let closeButton = modal.querySelector('.gclose');
-        const leftButton = modal.querySelector('.gprev');
-        const rightButton = modal.querySelector('.gnext');
-        this.prevButton = this.settings.direction !== 'rtl' ? leftButton : rightButton;
-        this.nextButton = this.settings.direction === 'rtl' ? leftButton : rightButton;
+        this.prevButton = modal.querySelector('.gprev');
+        this.nextButton = modal.querySelector('.gnext');
+        if (this.settings.direction === 'rtl') {
+            this.prevButton.classList.add('gprev-rtl');
+            this.nextButton.classList.add('gnext-rtl');
+        }
         this.overlay = modal.querySelector('.goverlay');
         this.loader = modal.querySelector('.gloader');
         this.slidesContainer = document.getElementById('glightbox-slider');

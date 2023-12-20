@@ -560,7 +560,8 @@ iframe.wait-autoplay {
         }
     }
 
-    .gprev {
+    .gprev:not(.gprev-rtl),
+    .gnext.gnext-rtl {
         position: absolute;
         top: -100%;
         left: 30px;
@@ -572,7 +573,8 @@ iframe.wait-autoplay {
         }
     }
 
-    .gnext {
+    .gnext:not(.gnext-rtl),
+    .gprev.gprev-rtl {
         position: absolute;
         top: -100%;
         right: 30px;
@@ -582,6 +584,11 @@ iframe.wait-autoplay {
         @media (--medium-small-viewport) {
             top: 45%;
         }
+    }
+
+    .gprev-rtl,
+    .gnext-rtl {
+        transform: scale(-1, 1);
     }
 
     .gclose {
