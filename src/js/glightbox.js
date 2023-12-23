@@ -184,13 +184,6 @@ class GlightboxInit {
 
         this.build();
 
-        if (this.settings.direction === 'rtl') {
-            // swap the slide and slideBack effects
-            const slideEffect = this.settings.cssEfects.slide;
-            this.settings.cssEfects.slide = this.settings.cssEfects.slideBack;
-            this.settings.cssEfects.slideBack = slideEffect;
-        }
-
         _.animateElement(this.overlay, this.settings.openEffect === 'none' ? 'none' : this.settings.cssEfects.fade.in);
 
         const body = document.body;
@@ -928,6 +921,13 @@ class GlightboxInit {
      */
     getAnimationClasses() {
         let effects = [];
+        if (this.settings.direction === 'rtl') {
+            console.log('Swapping settings.direction from rtl to ltr');
+            // swap the slide and slideBack effects
+            const slideEffect = this.settings.cssEfects.slide;
+            this.settings.cssEfects.slide = this.settings.cssEfects.slideBack;
+            this.settings.cssEfects.slideBack = slideEffect;
+        }
         for (let key in this.settings.cssEfects) {
             if (this.settings.cssEfects.hasOwnProperty(key)) {
                 let effect = this.settings.cssEfects[key];
