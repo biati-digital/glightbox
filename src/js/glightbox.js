@@ -922,7 +922,6 @@ class GlightboxInit {
     getAnimationClasses() {
         let effects = [];
         if (this.settings.direction === 'rtl') {
-            console.log('Swapping settings.direction from rtl to ltr');
             // swap the slide and slideBack effects
             const slideEffect = this.settings.cssEfects.slide;
             this.settings.cssEfects.slide = this.settings.cssEfects.slideBack;
