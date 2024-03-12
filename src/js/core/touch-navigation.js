@@ -227,7 +227,7 @@ export default function touchNavigation(instance) {
                 lastZoomedPosX = null;
                 zoomedPosX = null;
                 zoomedPosY = null;
-                mediaImage.setAttribute('style', '');
+                mediaImage.style = '';
                 return;
             }
             if (scale > maxScale) {

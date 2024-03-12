@@ -27,6 +27,8 @@ export default class ZoomImages {
         this.xOffset = 0;
         this.yOffset = 0;
 
+        this.imgStylesMapper = new Map();
+
         this.img.addEventListener('mousedown', (e) => this.dragStart(e), false);
         this.img.addEventListener('mouseup', (e) => this.dragEnd(e), false);
         this.img.addEventListener('mousemove', (e) => this.drag(e), false);
@@ -59,7 +61,7 @@ export default class ZoomImages {
         }
 
         const img = this.img;
-        img.setAttribute('data-style', img.getAttribute('style'));
+        this.imgStylesMapper.set(img, img.style);
         img.style.maxWidth = img.naturalWidth + 'px';
         img.style.maxHeight = img.naturalHeight + 'px';
 
@@ -71,8 +73,8 @@ export default class ZoomImages {
         this.zoomedIn = true;
     }
     zoomOut() {
-        this.img.parentNode.setAttribute('style', '');
-        this.img.setAttribute('style', this.img.getAttribute('data-style'));
+        this.img.parentNode.style = '';
+        this.img.style = this.imgStylesMapper.get(this.img) || '';
         this.slide.classList.remove('zoomed');
         this.zoomedIn = false;
         this.currentX = null;
