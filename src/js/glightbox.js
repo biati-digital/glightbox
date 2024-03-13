@@ -1085,8 +1085,8 @@ class GlightboxInit {
                 let descHeight = description.offsetHeight;
                 let imgNode = image.querySelector('img');
 
-                imgNode.setAttribute('style', `max-height: calc(100vh - ${descHeight}px)`);
-                description.setAttribute('style', `max-width: ${imgNode.offsetWidth}px;`);
+                imgNode.style.maxHeight = `calc(100vh - ${descHeight}px)`;
+                description.style.maxWidth = `${imgNode.offsetWidth}px`;
             }
         }
 
@@ -1134,15 +1134,15 @@ class GlightboxInit {
                 let vheight = video.offsetHeight;
                 let ratio = winHeight / vheight;
                 let vsize = { width: vwidth * ratio, height: vheight * ratio };
-                video.parentNode.setAttribute('style', `max-width: ${vsize.width}px`);
+                video.parentNode.style.maxWidth = `${vsize.width}px`;
 
                 if (descriptionResize) {
-                    description.setAttribute('style', `max-width: ${vsize.width}px;`);
+                    description.style.maxWidth = `${vsize.width}px`;
                 }
             } else {
                 video.parentNode.style.maxWidth = `${videoWidth}`;
                 if (descriptionResize) {
-                    description.setAttribute('style', `max-width: ${videoWidth};`);
+                    description.style.maxWidth = videoWidth;
                 }
             }
         }
