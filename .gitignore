@@ -155,3 +155,4 @@ dist
 .yarn/install-state.gz
 .pnp.*
 .ddev/*
+*.ts.timestamp-*
