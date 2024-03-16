@@ -4,17 +4,19 @@ about: Create a report to help us improve
 title: ''
 labels: ''
 assignees: ''
-
 ---
+
+**Please read this**
+Before creating a new issue, please make sure to use the search feature. New issues should only be created for library-related bugs. For guidance or assistance, please use the [Discussion Page](https://github.com/biati-digital/glightbox/discussions).
+
+Please provide all the information below. We work on this library and provide support in our free time, so having all the details will help us to find and solve bugs faster.
 
 **Describe the bug**
 A clear and concise description of what the bug is.
 
-**Are you able to reproduce the bug in the demo site**
-Yes|No.
-
 **To Reproduce**
 Steps to reproduce the behavior:
+
 1. Go to '...'
 2. Click on '....'
 3. Scroll down to '....'
@@ -24,18 +26,13 @@ Steps to reproduce the behavior:
 A clear and concise description of what you expected to happen.
 
 **Post the code you are using**
-Help me solve issues faster, if I can copy paste your code I can try to reproduce and fix the bug faster.
+Share your code with us so we can make some tests
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+**Live example**
+Share a URL so we can see the error, in case you are not able to share your project URL please replicate the error using codesandbox.io or similar if required.
 
-**Desktop:**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+**Device**
 
-**Smartphone:**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
+- OS: [e.g. iOS 17, macOS Catalina, Windows 11, etc.]
+- Browser [e.g. Chrome, Safari]
+- Glightbox Version [e.g. 4.0.0]
