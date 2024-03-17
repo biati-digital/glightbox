@@ -7,17 +7,11 @@
   function _typeof(obj) {
     "@babel/helpers - typeof";
 
-    if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
-      _typeof = function (obj) {
-        return typeof obj;
-      };
-    } else {
-      _typeof = function (obj) {
-        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-      };
-    }
-
-    return _typeof(obj);
+    return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) {
+      return typeof obj;
+    } : function (obj) {
+      return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+    }, _typeof(obj);
   }
 
   function _classCallCheck(instance, Constructor) {
@@ -39,6 +33,9 @@
   function _createClass(Constructor, protoProps, staticProps) {
     if (protoProps) _defineProperties(Constructor.prototype, protoProps);
     if (staticProps) _defineProperties(Constructor, staticProps);
+    Object.defineProperty(Constructor, "prototype", {
+      writable: false
+    });
     return Constructor;
   }
 
@@ -1999,7 +1996,9 @@
         var _this = this;
 
         var data = extend({
-          descPosition: settings.descPosition
+          descPosition: settings.descPosition,
+          openEffect: settings.openEffect,
+          closeEffect: settings.closeEffect
         }, this.defaults);
 
         if (isObject(element) && !isNode(element)) {
@@ -2388,7 +2387,7 @@
     return Slide;
   }();
 
-  var _version = '3.1.0';
+  var _version = '3.2.0';
 
   var isMobile$1 = isMobile();
 
@@ -2561,7 +2560,7 @@
 
         this.build();
 
-        animateElement(this.overlay, this.settings.openEffect === 'none' ? 'none' : this.settings.cssEfects.fade["in"]);
+        animateElement(this.overlay, this.elements[index].openEffect === 'none' ? 'none' : this.settings.cssEfects.fade["in"]);
 
         var body = document.body;
         var scrollBar = window.innerWidth - document.documentElement.clientWidth;
@@ -2882,7 +2881,7 @@
         removeClass(slide, this.effectsClasses);
 
         if (first) {
-          animateElement(slide, this.settings.cssEfects[this.settings.openEffect]["in"], function () {
+          animateElement(slide, this.settings.cssEfects[this.elements[this.index].openEffect]["in"], function () {
             if (_this4.settings.autoplayVideos) {
               _this4.slidePlayerPlay(slide);
             }
@@ -3528,9 +3527,9 @@
 
         addClass(this.modal, 'glightbox-closing');
 
-        animateElement(this.overlay, this.settings.openEffect == 'none' ? 'none' : this.settings.cssEfects.fade.out);
+        animateElement(this.overlay, this.elements[this.index].openEffect == 'none' ? 'none' : this.settings.cssEfects.fade.out);
 
-        animateElement(this.activeSlide, this.settings.cssEfects[this.settings.closeEffect].out, function () {
+        animateElement(this.activeSlide, this.settings.cssEfects[this.elements[this.index].closeEffect].out, function () {
           _this8.activeSlide = null;
           _this8.prevActiveSlideIndex = null;
           _this8.prevActiveSlide = null;
