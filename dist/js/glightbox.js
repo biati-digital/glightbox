@@ -2279,11 +2279,19 @@
         this.slideDescription = slideNode.querySelector('.gslide-description');
         this.slideDescriptionContained = this.slideDescription && hasClass(this.slideDescription.parentNode, 'gslide-media');
         if (this.settings.preload) {
-          this.preloadSlide(index + 1);
-          this.preloadSlide(index - 1);
+          var numberOfSlidesToLoad = 3;
+          this.preloadSlides(index, numberOfSlidesToLoad);
         }
         this.updateNavigationClasses();
         this.activeSlide = slideNode;
+      }
+    }, {
+      key: "preloadSlides",
+      value: function preloadSlides(index, howMany) {
+        for (var i = 1; i <= howMany; i++) {
+          this.preloadSlide(index + i);
+          this.preloadSlide(index - i);
+        }
       }
     }, {
       key: "preloadSlide",

@@ -288,14 +288,27 @@ class GlightboxInit {
 
         // Preload subsequent slides
         if (this.settings.preload) {
-            this.preloadSlide(index + 1);
-            this.preloadSlide(index - 1);
+            const numberOfSlidesToLoad = 3
+            this.preloadSlides(index, numberOfSlidesToLoad)
         }
 
         // Handle navigation arrows
         this.updateNavigationClasses();
 
         this.activeSlide = slideNode;
+    }
+
+    /**
+     * Calling Preload slide
+     * @param  {number}  index slide index
+     * @param  {number}  howMany number of loading slides
+     * @return {null}
+     */
+    preloadSlides(index, howMany) {
+        for (let i = 1; i <= howMany; i++) {
+            this.preloadSlide(index + i);
+            this.preloadSlide(index - i);
+        }
     }
 
     /**
