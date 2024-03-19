@@ -3,6 +3,10 @@
 @custom-media --medium-viewport (width >=992px);
 @custom-media --large-viewport (width >=1200px);
 
+.gscrollbar-fixer {
+    margin-right: var(--gscrollbar-fixer);
+}
+
 .glightbox-container {
     width: 100%;
     height: 100%;

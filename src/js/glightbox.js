@@ -192,7 +192,7 @@ class GlightboxInit {
             var styleSheet = document.createElement('style');
             styleSheet.type = 'text/css';
             styleSheet.className = 'gcss-styles';
-            styleSheet.innerText = `.gscrollbar-fixer {margin-right: ${scrollBar}px}`;
+            styleSheet.innerText = `:root { --gscrollbar-fixer: ${scrollBar}px; }`;
             document.head.appendChild(styleSheet);
             _.addClass(body, 'gscrollbar-fixer');
         }
