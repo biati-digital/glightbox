@@ -32,7 +32,7 @@ export default function slideVideo(slide, data, index, callback) {
 
     slideMedia.style.maxWidth = data.width;
 
-    const initPlyr = Plyr => {
+    const initPlyr = (Plyr, config) => {
         // Set vimeo videos
         if (!provider && url.match(/vimeo\.com\/([0-9]*)/)) {
             provider = 'vimeo';
@@ -70,7 +70,7 @@ export default function slideVideo(slide, data, index, callback) {
         videoWrapper.setAttribute('data-id', videoID);
         videoWrapper.setAttribute('data-index', index);
 
-        const playerConfig = has(this.settings.plyr, 'config') ? this.settings.plyr.config : {};
+        const playerConfig = config || (has(this.settings.plyr, 'config') ? this.settings.plyr.config : {});
         const player = new Plyr('#' + videoID, playerConfig);
 
         player.on('ready', (event) => {
@@ -92,7 +92,7 @@ export default function slideVideo(slide, data, index, callback) {
     }
 
     if (typeof this.settings.plyr.js === 'function') {
-        this.settings.plyr.js().then(Plyr => initPlyr(Plyr));
+        this.settings.plyr.js().then(v => initPlyr(v.Plyr, v.config));
     } else {
         injectAssets(this.settings.plyr.js, 'Plyr', () => initPlyr(window.Plyr));
     }
