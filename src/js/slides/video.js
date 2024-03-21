@@ -20,7 +20,11 @@ export default function slideVideo(slide, data, index, callback) {
 
     const videoWrapper = slide.querySelector('.gvideo-wrapper');
 
-    injectAssets(this.settings.plyr.css, 'Plyr');
+    if (typeof this.settings.plyr.css === 'function') {
+        this.settings.plyr.css();
+    } else {
+        injectAssets(this.settings.plyr.css, 'Plyr');
+    }
 
     let url = data.href;
     let provider = data?.videoProvider;
@@ -28,7 +32,7 @@ export default function slideVideo(slide, data, index, callback) {
 
     slideMedia.style.maxWidth = data.width;
 
-    injectAssets(this.settings.plyr.js, 'Plyr', () => {
+    const initPlyr = Plyr => {
         // Set vimeo videos
         if (!provider && url.match(/vimeo\.com\/([0-9]*)/)) {
             provider = 'vimeo';
@@ -85,7 +89,13 @@ export default function slideVideo(slide, data, index, callback) {
         );
         player.on('enterfullscreen', handleMediaFullScreen);
         player.on('exitfullscreen', handleMediaFullScreen);
-    });
+    }
+
+    if (typeof this.settings.plyr.js === 'function') {
+        this.settings.plyr.js().then(Plyr => initPlyr(Plyr));
+    } else {
+        injectAssets(this.settings.plyr.js, 'Plyr', () => initPlyr(window.Plyr));
+    }
 }
 
 /**
