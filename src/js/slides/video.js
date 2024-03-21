@@ -50,23 +50,33 @@ export default function slideVideo(slide, data, index, callback) {
         // if no provider, default to local
         if (provider === 'local' || !provider) {
             provider = 'local';
-            let html = '<video id="' + videoID + '" ';
-            html += `style="background:#000; max-width: ${data.width};" `;
-            html += 'preload="metadata" ';
-            html += 'x-webkit-airplay="allow" ';
-            html += 'playsinline ';
-            html += 'controls ';
-            html += 'class="gvideo-local">';
-            html += `<source src="${url}">`;
-            html += '</video>';
-            customPlaceholder = createHTML(html);
+
+            const video = document.createElement('video');
+            video.id = videoID;
+            video.className = 'gvideo-local';
+            video.preload = 'metadata';
+            video.playsInline = true;
+            video.controls = true;
+            video.style.background = '#000';
+            video.style.maxWidth = data.width;
+            video.setAttribute('x-webkit-airplay', 'allow');
+
+            const source = document.createElement('source');
+            source.src = url;
+            video.appendChild(source);
+
+            customPlaceholder = video;
         }
 
-        // prettier-ignore
-        const placeholder = customPlaceholder ? customPlaceholder : createHTML(`<div id="${videoID}" data-plyr-provider="${provider}" data-plyr-embed-id="${url}"></div>`);
+        if (!customPlaceholder) {
+            customPlaceholder = document.createElement('div');
+            customPlaceholder.id = videoID;
+            customPlaceholder.dataset.plyrProvider = provider;
+            customPlaceholder.dataset.plyrEmbedId = url;
+        }
 
         addClass(videoWrapper, `${provider}-video gvideo`);
-        videoWrapper.appendChild(placeholder);
+        videoWrapper.appendChild(customPlaceholder);
         videoWrapper.setAttribute('data-id', videoID);
         videoWrapper.setAttribute('data-index', index);
 
