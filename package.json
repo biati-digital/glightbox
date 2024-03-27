@@ -1,53 +1,51 @@
 {
-  "name": "glightbox",
-  "version": "3.2.0",
-  "description": "Pure Javascript lightbox",
-  "main": "dist/js/glightbox.min.js",
-  "scripts": {
-    "watch": "node development/watcher.js"
-  },
+  "name": "@glightbox/monorepo",
+  "description": "",
+  "version": "0.0.0",
   "author": "Biati Digital",
-  "keywords": [
-    "lightbox",
-    "javascript",
-    "gallery",
-    "popup"
+  "scripts": {
+    "prepare": "npm run build --workspaces --if-present",
+    "lint": "npm run lint:scripts && npm run lint:styles",
+    "lint:scripts": "eslint ./packages --ext .ts",
+    "lint:styles": "stylelint './**/*.css' --allow-empty-input",
+    "build": "npm run build --workspaces --if-present",
+    "watch": "npm run watch --workspaces --if-present",
+    "change:beta": "changeset pre enter beta",
+    "change:exit": "changeset pre exit",
+    "change": "changeset",
+    "version": "changeset version",
+    "release": "changeset publish",
+    "clean": "find ./packages -name 'dist' -type d -exec rm -rf {} + && find ./packages -name 'tsconfig.tsbuildinfo' -type f -exec rm -rf {} +"
+  },
+  "workspaces": [
+    "packages/utils",
+    "packages/glightbox",
+    "packages/plugin-core",
+    "packages/drag-navigation",
+    "packages/keyboard-navigation",
+    "packages/image",
+    "packages/video"
   ],
-  "license": "MIT",
-  "homepage": "https://biati-digital.github.io/glightbox/",
-  "repository": {
-    "url": "https://github.com/biati-digital/glightbox",
-    "type": "git"
-  },
-  "bugs": "https://github.com/biati-digital/glightbox/issues",
+  "private": true,
+  "license": "GPLV3",
   "devDependencies": {
-    "@babel/cli": "^7.10.3",
-    "@babel/core": "^7.10.3",
-    "@babel/node": "^7.10.3",
-    "@babel/preset-env": "^7.10.3",
-    "@babel/register": "^7.10.3",
-    "archiver": "^3.1.1",
-    "babel-plugin-transform-runtime": "^6.23.0",
-    "chokidar": "^3.4.0",
-    "clean-css": "^4.2.3",
-    "css-mqpacker": "^7.0.0",
-    "eslint": "^7.16.0",
-    "fs-extra": "^8.1.0",
-    "fs-jetpack": "^2.4.0",
-    "install": "^0.13.0",
-    "node-notifier": "^5.4.0",
-    "npm": "^6.14.10",
-    "postcss": "^7.0.32",
-    "postcss-nested": "^4.1.1",
-    "postcss-preset-env": "^6.5.0",
-    "postcss-prettify": "^0.3.4",
-    "rollup": "^1.32.1",
-    "rollup-plugin-babel": "^4.4.0",
-    "rollup-plugin-commonjs": "^9.2.0",
-    "rollup-plugin-node-resolve": "^4.0.0",
-    "temporary": "^1.1.0",
-    "terser": "^4.8.0",
-    "uninstall": "0.0.0"
+    "@changesets/changelog-github": "^0.5.0",
+    "@changesets/cli": "^2.27.1",
+    "@types/node": "^20.8.0",
+    "@typescript-eslint/eslint-plugin": "^7.3.1",
+    "@typescript-eslint/parser": "^7.3.1",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "stylelint": "^16.2.1",
+    "stylelint-config-recommended": "^14.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.0.2",
+    "vite": "^5.1.6",
+    "vite-plugin-dts": "^3.6.0",
+    "vite-plugin-static-copy": "^1.0.1"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@glightbox/plugin-core": "^1.0.0-beta.1"
+  }
 }
