@@ -4,14 +4,28 @@
   (global = global || self, global.GLightbox = factory());
 }(this, (function () { 'use strict';
 
-  function _typeof(obj) {
+  function _toPrimitive(t, r) {
+    if ("object" != typeof t || !t) return t;
+    var e = t[Symbol.toPrimitive];
+    if (void 0 !== e) {
+      var i = e.call(t, r || "default");
+      if ("object" != typeof i) return i;
+      throw new TypeError("@@toPrimitive must return a primitive value.");
+    }
+    return ("string" === r ? String : Number)(t);
+  }
+  function _toPropertyKey(t) {
+    var i = _toPrimitive(t, "string");
+    return "symbol" == typeof i ? i : i + "";
+  }
+  function _typeof(o) {
     "@babel/helpers - typeof";
 
-    return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) {
-      return typeof obj;
-    } : function (obj) {
-      return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-    }, _typeof(obj);
+    return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) {
+      return typeof o;
+    } : function (o) {
+      return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o;
+    }, _typeof(o);
   }
   function _classCallCheck(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
@@ -34,20 +48,6 @@
       writable: false
     });
     return Constructor;
-  }
-  function _toPrimitive(input, hint) {
-    if (typeof input !== "object" || input === null) return input;
-    var prim = input[Symbol.toPrimitive];
-    if (prim !== undefined) {
-      var res = prim.call(input, hint || "default");
-      if (typeof res !== "object") return res;
-      throw new TypeError("@@toPrimitive must return a primitive value.");
-    }
-    return (hint === "string" ? String : Number)(input);
-  }
-  function _toPropertyKey(arg) {
-    var key = _toPrimitive(arg, "string");
-    return typeof key === "symbol" ? key : String(key);
   }
 
   var uid = Date.now();
@@ -549,6 +549,906 @@
     });
   }
 
+  var ZoomImages = function () {
+    function ZoomImages(el, slide) {
+      var _this = this;
+      var onclose = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+      _classCallCheck(this, ZoomImages);
+      this.img = el;
+      this.slide = slide;
+      this.onclose = onclose;
+      if (this.img.setZoomEvents) {
+        return false;
+      }
+      this.active = false;
+      this.zoomedIn = false;
+      this.dragging = false;
+      this.currentX = null;
+      this.currentY = null;
+      this.initialX = null;
+      this.initialY = null;
+      this.xOffset = 0;
+      this.yOffset = 0;
+      this.img.addEventListener('mousedown', function (e) {
+        return _this.dragStart(e);
+      }, false);
+      this.img.addEventListener('mouseup', function (e) {
+        return _this.dragEnd(e);
+      }, false);
+      this.img.addEventListener('mousemove', function (e) {
+        return _this.drag(e);
+      }, false);
+      this.img.addEventListener('click', function (e) {
+        if (_this.slide.classList.contains('dragging-nav')) {
+          _this.zoomOut();
+          return false;
+        }
+        if (!_this.zoomedIn) {
+          return _this.zoomIn();
+        }
+        if (_this.zoomedIn && !_this.dragging) {
+          _this.zoomOut();
+        }
+      }, false);
+      this.img.setZoomEvents = true;
+    }
+    return _createClass(ZoomImages, [{
+      key: "zoomIn",
+      value: function zoomIn() {
+        var winWidth = this.widowWidth();
+        if (this.zoomedIn || winWidth <= 768) {
+          return;
+        }
+        var img = this.img;
+        img.setAttribute('data-style', img.getAttribute('style'));
+        img.style.maxWidth = img.naturalWidth + 'px';
+        img.style.maxHeight = img.naturalHeight + 'px';
+        if (img.naturalWidth > winWidth) {
+          var centerX = winWidth / 2 - img.naturalWidth / 2;
+          this.setTranslate(this.img.parentNode, centerX, 0);
+        }
+        this.slide.classList.add('zoomed');
+        this.zoomedIn = true;
+      }
+    }, {
+      key: "zoomOut",
+      value: function zoomOut() {
+        this.img.parentNode.setAttribute('style', '');
+        this.img.setAttribute('style', this.img.getAttribute('data-style'));
+        this.slide.classList.remove('zoomed');
+        this.zoomedIn = false;
+        this.currentX = null;
+        this.currentY = null;
+        this.initialX = null;
+        this.initialY = null;
+        this.xOffset = 0;
+        this.yOffset = 0;
+        if (this.onclose && typeof this.onclose == 'function') {
+          this.onclose();
+        }
+      }
+    }, {
+      key: "dragStart",
+      value: function dragStart(e) {
+        e.preventDefault();
+        if (!this.zoomedIn) {
+          this.active = false;
+          return;
+        }
+        if (e.type === 'touchstart') {
+          this.initialX = e.touches[0].clientX - this.xOffset;
+          this.initialY = e.touches[0].clientY - this.yOffset;
+        } else {
+          this.initialX = e.clientX - this.xOffset;
+          this.initialY = e.clientY - this.yOffset;
+        }
+        if (e.target === this.img) {
+          this.active = true;
+          this.img.classList.add('dragging');
+        }
+      }
+    }, {
+      key: "dragEnd",
+      value: function dragEnd(e) {
+        var _this2 = this;
+        e.preventDefault();
+        this.initialX = this.currentX;
+        this.initialY = this.currentY;
+        this.active = false;
+        setTimeout(function () {
+          _this2.dragging = false;
+          _this2.img.isDragging = false;
+          _this2.img.classList.remove('dragging');
+        }, 100);
+      }
+    }, {
+      key: "drag",
+      value: function drag(e) {
+        if (this.active) {
+          e.preventDefault();
+          if (e.type === 'touchmove') {
+            this.currentX = e.touches[0].clientX - this.initialX;
+            this.currentY = e.touches[0].clientY - this.initialY;
+          } else {
+            this.currentX = e.clientX - this.initialX;
+            this.currentY = e.clientY - this.initialY;
+          }
+          this.xOffset = this.currentX;
+          this.yOffset = this.currentY;
+          this.img.isDragging = true;
+          this.dragging = true;
+          this.setTranslate(this.img, this.currentX, this.currentY);
+        }
+      }
+    }, {
+      key: "onMove",
+      value: function onMove(e) {
+        if (!this.zoomedIn) {
+          return;
+        }
+        var xOffset = e.clientX - this.img.naturalWidth / 2;
+        var yOffset = e.clientY - this.img.naturalHeight / 2;
+        this.setTranslate(this.img, xOffset, yOffset);
+      }
+    }, {
+      key: "setTranslate",
+      value: function setTranslate(node, xPos, yPos) {
+        node.style.transform = 'translate3d(' + xPos + 'px, ' + yPos + 'px, 0)';
+      }
+    }, {
+      key: "widowWidth",
+      value: function widowWidth() {
+        return window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+      }
+    }]);
+  }();
+
+  var DragSlides = function () {
+    function DragSlides() {
+      var _this = this;
+      var config = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      _classCallCheck(this, DragSlides);
+      var dragEl = config.dragEl,
+        _config$toleranceX = config.toleranceX,
+        toleranceX = _config$toleranceX === void 0 ? 40 : _config$toleranceX,
+        _config$toleranceY = config.toleranceY,
+        toleranceY = _config$toleranceY === void 0 ? 65 : _config$toleranceY,
+        _config$slide = config.slide,
+        slide = _config$slide === void 0 ? null : _config$slide,
+        _config$instance = config.instance,
+        instance = _config$instance === void 0 ? null : _config$instance;
+      this.el = dragEl;
+      this.active = false;
+      this.dragging = false;
+      this.currentX = null;
+      this.currentY = null;
+      this.initialX = null;
+      this.initialY = null;
+      this.xOffset = 0;
+      this.yOffset = 0;
+      this.direction = null;
+      this.lastDirection = null;
+      this.toleranceX = toleranceX;
+      this.toleranceY = toleranceY;
+      this.toleranceReached = false;
+      this.dragContainer = this.el;
+      this.slide = slide;
+      this.instance = instance;
+      this.el.addEventListener('mousedown', function (e) {
+        return _this.dragStart(e);
+      }, false);
+      this.el.addEventListener('mouseup', function (e) {
+        return _this.dragEnd(e);
+      }, false);
+      this.el.addEventListener('mousemove', function (e) {
+        return _this.drag(e);
+      }, false);
+    }
+    return _createClass(DragSlides, [{
+      key: "dragStart",
+      value: function dragStart(e) {
+        if (this.slide.classList.contains('zoomed')) {
+          this.active = false;
+          return;
+        }
+        if (e.type === 'touchstart') {
+          this.initialX = e.touches[0].clientX - this.xOffset;
+          this.initialY = e.touches[0].clientY - this.yOffset;
+        } else {
+          this.initialX = e.clientX - this.xOffset;
+          this.initialY = e.clientY - this.yOffset;
+        }
+        var clicked = e.target.nodeName.toLowerCase();
+        var exludeClicks = ['input', 'select', 'textarea', 'button', 'a'];
+        if (e.target.classList.contains('nodrag') || closest(e.target, '.nodrag') || exludeClicks.indexOf(clicked) !== -1) {
+          this.active = false;
+          return;
+        }
+        e.preventDefault();
+        if (e.target === this.el || clicked !== 'img' && closest(e.target, '.gslide-inline')) {
+          this.active = true;
+          this.el.classList.add('dragging');
+          this.dragContainer = closest(e.target, '.ginner-container');
+        }
+      }
+    }, {
+      key: "dragEnd",
+      value: function dragEnd(e) {
+        var _this2 = this;
+        e && e.preventDefault();
+        this.initialX = 0;
+        this.initialY = 0;
+        this.currentX = null;
+        this.currentY = null;
+        this.initialX = null;
+        this.initialY = null;
+        this.xOffset = 0;
+        this.yOffset = 0;
+        this.active = false;
+        if (this.doSlideChange) {
+          this.instance.preventOutsideClick = true;
+          this.doSlideChange == 'right' && this.instance.prevSlide();
+          this.doSlideChange == 'left' && this.instance.nextSlide();
+        }
+        if (this.doSlideClose) {
+          this.instance.close();
+        }
+        if (!this.toleranceReached) {
+          this.setTranslate(this.dragContainer, 0, 0, true);
+        }
+        setTimeout(function () {
+          _this2.instance.preventOutsideClick = false;
+          _this2.toleranceReached = false;
+          _this2.lastDirection = null;
+          _this2.dragging = false;
+          _this2.el.isDragging = false;
+          _this2.el.classList.remove('dragging');
+          _this2.slide.classList.remove('dragging-nav');
+          _this2.dragContainer.style.transform = '';
+          _this2.dragContainer.style.transition = '';
+        }, 100);
+      }
+    }, {
+      key: "drag",
+      value: function drag(e) {
+        if (this.active) {
+          e.preventDefault();
+          this.slide.classList.add('dragging-nav');
+          if (e.type === 'touchmove') {
+            this.currentX = e.touches[0].clientX - this.initialX;
+            this.currentY = e.touches[0].clientY - this.initialY;
+          } else {
+            this.currentX = e.clientX - this.initialX;
+            this.currentY = e.clientY - this.initialY;
+          }
+          this.xOffset = this.currentX;
+          this.yOffset = this.currentY;
+          this.el.isDragging = true;
+          this.dragging = true;
+          this.doSlideChange = false;
+          this.doSlideClose = false;
+          var currentXInt = Math.abs(this.currentX);
+          var currentYInt = Math.abs(this.currentY);
+          if (currentXInt > 0 && currentXInt >= Math.abs(this.currentY) && (!this.lastDirection || this.lastDirection == 'x')) {
+            this.yOffset = 0;
+            this.lastDirection = 'x';
+            this.setTranslate(this.dragContainer, this.currentX, 0);
+            var doChange = this.shouldChange();
+            if (!this.instance.settings.dragAutoSnap && doChange) {
+              this.doSlideChange = doChange;
+            }
+            if (this.instance.settings.dragAutoSnap && doChange) {
+              this.instance.preventOutsideClick = true;
+              this.toleranceReached = true;
+              this.active = false;
+              this.instance.preventOutsideClick = true;
+              this.dragEnd(null);
+              doChange == 'right' && this.instance.prevSlide();
+              doChange == 'left' && this.instance.nextSlide();
+              return;
+            }
+          }
+          if (this.toleranceY > 0 && currentYInt > 0 && currentYInt >= currentXInt && (!this.lastDirection || this.lastDirection == 'y')) {
+            this.xOffset = 0;
+            this.lastDirection = 'y';
+            this.setTranslate(this.dragContainer, 0, this.currentY);
+            var doClose = this.shouldClose();
+            if (!this.instance.settings.dragAutoSnap && doClose) {
+              this.doSlideClose = true;
+            }
+            if (this.instance.settings.dragAutoSnap && doClose) {
+              this.instance.close();
+            }
+            return;
+          }
+        }
+      }
+    }, {
+      key: "shouldChange",
+      value: function shouldChange() {
+        var doChange = false;
+        var currentXInt = Math.abs(this.currentX);
+        if (currentXInt >= this.toleranceX) {
+          var dragDir = this.currentX > 0 ? 'right' : 'left';
+          if (dragDir == 'left' && this.slide !== this.slide.parentNode.lastChild || dragDir == 'right' && this.slide !== this.slide.parentNode.firstChild) {
+            doChange = dragDir;
+          }
+        }
+        return doChange;
+      }
+    }, {
+      key: "shouldClose",
+      value: function shouldClose() {
+        var doClose = false;
+        var currentYInt = Math.abs(this.currentY);
+        if (currentYInt >= this.toleranceY) {
+          doClose = true;
+        }
+        return doClose;
+      }
+    }, {
+      key: "setTranslate",
+      value: function setTranslate(node, xPos, yPos) {
+        var animated = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+        if (animated) {
+          node.style.transition = 'all .2s ease';
+        } else {
+          node.style.transition = '';
+        }
+        node.style.transform = "translate3d(".concat(xPos, "px, ").concat(yPos, "px, 0)");
+      }
+    }]);
+  }();
+
+  function slideImage(slide, data, index, callback) {
+    var slideMedia = slide.querySelector('.gslide-media');
+    var img = new Image();
+    var titleID = 'gSlideTitle_' + index;
+    var textID = 'gSlideDesc_' + index;
+    img.addEventListener('load', function () {
+      if (isFunction(callback)) {
+        callback();
+      }
+    }, false);
+    img.src = data.href;
+    if (data.sizes != '' && data.srcset != '') {
+      img.sizes = data.sizes;
+      img.srcset = data.srcset;
+    }
+    img.alt = '';
+    if (!isNil(data.alt) && data.alt !== '') {
+      img.alt = data.alt;
+    }
+    if (data.title !== '') {
+      img.setAttribute('aria-labelledby', titleID);
+    }
+    if (data.description !== '') {
+      img.setAttribute('aria-describedby', textID);
+    }
+    if (data.hasOwnProperty('_hasCustomWidth') && data._hasCustomWidth) {
+      img.style.width = data.width;
+    }
+    if (data.hasOwnProperty('_hasCustomHeight') && data._hasCustomHeight) {
+      img.style.height = data.height;
+    }
+    slideMedia.insertBefore(img, slideMedia.firstChild);
+    return;
+  }
+
+  function slideVideo(slide, data, index, callback) {
+    var _this = this;
+    var slideContainer = slide.querySelector('.ginner-container');
+    var videoID = 'gvideo' + index;
+    var slideMedia = slide.querySelector('.gslide-media');
+    var videoPlayers = this.getAllPlayers();
+    addClass(slideContainer, 'gvideo-container');
+    slideMedia.insertBefore(createHTML('<div class="gvideo-wrapper"></div>'), slideMedia.firstChild);
+    var videoWrapper = slide.querySelector('.gvideo-wrapper');
+    injectAssets(this.settings.plyr.css, 'Plyr');
+    var url = data.href;
+    var provider = data === null || data === void 0 ? void 0 : data.videoProvider;
+    var customPlaceholder = false;
+    slideMedia.style.maxWidth = data.width;
+    injectAssets(this.settings.plyr.js, 'Plyr', function () {
+      if (!provider && url.match(/vimeo\.com\/([0-9]*)/)) {
+        provider = 'vimeo';
+      }
+      if (!provider && (url.match(/(youtube\.com|youtube-nocookie\.com)\/watch\?v=([a-zA-Z0-9\-_]+)/) || url.match(/youtu\.be\/([a-zA-Z0-9\-_]+)/) || url.match(/(youtube\.com|youtube-nocookie\.com)\/embed\/([a-zA-Z0-9\-_]+)/) || url.match(/(youtube\.com|youtube-nocookie\.com)\/shorts\/([a-zA-Z0-9\-_]+)/))) {
+        provider = 'youtube';
+      }
+      if (provider === 'local' || !provider) {
+        provider = 'local';
+        var html = '<video id="' + videoID + '" ';
+        html += "style=\"background:#000; max-width: ".concat(data.width, ";\" ");
+        html += 'preload="metadata" ';
+        html += 'x-webkit-airplay="allow" ';
+        html += 'playsinline ';
+        html += 'controls ';
+        html += 'class="gvideo-local">';
+        html += "<source src=\"".concat(url, "\">");
+        html += '</video>';
+        customPlaceholder = createHTML(html);
+      }
+      var placeholder = customPlaceholder ? customPlaceholder : createHTML("<div id=\"".concat(videoID, "\" data-plyr-provider=\"").concat(provider, "\" data-plyr-embed-id=\"").concat(url, "\"></div>"));
+      addClass(videoWrapper, "".concat(provider, "-video gvideo"));
+      videoWrapper.appendChild(placeholder);
+      videoWrapper.setAttribute('data-id', videoID);
+      videoWrapper.setAttribute('data-index', index);
+      var playerConfig = has(_this.settings.plyr, 'config') ? _this.settings.plyr.config : {};
+      var player = new Plyr('#' + videoID, playerConfig);
+      player.on('ready', function (event) {
+        videoPlayers[videoID] = event.detail.plyr;
+        if (isFunction(callback)) {
+          callback();
+        }
+      });
+      waitUntil(function () {
+        return slide.querySelector('iframe') && slide.querySelector('iframe').dataset.ready == 'true';
+      }, function () {
+        _this.resize(slide);
+      });
+      player.on('enterfullscreen', handleMediaFullScreen);
+      player.on('exitfullscreen', handleMediaFullScreen);
+    });
+  }
+  function handleMediaFullScreen(event) {
+    var media = closest(event.target, '.gslide-media');
+    if (event.type === 'enterfullscreen') {
+      addClass(media, 'fullscreen');
+    }
+    if (event.type === 'exitfullscreen') {
+      removeClass(media, 'fullscreen');
+    }
+  }
+
+  function slideInline(slide, data, index, callback) {
+    var _this = this;
+    var slideMedia = slide.querySelector('.gslide-media');
+    var hash = has(data, 'href') && data.href ? data.href.split('#').pop().trim() : false;
+    var content = has(data, 'content') && data.content ? data.content : false;
+    var innerContent;
+    if (content) {
+      if (isString(content)) {
+        innerContent = createHTML("<div class=\"ginlined-content\">".concat(content, "</div>"));
+      }
+      if (isNode(content)) {
+        if (content.style.display == 'none') {
+          content.style.display = 'block';
+        }
+        var container = document.createElement('div');
+        container.className = 'ginlined-content';
+        container.appendChild(content);
+        innerContent = container;
+      }
+    }
+    if (hash) {
+      var div = document.getElementById(hash);
+      if (!div) {
+        return false;
+      }
+      var cloned = div.cloneNode(true);
+      cloned.style.height = data.height;
+      cloned.style.maxWidth = data.width;
+      addClass(cloned, 'ginlined-content');
+      innerContent = cloned;
+    }
+    if (!innerContent) {
+      console.error('Unable to append inline slide content', data);
+      return false;
+    }
+    slideMedia.style.height = data.height;
+    slideMedia.style.width = data.width;
+    slideMedia.appendChild(innerContent);
+    this.events['inlineclose' + hash] = addEvent('click', {
+      onElement: slideMedia.querySelectorAll('.gtrigger-close'),
+      withCallback: function withCallback(e) {
+        e.preventDefault();
+        _this.close();
+      }
+    });
+    if (isFunction(callback)) {
+      callback();
+    }
+    return;
+  }
+
+  function slideIframe(slide, data, index, callback) {
+    var slideMedia = slide.querySelector('.gslide-media');
+    var iframe = createIframe({
+      url: data.href,
+      callback: callback
+    });
+    slideMedia.parentNode.style.maxWidth = data.width;
+    slideMedia.parentNode.style.height = data.height;
+    slideMedia.appendChild(iframe);
+    return;
+  }
+
+  var SlideConfigParser = function () {
+    function SlideConfigParser() {
+      var slideParamas = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      _classCallCheck(this, SlideConfigParser);
+      this.defaults = {
+        href: '',
+        sizes: '',
+        srcset: '',
+        title: '',
+        type: '',
+        videoProvider: '',
+        description: '',
+        alt: '',
+        descPosition: 'bottom',
+        effect: '',
+        width: '',
+        height: '',
+        content: false,
+        zoomable: true,
+        draggable: true
+      };
+      if (isObject(slideParamas)) {
+        this.defaults = extend(this.defaults, slideParamas);
+      }
+    }
+    return _createClass(SlideConfigParser, [{
+      key: "sourceType",
+      value: function sourceType(url) {
+        var origin = url;
+        url = url.toLowerCase();
+        if (url.match(/\.(jpeg|jpg|jpe|gif|png|apn|webp|avif|svg)/) !== null) {
+          return 'image';
+        }
+        if (url.match(/(youtube\.com|youtube-nocookie\.com)\/watch\?v=([a-zA-Z0-9\-_]+)/) || url.match(/youtu\.be\/([a-zA-Z0-9\-_]+)/) || url.match(/(youtube\.com|youtube-nocookie\.com)\/embed\/([a-zA-Z0-9\-_]+)/) || url.match(/(youtube\.com|youtube-nocookie\.com)\/shorts\/([a-zA-Z0-9\-_]+)/)) {
+          return 'video';
+        }
+        if (url.match(/vimeo\.com\/([0-9]*)/)) {
+          return 'video';
+        }
+        if (url.match(/\.(mp4|ogg|webm|mov)/) !== null) {
+          return 'video';
+        }
+        if (url.match(/\.(mp3|wav|wma|aac|ogg)/) !== null) {
+          return 'audio';
+        }
+        if (url.indexOf('#') > -1) {
+          var hash = origin.split('#').pop();
+          if (hash.trim() !== '') {
+            return 'inline';
+          }
+        }
+        if (url.indexOf('goajax=true') > -1) {
+          return 'ajax';
+        }
+        return 'external';
+      }
+    }, {
+      key: "parseConfig",
+      value: function parseConfig(element, settings) {
+        var _this = this;
+        var data = extend({
+          descPosition: settings.descPosition
+        }, this.defaults);
+        if (isObject(element) && !isNode(element)) {
+          if (!has(element, 'type')) {
+            if (has(element, 'content') && element.content) {
+              element.type = 'inline';
+            } else if (has(element, 'href')) {
+              element.type = this.sourceType(element.href);
+            }
+          }
+          var objectData = extend(data, element);
+          this.setSize(objectData, settings);
+          return objectData;
+        }
+        var url = '';
+        var config = element.getAttribute('data-glightbox');
+        var nodeType = element.nodeName.toLowerCase();
+        if (nodeType === 'a') {
+          url = element.href;
+        }
+        if (nodeType === 'img') {
+          url = element.src;
+          data.alt = element.alt;
+        }
+        data.href = url;
+        each(data, function (val, key) {
+          if (has(settings, key) && key !== 'width') {
+            data[key] = settings[key];
+          }
+          var nodeData = element.dataset[key];
+          if (!isNil(nodeData)) {
+            data[key] = _this.sanitizeValue(nodeData);
+          }
+        });
+        if (data.content) {
+          data.type = 'inline';
+        }
+        if (!data.type && url) {
+          data.type = this.sourceType(url);
+        }
+        if (!isNil(config)) {
+          var cleanKeys = [];
+          each(data, function (v, k) {
+            cleanKeys.push(';\\s?' + k);
+          });
+          cleanKeys = cleanKeys.join('\\s?:|');
+          if (config.trim() !== '') {
+            each(data, function (val, key) {
+              var str = config;
+              var match = 's?' + key + 's?:s?(.*?)(' + cleanKeys + 's?:|$)';
+              var regex = new RegExp(match);
+              var matches = str.match(regex);
+              if (matches && matches.length && matches[1]) {
+                var value = matches[1].trim().replace(/;\s*$/, '');
+                data[key] = _this.sanitizeValue(value);
+              }
+            });
+          }
+        } else {
+          if (!data.title && nodeType == 'a') {
+            var title = element.title;
+            if (!isNil(title) && title !== '') {
+              data.title = title;
+            }
+          }
+          if (!data.title && nodeType == 'img') {
+            var alt = element.alt;
+            if (!isNil(alt) && alt !== '') {
+              data.title = alt;
+            }
+          }
+        }
+        if (data.description && data.description.substring(0, 1) === '.') {
+          var description;
+          try {
+            description = document.querySelector(data.description).innerHTML;
+          } catch (error) {
+            if (!(error instanceof DOMException)) {
+              throw error;
+            }
+          }
+          if (description) {
+            data.description = description;
+          }
+        }
+        if (!data.description) {
+          var nodeDesc = element.querySelector('.glightbox-desc');
+          if (nodeDesc) {
+            data.description = nodeDesc.innerHTML;
+          }
+        }
+        this.setSize(data, settings, element);
+        this.slideConfig = data;
+        return data;
+      }
+    }, {
+      key: "setSize",
+      value: function setSize(data, settings) {
+        var element = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+        var defaultWith = data.type == 'video' ? this.checkSize(settings.videosWidth) : this.checkSize(settings.width);
+        var defaultHeight = this.checkSize(settings.height);
+        data.width = has(data, 'width') && data.width !== '' ? this.checkSize(data.width) : defaultWith;
+        data.height = has(data, 'height') && data.height !== '' ? this.checkSize(data.height) : defaultHeight;
+        if (element && data.type == 'image') {
+          data._hasCustomWidth = element.dataset.width ? true : false;
+          data._hasCustomHeight = element.dataset.height ? true : false;
+        }
+        return data;
+      }
+    }, {
+      key: "checkSize",
+      value: function checkSize(size) {
+        return isNumber(size) ? "".concat(size, "px") : size;
+      }
+    }, {
+      key: "sanitizeValue",
+      value: function sanitizeValue(val) {
+        if (val !== 'true' && val !== 'false') {
+          return val;
+        }
+        return val === 'true';
+      }
+    }]);
+  }();
+
+  var Slide = function () {
+    function Slide(el, instance, index) {
+      _classCallCheck(this, Slide);
+      this.element = el;
+      this.instance = instance;
+      this.index = index;
+    }
+    return _createClass(Slide, [{
+      key: "setContent",
+      value: function setContent() {
+        var _this = this;
+        var slide = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+        var callback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+        if (hasClass(slide, 'loaded')) {
+          return false;
+        }
+        var settings = this.instance.settings;
+        var slideConfig = this.slideConfig;
+        var isMobileDevice = isMobile();
+        if (isFunction(settings.beforeSlideLoad)) {
+          settings.beforeSlideLoad({
+            index: this.index,
+            slide: slide,
+            player: false
+          });
+        }
+        var type = slideConfig.type;
+        var position = slideConfig.descPosition;
+        var slideMedia = slide.querySelector('.gslide-media');
+        var slideTitle = slide.querySelector('.gslide-title');
+        var slideText = slide.querySelector('.gslide-desc');
+        var slideDesc = slide.querySelector('.gdesc-inner');
+        var finalCallback = callback;
+        var titleID = 'gSlideTitle_' + this.index;
+        var textID = 'gSlideDesc_' + this.index;
+        if (isFunction(settings.afterSlideLoad)) {
+          finalCallback = function finalCallback() {
+            if (isFunction(callback)) {
+              callback();
+            }
+            settings.afterSlideLoad({
+              index: _this.index,
+              slide: slide,
+              player: _this.instance.getSlidePlayerInstance(_this.index)
+            });
+          };
+        }
+        if (slideConfig.title == '' && slideConfig.description == '') {
+          if (slideDesc) {
+            slideDesc.parentNode.parentNode.removeChild(slideDesc.parentNode);
+          }
+        } else {
+          if (slideTitle && slideConfig.title !== '') {
+            slideTitle.id = titleID;
+            slideTitle.innerHTML = slideConfig.title;
+          } else {
+            slideTitle.parentNode.removeChild(slideTitle);
+          }
+          if (slideText && slideConfig.description !== '') {
+            slideText.id = textID;
+            if (isMobileDevice && settings.moreLength > 0) {
+              slideConfig.smallDescription = this.slideShortDesc(slideConfig.description, settings.moreLength, settings.moreText);
+              slideText.innerHTML = slideConfig.smallDescription;
+              this.descriptionEvents(slideText, slideConfig);
+            } else {
+              slideText.innerHTML = slideConfig.description;
+            }
+          } else {
+            slideText.parentNode.removeChild(slideText);
+          }
+          addClass(slideMedia.parentNode, "desc-".concat(position));
+          addClass(slideDesc.parentNode, "description-".concat(position));
+        }
+        addClass(slideMedia, "gslide-".concat(type));
+        addClass(slide, 'loaded');
+        if (type === 'video') {
+          slideVideo.apply(this.instance, [slide, slideConfig, this.index, finalCallback]);
+          return;
+        }
+        if (type === 'external') {
+          slideIframe.apply(this, [slide, slideConfig, this.index, finalCallback]);
+          return;
+        }
+        if (type === 'inline') {
+          slideInline.apply(this.instance, [slide, slideConfig, this.index, finalCallback]);
+          if (slideConfig.draggable) {
+            new DragSlides({
+              dragEl: slide.querySelector('.gslide-inline'),
+              toleranceX: settings.dragToleranceX,
+              toleranceY: settings.dragToleranceY,
+              slide: slide,
+              instance: this.instance
+            });
+          }
+          return;
+        }
+        if (type === 'image') {
+          slideImage(slide, slideConfig, this.index, function () {
+            var img = slide.querySelector('img');
+            if (slideConfig.draggable) {
+              new DragSlides({
+                dragEl: img,
+                toleranceX: settings.dragToleranceX,
+                toleranceY: settings.dragToleranceY,
+                slide: slide,
+                instance: _this.instance
+              });
+            }
+            if (slideConfig.zoomable && img.naturalWidth > img.offsetWidth) {
+              addClass(img, 'zoomable');
+              new ZoomImages(img, slide, function () {
+                _this.instance.resize();
+              });
+            }
+            if (isFunction(finalCallback)) {
+              finalCallback();
+            }
+          });
+          return;
+        }
+        if (isFunction(finalCallback)) {
+          finalCallback();
+        }
+      }
+    }, {
+      key: "slideShortDesc",
+      value: function slideShortDesc(string) {
+        var n = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 50;
+        var wordBoundary = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+        var div = document.createElement('div');
+        div.innerHTML = string;
+        var cleanedString = div.innerText;
+        var useWordBoundary = wordBoundary;
+        string = cleanedString.trim();
+        if (string.length <= n) {
+          return string;
+        }
+        var subString = string.substr(0, n - 1);
+        if (!useWordBoundary) {
+          return subString;
+        }
+        div = null;
+        return subString + '... <a href="#" class="desc-more">' + wordBoundary + '</a>';
+      }
+    }, {
+      key: "descriptionEvents",
+      value: function descriptionEvents(desc, data) {
+        var _this2 = this;
+        var moreLink = desc.querySelector('.desc-more');
+        if (!moreLink) {
+          return false;
+        }
+        addEvent('click', {
+          onElement: moreLink,
+          withCallback: function withCallback(event, target) {
+            event.preventDefault();
+            var body = document.body;
+            var desc = closest(target, '.gslide-desc');
+            if (!desc) {
+              return false;
+            }
+            desc.innerHTML = data.description;
+            addClass(body, 'gdesc-open');
+            var shortEvent = addEvent('click', {
+              onElement: [body, closest(desc, '.gslide-description')],
+              withCallback: function withCallback(event, target) {
+                if (event.target.nodeName.toLowerCase() !== 'a') {
+                  removeClass(body, 'gdesc-open');
+                  addClass(body, 'gdesc-closed');
+                  desc.innerHTML = data.smallDescription;
+                  _this2.descriptionEvents(desc, data);
+                  setTimeout(function () {
+                    removeClass(body, 'gdesc-closed');
+                  }, 400);
+                  shortEvent.destroy();
+                }
+              }
+            });
+          }
+        });
+      }
+    }, {
+      key: "create",
+      value: function create() {
+        return createHTML(this.instance.settings.slideHTML);
+      }
+    }, {
+      key: "getConfig",
+      value: function getConfig() {
+        if (!isNode(this.element) && !this.element.hasOwnProperty('draggable')) {
+          this.element.draggable = this.instance.settings.draggable;
+        }
+        var parser = new SlideConfigParser(this.instance.settings.slideExtraAttributes);
+        this.slideConfig = parser.parseConfig(this.element, this.instance.settings);
+        return this.slideConfig;
+      }
+    }]);
+  }();
+
   function getLen(v) {
     return Math.sqrt(v.x * v.x + v.y * v.y);
   }
@@ -582,7 +1482,7 @@
       this.handlers = [];
       this.el = el;
     }
-    _createClass(EventsHandlerAdmin, [{
+    return _createClass(EventsHandlerAdmin, [{
       key: "add",
       value: function add(handler) {
         this.handlers.push(handler);
@@ -610,7 +1510,6 @@
         }
       }
     }]);
-    return EventsHandlerAdmin;
   }();
   function wrapFunc(el, handler) {
     var EventshandlerAdmin = new EventsHandlerAdmin(el);
@@ -668,7 +1567,7 @@
         y: null
       };
     }
-    _createClass(TouchEvents, [{
+    return _createClass(TouchEvents, [{
       key: "start",
       value: function start(evt) {
         if (!evt.touches) {
@@ -897,7 +1796,6 @@
         return null;
       }
     }]);
-    return TouchEvents;
   }();
 
   function resetSlideMove(slide) {
@@ -1139,911 +2037,7 @@
     instance.events['touch'] = touchInstance;
   }
 
-  var ZoomImages = function () {
-    function ZoomImages(el, slide) {
-      var _this = this;
-      var onclose = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
-      _classCallCheck(this, ZoomImages);
-      this.img = el;
-      this.slide = slide;
-      this.onclose = onclose;
-      if (this.img.setZoomEvents) {
-        return false;
-      }
-      this.active = false;
-      this.zoomedIn = false;
-      this.dragging = false;
-      this.currentX = null;
-      this.currentY = null;
-      this.initialX = null;
-      this.initialY = null;
-      this.xOffset = 0;
-      this.yOffset = 0;
-      this.img.addEventListener('mousedown', function (e) {
-        return _this.dragStart(e);
-      }, false);
-      this.img.addEventListener('mouseup', function (e) {
-        return _this.dragEnd(e);
-      }, false);
-      this.img.addEventListener('mousemove', function (e) {
-        return _this.drag(e);
-      }, false);
-      this.img.addEventListener('click', function (e) {
-        if (_this.slide.classList.contains('dragging-nav')) {
-          _this.zoomOut();
-          return false;
-        }
-        if (!_this.zoomedIn) {
-          return _this.zoomIn();
-        }
-        if (_this.zoomedIn && !_this.dragging) {
-          _this.zoomOut();
-        }
-      }, false);
-      this.img.setZoomEvents = true;
-    }
-    _createClass(ZoomImages, [{
-      key: "zoomIn",
-      value: function zoomIn() {
-        var winWidth = this.widowWidth();
-        if (this.zoomedIn || winWidth <= 768) {
-          return;
-        }
-        var img = this.img;
-        img.setAttribute('data-style', img.getAttribute('style'));
-        img.style.maxWidth = img.naturalWidth + 'px';
-        img.style.maxHeight = img.naturalHeight + 'px';
-        if (img.naturalWidth > winWidth) {
-          var centerX = winWidth / 2 - img.naturalWidth / 2;
-          this.setTranslate(this.img.parentNode, centerX, 0);
-        }
-        this.slide.classList.add('zoomed');
-        this.zoomedIn = true;
-      }
-    }, {
-      key: "zoomOut",
-      value: function zoomOut() {
-        this.img.parentNode.setAttribute('style', '');
-        this.img.setAttribute('style', this.img.getAttribute('data-style'));
-        this.slide.classList.remove('zoomed');
-        this.zoomedIn = false;
-        this.currentX = null;
-        this.currentY = null;
-        this.initialX = null;
-        this.initialY = null;
-        this.xOffset = 0;
-        this.yOffset = 0;
-        if (this.onclose && typeof this.onclose == 'function') {
-          this.onclose();
-        }
-      }
-    }, {
-      key: "dragStart",
-      value: function dragStart(e) {
-        e.preventDefault();
-        if (!this.zoomedIn) {
-          this.active = false;
-          return;
-        }
-        if (e.type === 'touchstart') {
-          this.initialX = e.touches[0].clientX - this.xOffset;
-          this.initialY = e.touches[0].clientY - this.yOffset;
-        } else {
-          this.initialX = e.clientX - this.xOffset;
-          this.initialY = e.clientY - this.yOffset;
-        }
-        if (e.target === this.img) {
-          this.active = true;
-          this.img.classList.add('dragging');
-        }
-      }
-    }, {
-      key: "dragEnd",
-      value: function dragEnd(e) {
-        var _this2 = this;
-        e.preventDefault();
-        this.initialX = this.currentX;
-        this.initialY = this.currentY;
-        this.active = false;
-        setTimeout(function () {
-          _this2.dragging = false;
-          _this2.img.isDragging = false;
-          _this2.img.classList.remove('dragging');
-        }, 100);
-      }
-    }, {
-      key: "drag",
-      value: function drag(e) {
-        if (this.active) {
-          e.preventDefault();
-          if (e.type === 'touchmove') {
-            this.currentX = e.touches[0].clientX - this.initialX;
-            this.currentY = e.touches[0].clientY - this.initialY;
-          } else {
-            this.currentX = e.clientX - this.initialX;
-            this.currentY = e.clientY - this.initialY;
-          }
-          this.xOffset = this.currentX;
-          this.yOffset = this.currentY;
-          this.img.isDragging = true;
-          this.dragging = true;
-          this.setTranslate(this.img, this.currentX, this.currentY);
-        }
-      }
-    }, {
-      key: "onMove",
-      value: function onMove(e) {
-        if (!this.zoomedIn) {
-          return;
-        }
-        var xOffset = e.clientX - this.img.naturalWidth / 2;
-        var yOffset = e.clientY - this.img.naturalHeight / 2;
-        this.setTranslate(this.img, xOffset, yOffset);
-      }
-    }, {
-      key: "setTranslate",
-      value: function setTranslate(node, xPos, yPos) {
-        node.style.transform = 'translate3d(' + xPos + 'px, ' + yPos + 'px, 0)';
-      }
-    }, {
-      key: "widowWidth",
-      value: function widowWidth() {
-        return window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-      }
-    }]);
-    return ZoomImages;
-  }();
-
-  var DragSlides = function () {
-    function DragSlides() {
-      var _this = this;
-      var config = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      _classCallCheck(this, DragSlides);
-      var dragEl = config.dragEl,
-        _config$toleranceX = config.toleranceX,
-        toleranceX = _config$toleranceX === void 0 ? 40 : _config$toleranceX,
-        _config$toleranceY = config.toleranceY,
-        toleranceY = _config$toleranceY === void 0 ? 65 : _config$toleranceY,
-        _config$slide = config.slide,
-        slide = _config$slide === void 0 ? null : _config$slide,
-        _config$instance = config.instance,
-        instance = _config$instance === void 0 ? null : _config$instance;
-      this.el = dragEl;
-      this.active = false;
-      this.dragging = false;
-      this.currentX = null;
-      this.currentY = null;
-      this.initialX = null;
-      this.initialY = null;
-      this.xOffset = 0;
-      this.yOffset = 0;
-      this.direction = null;
-      this.lastDirection = null;
-      this.toleranceX = toleranceX;
-      this.toleranceY = toleranceY;
-      this.toleranceReached = false;
-      this.dragContainer = this.el;
-      this.slide = slide;
-      this.instance = instance;
-      this.el.addEventListener('mousedown', function (e) {
-        return _this.dragStart(e);
-      }, false);
-      this.el.addEventListener('mouseup', function (e) {
-        return _this.dragEnd(e);
-      }, false);
-      this.el.addEventListener('mousemove', function (e) {
-        return _this.drag(e);
-      }, false);
-    }
-    _createClass(DragSlides, [{
-      key: "dragStart",
-      value: function dragStart(e) {
-        if (this.slide.classList.contains('zoomed')) {
-          this.active = false;
-          return;
-        }
-        if (e.type === 'touchstart') {
-          this.initialX = e.touches[0].clientX - this.xOffset;
-          this.initialY = e.touches[0].clientY - this.yOffset;
-        } else {
-          this.initialX = e.clientX - this.xOffset;
-          this.initialY = e.clientY - this.yOffset;
-        }
-        var clicked = e.target.nodeName.toLowerCase();
-        var exludeClicks = ['input', 'select', 'textarea', 'button', 'a'];
-        if (e.target.classList.contains('nodrag') || closest(e.target, '.nodrag') || exludeClicks.indexOf(clicked) !== -1) {
-          this.active = false;
-          return;
-        }
-        e.preventDefault();
-        if (e.target === this.el || clicked !== 'img' && closest(e.target, '.gslide-inline')) {
-          this.active = true;
-          this.el.classList.add('dragging');
-          this.dragContainer = closest(e.target, '.ginner-container');
-        }
-      }
-    }, {
-      key: "dragEnd",
-      value: function dragEnd(e) {
-        var _this2 = this;
-        e && e.preventDefault();
-        this.initialX = 0;
-        this.initialY = 0;
-        this.currentX = null;
-        this.currentY = null;
-        this.initialX = null;
-        this.initialY = null;
-        this.xOffset = 0;
-        this.yOffset = 0;
-        this.active = false;
-        if (this.doSlideChange) {
-          this.instance.preventOutsideClick = true;
-          this.doSlideChange == 'right' && this.instance.prevSlide();
-          this.doSlideChange == 'left' && this.instance.nextSlide();
-        }
-        if (this.doSlideClose) {
-          this.instance.close();
-        }
-        if (!this.toleranceReached) {
-          this.setTranslate(this.dragContainer, 0, 0, true);
-        }
-        setTimeout(function () {
-          _this2.instance.preventOutsideClick = false;
-          _this2.toleranceReached = false;
-          _this2.lastDirection = null;
-          _this2.dragging = false;
-          _this2.el.isDragging = false;
-          _this2.el.classList.remove('dragging');
-          _this2.slide.classList.remove('dragging-nav');
-          _this2.dragContainer.style.transform = '';
-          _this2.dragContainer.style.transition = '';
-        }, 100);
-      }
-    }, {
-      key: "drag",
-      value: function drag(e) {
-        if (this.active) {
-          e.preventDefault();
-          this.slide.classList.add('dragging-nav');
-          if (e.type === 'touchmove') {
-            this.currentX = e.touches[0].clientX - this.initialX;
-            this.currentY = e.touches[0].clientY - this.initialY;
-          } else {
-            this.currentX = e.clientX - this.initialX;
-            this.currentY = e.clientY - this.initialY;
-          }
-          this.xOffset = this.currentX;
-          this.yOffset = this.currentY;
-          this.el.isDragging = true;
-          this.dragging = true;
-          this.doSlideChange = false;
-          this.doSlideClose = false;
-          var currentXInt = Math.abs(this.currentX);
-          var currentYInt = Math.abs(this.currentY);
-          if (currentXInt > 0 && currentXInt >= Math.abs(this.currentY) && (!this.lastDirection || this.lastDirection == 'x')) {
-            this.yOffset = 0;
-            this.lastDirection = 'x';
-            this.setTranslate(this.dragContainer, this.currentX, 0);
-            var doChange = this.shouldChange();
-            if (!this.instance.settings.dragAutoSnap && doChange) {
-              this.doSlideChange = doChange;
-            }
-            if (this.instance.settings.dragAutoSnap && doChange) {
-              this.instance.preventOutsideClick = true;
-              this.toleranceReached = true;
-              this.active = false;
-              this.instance.preventOutsideClick = true;
-              this.dragEnd(null);
-              doChange == 'right' && this.instance.prevSlide();
-              doChange == 'left' && this.instance.nextSlide();
-              return;
-            }
-          }
-          if (this.toleranceY > 0 && currentYInt > 0 && currentYInt >= currentXInt && (!this.lastDirection || this.lastDirection == 'y')) {
-            this.xOffset = 0;
-            this.lastDirection = 'y';
-            this.setTranslate(this.dragContainer, 0, this.currentY);
-            var doClose = this.shouldClose();
-            if (!this.instance.settings.dragAutoSnap && doClose) {
-              this.doSlideClose = true;
-            }
-            if (this.instance.settings.dragAutoSnap && doClose) {
-              this.instance.close();
-            }
-            return;
-          }
-        }
-      }
-    }, {
-      key: "shouldChange",
-      value: function shouldChange() {
-        var doChange = false;
-        var currentXInt = Math.abs(this.currentX);
-        if (currentXInt >= this.toleranceX) {
-          var dragDir = this.currentX > 0 ? 'right' : 'left';
-          if (dragDir == 'left' && this.slide !== this.slide.parentNode.lastChild || dragDir == 'right' && this.slide !== this.slide.parentNode.firstChild) {
-            doChange = dragDir;
-          }
-        }
-        return doChange;
-      }
-    }, {
-      key: "shouldClose",
-      value: function shouldClose() {
-        var doClose = false;
-        var currentYInt = Math.abs(this.currentY);
-        if (currentYInt >= this.toleranceY) {
-          doClose = true;
-        }
-        return doClose;
-      }
-    }, {
-      key: "setTranslate",
-      value: function setTranslate(node, xPos, yPos) {
-        var animated = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
-        if (animated) {
-          node.style.transition = 'all .2s ease';
-        } else {
-          node.style.transition = '';
-        }
-        node.style.transform = "translate3d(".concat(xPos, "px, ").concat(yPos, "px, 0)");
-      }
-    }]);
-    return DragSlides;
-  }();
-
-  function slideImage(slide, data, index, callback) {
-    var slideMedia = slide.querySelector('.gslide-media');
-    var img = new Image();
-    var titleID = 'gSlideTitle_' + index;
-    var textID = 'gSlideDesc_' + index;
-    img.addEventListener('load', function () {
-      if (isFunction(callback)) {
-        callback();
-      }
-    }, false);
-    img.src = data.href;
-    if (data.sizes != '' && data.srcset != '') {
-      img.sizes = data.sizes;
-      img.srcset = data.srcset;
-    }
-    img.alt = '';
-    if (!isNil(data.alt) && data.alt !== '') {
-      img.alt = data.alt;
-    }
-    if (data.title !== '') {
-      img.setAttribute('aria-labelledby', titleID);
-    }
-    if (data.description !== '') {
-      img.setAttribute('aria-describedby', textID);
-    }
-    if (data.hasOwnProperty('_hasCustomWidth') && data._hasCustomWidth) {
-      img.style.width = data.width;
-    }
-    if (data.hasOwnProperty('_hasCustomHeight') && data._hasCustomHeight) {
-      img.style.height = data.height;
-    }
-    slideMedia.insertBefore(img, slideMedia.firstChild);
-    return;
-  }
-
-  function slideVideo(slide, data, index, callback) {
-    var _this = this;
-    var slideContainer = slide.querySelector('.ginner-container');
-    var videoID = 'gvideo' + index;
-    var slideMedia = slide.querySelector('.gslide-media');
-    var videoPlayers = this.getAllPlayers();
-    addClass(slideContainer, 'gvideo-container');
-    slideMedia.insertBefore(createHTML('<div class="gvideo-wrapper"></div>'), slideMedia.firstChild);
-    var videoWrapper = slide.querySelector('.gvideo-wrapper');
-    injectAssets(this.settings.plyr.css, 'Plyr');
-    var url = data.href;
-    var provider = data === null || data === void 0 ? void 0 : data.videoProvider;
-    var customPlaceholder = false;
-    slideMedia.style.maxWidth = data.width;
-    injectAssets(this.settings.plyr.js, 'Plyr', function () {
-      if (!provider && url.match(/vimeo\.com\/([0-9]*)/)) {
-        provider = 'vimeo';
-      }
-      if (!provider && (url.match(/(youtube\.com|youtube-nocookie\.com)\/watch\?v=([a-zA-Z0-9\-_]+)/) || url.match(/youtu\.be\/([a-zA-Z0-9\-_]+)/) || url.match(/(youtube\.com|youtube-nocookie\.com)\/embed\/([a-zA-Z0-9\-_]+)/) || url.match(/(youtube\.com|youtube-nocookie\.com)\/shorts\/([a-zA-Z0-9\-_]+)/))) {
-        provider = 'youtube';
-      }
-      if (provider === 'local' || !provider) {
-        provider = 'local';
-        var html = '<video id="' + videoID + '" ';
-        html += "style=\"background:#000; max-width: ".concat(data.width, ";\" ");
-        html += 'preload="metadata" ';
-        html += 'x-webkit-airplay="allow" ';
-        html += 'playsinline ';
-        html += 'controls ';
-        html += 'class="gvideo-local">';
-        html += "<source src=\"".concat(url, "\">");
-        html += '</video>';
-        customPlaceholder = createHTML(html);
-      }
-      var placeholder = customPlaceholder ? customPlaceholder : createHTML("<div id=\"".concat(videoID, "\" data-plyr-provider=\"").concat(provider, "\" data-plyr-embed-id=\"").concat(url, "\"></div>"));
-      addClass(videoWrapper, "".concat(provider, "-video gvideo"));
-      videoWrapper.appendChild(placeholder);
-      videoWrapper.setAttribute('data-id', videoID);
-      videoWrapper.setAttribute('data-index', index);
-      var playerConfig = has(_this.settings.plyr, 'config') ? _this.settings.plyr.config : {};
-      var player = new Plyr('#' + videoID, playerConfig);
-      player.on('ready', function (event) {
-        videoPlayers[videoID] = event.detail.plyr;
-        if (isFunction(callback)) {
-          callback();
-        }
-      });
-      waitUntil(function () {
-        return slide.querySelector('iframe') && slide.querySelector('iframe').dataset.ready == 'true';
-      }, function () {
-        _this.resize(slide);
-      });
-      player.on('enterfullscreen', handleMediaFullScreen);
-      player.on('exitfullscreen', handleMediaFullScreen);
-    });
-  }
-  function handleMediaFullScreen(event) {
-    var media = closest(event.target, '.gslide-media');
-    if (event.type === 'enterfullscreen') {
-      addClass(media, 'fullscreen');
-    }
-    if (event.type === 'exitfullscreen') {
-      removeClass(media, 'fullscreen');
-    }
-  }
-
-  function slideInline(slide, data, index, callback) {
-    var _this = this;
-    var slideMedia = slide.querySelector('.gslide-media');
-    var hash = has(data, 'href') && data.href ? data.href.split('#').pop().trim() : false;
-    var content = has(data, 'content') && data.content ? data.content : false;
-    var innerContent;
-    if (content) {
-      if (isString(content)) {
-        innerContent = createHTML("<div class=\"ginlined-content\">".concat(content, "</div>"));
-      }
-      if (isNode(content)) {
-        if (content.style.display == 'none') {
-          content.style.display = 'block';
-        }
-        var container = document.createElement('div');
-        container.className = 'ginlined-content';
-        container.appendChild(content);
-        innerContent = container;
-      }
-    }
-    if (hash) {
-      var div = document.getElementById(hash);
-      if (!div) {
-        return false;
-      }
-      var cloned = div.cloneNode(true);
-      cloned.style.height = data.height;
-      cloned.style.maxWidth = data.width;
-      addClass(cloned, 'ginlined-content');
-      innerContent = cloned;
-    }
-    if (!innerContent) {
-      console.error('Unable to append inline slide content', data);
-      return false;
-    }
-    slideMedia.style.height = data.height;
-    slideMedia.style.width = data.width;
-    slideMedia.appendChild(innerContent);
-    this.events['inlineclose' + hash] = addEvent('click', {
-      onElement: slideMedia.querySelectorAll('.gtrigger-close'),
-      withCallback: function withCallback(e) {
-        e.preventDefault();
-        _this.close();
-      }
-    });
-    if (isFunction(callback)) {
-      callback();
-    }
-    return;
-  }
-
-  function slideIframe(slide, data, index, callback) {
-    var slideMedia = slide.querySelector('.gslide-media');
-    var iframe = createIframe({
-      url: data.href,
-      callback: callback
-    });
-    slideMedia.parentNode.style.maxWidth = data.width;
-    slideMedia.parentNode.style.height = data.height;
-    slideMedia.appendChild(iframe);
-    return;
-  }
-
-  var SlideConfigParser = function () {
-    function SlideConfigParser() {
-      var slideParamas = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      _classCallCheck(this, SlideConfigParser);
-      this.defaults = {
-        href: '',
-        sizes: '',
-        srcset: '',
-        title: '',
-        type: '',
-        videoProvider: '',
-        description: '',
-        alt: '',
-        descPosition: 'bottom',
-        effect: '',
-        width: '',
-        height: '',
-        content: false,
-        zoomable: true,
-        draggable: true
-      };
-      if (isObject(slideParamas)) {
-        this.defaults = extend(this.defaults, slideParamas);
-      }
-    }
-    _createClass(SlideConfigParser, [{
-      key: "sourceType",
-      value: function sourceType(url) {
-        var origin = url;
-        url = url.toLowerCase();
-        if (url.match(/\.(jpeg|jpg|jpe|gif|png|apn|webp|avif|svg)/) !== null) {
-          return 'image';
-        }
-        if (url.match(/(youtube\.com|youtube-nocookie\.com)\/watch\?v=([a-zA-Z0-9\-_]+)/) || url.match(/youtu\.be\/([a-zA-Z0-9\-_]+)/) || url.match(/(youtube\.com|youtube-nocookie\.com)\/embed\/([a-zA-Z0-9\-_]+)/) || url.match(/(youtube\.com|youtube-nocookie\.com)\/shorts\/([a-zA-Z0-9\-_]+)/)) {
-          return 'video';
-        }
-        if (url.match(/vimeo\.com\/([0-9]*)/)) {
-          return 'video';
-        }
-        if (url.match(/\.(mp4|ogg|webm|mov)/) !== null) {
-          return 'video';
-        }
-        if (url.match(/\.(mp3|wav|wma|aac|ogg)/) !== null) {
-          return 'audio';
-        }
-        if (url.indexOf('#') > -1) {
-          var hash = origin.split('#').pop();
-          if (hash.trim() !== '') {
-            return 'inline';
-          }
-        }
-        if (url.indexOf('goajax=true') > -1) {
-          return 'ajax';
-        }
-        return 'external';
-      }
-    }, {
-      key: "parseConfig",
-      value: function parseConfig(element, settings) {
-        var _this = this;
-        var data = extend({
-          descPosition: settings.descPosition
-        }, this.defaults);
-        if (isObject(element) && !isNode(element)) {
-          if (!has(element, 'type')) {
-            if (has(element, 'content') && element.content) {
-              element.type = 'inline';
-            } else if (has(element, 'href')) {
-              element.type = this.sourceType(element.href);
-            }
-          }
-          var objectData = extend(data, element);
-          this.setSize(objectData, settings);
-          return objectData;
-        }
-        var url = '';
-        var config = element.getAttribute('data-glightbox');
-        var nodeType = element.nodeName.toLowerCase();
-        if (nodeType === 'a') {
-          url = element.href;
-        }
-        if (nodeType === 'img') {
-          url = element.src;
-          data.alt = element.alt;
-        }
-        data.href = url;
-        each(data, function (val, key) {
-          if (has(settings, key) && key !== 'width') {
-            data[key] = settings[key];
-          }
-          var nodeData = element.dataset[key];
-          if (!isNil(nodeData)) {
-            data[key] = _this.sanitizeValue(nodeData);
-          }
-        });
-        if (data.content) {
-          data.type = 'inline';
-        }
-        if (!data.type && url) {
-          data.type = this.sourceType(url);
-        }
-        if (!isNil(config)) {
-          var cleanKeys = [];
-          each(data, function (v, k) {
-            cleanKeys.push(';\\s?' + k);
-          });
-          cleanKeys = cleanKeys.join('\\s?:|');
-          if (config.trim() !== '') {
-            each(data, function (val, key) {
-              var str = config;
-              var match = 's?' + key + 's?:s?(.*?)(' + cleanKeys + 's?:|$)';
-              var regex = new RegExp(match);
-              var matches = str.match(regex);
-              if (matches && matches.length && matches[1]) {
-                var value = matches[1].trim().replace(/;\s*$/, '');
-                data[key] = _this.sanitizeValue(value);
-              }
-            });
-          }
-        } else {
-          if (!data.title && nodeType == 'a') {
-            var title = element.title;
-            if (!isNil(title) && title !== '') {
-              data.title = title;
-            }
-          }
-          if (!data.title && nodeType == 'img') {
-            var alt = element.alt;
-            if (!isNil(alt) && alt !== '') {
-              data.title = alt;
-            }
-          }
-        }
-        if (data.description && data.description.substring(0, 1) === '.') {
-          var description;
-          try {
-            description = document.querySelector(data.description).innerHTML;
-          } catch (error) {
-            if (!(error instanceof DOMException)) {
-              throw error;
-            }
-          }
-          if (description) {
-            data.description = description;
-          }
-        }
-        if (!data.description) {
-          var nodeDesc = element.querySelector('.glightbox-desc');
-          if (nodeDesc) {
-            data.description = nodeDesc.innerHTML;
-          }
-        }
-        this.setSize(data, settings, element);
-        this.slideConfig = data;
-        return data;
-      }
-    }, {
-      key: "setSize",
-      value: function setSize(data, settings) {
-        var element = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
-        var defaultWith = data.type == 'video' ? this.checkSize(settings.videosWidth) : this.checkSize(settings.width);
-        var defaultHeight = this.checkSize(settings.height);
-        data.width = has(data, 'width') && data.width !== '' ? this.checkSize(data.width) : defaultWith;
-        data.height = has(data, 'height') && data.height !== '' ? this.checkSize(data.height) : defaultHeight;
-        if (element && data.type == 'image') {
-          data._hasCustomWidth = element.dataset.width ? true : false;
-          data._hasCustomHeight = element.dataset.height ? true : false;
-        }
-        return data;
-      }
-    }, {
-      key: "checkSize",
-      value: function checkSize(size) {
-        return isNumber(size) ? "".concat(size, "px") : size;
-      }
-    }, {
-      key: "sanitizeValue",
-      value: function sanitizeValue(val) {
-        if (val !== 'true' && val !== 'false') {
-          return val;
-        }
-        return val === 'true';
-      }
-    }]);
-    return SlideConfigParser;
-  }();
-
-  var Slide = function () {
-    function Slide(el, instance, index) {
-      _classCallCheck(this, Slide);
-      this.element = el;
-      this.instance = instance;
-      this.index = index;
-    }
-    _createClass(Slide, [{
-      key: "setContent",
-      value: function setContent() {
-        var _this = this;
-        var slide = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-        var callback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-        if (hasClass(slide, 'loaded')) {
-          return false;
-        }
-        var settings = this.instance.settings;
-        var slideConfig = this.slideConfig;
-        var isMobileDevice = isMobile();
-        if (isFunction(settings.beforeSlideLoad)) {
-          settings.beforeSlideLoad({
-            index: this.index,
-            slide: slide,
-            player: false
-          });
-        }
-        var type = slideConfig.type;
-        var position = slideConfig.descPosition;
-        var slideMedia = slide.querySelector('.gslide-media');
-        var slideTitle = slide.querySelector('.gslide-title');
-        var slideText = slide.querySelector('.gslide-desc');
-        var slideDesc = slide.querySelector('.gdesc-inner');
-        var finalCallback = callback;
-        var titleID = 'gSlideTitle_' + this.index;
-        var textID = 'gSlideDesc_' + this.index;
-        if (isFunction(settings.afterSlideLoad)) {
-          finalCallback = function finalCallback() {
-            if (isFunction(callback)) {
-              callback();
-            }
-            settings.afterSlideLoad({
-              index: _this.index,
-              slide: slide,
-              player: _this.instance.getSlidePlayerInstance(_this.index)
-            });
-          };
-        }
-        if (slideConfig.title == '' && slideConfig.description == '') {
-          if (slideDesc) {
-            slideDesc.parentNode.parentNode.removeChild(slideDesc.parentNode);
-          }
-        } else {
-          if (slideTitle && slideConfig.title !== '') {
-            slideTitle.id = titleID;
-            slideTitle.innerHTML = slideConfig.title;
-          } else {
-            slideTitle.parentNode.removeChild(slideTitle);
-          }
-          if (slideText && slideConfig.description !== '') {
-            slideText.id = textID;
-            if (isMobileDevice && settings.moreLength > 0) {
-              slideConfig.smallDescription = this.slideShortDesc(slideConfig.description, settings.moreLength, settings.moreText);
-              slideText.innerHTML = slideConfig.smallDescription;
-              this.descriptionEvents(slideText, slideConfig);
-            } else {
-              slideText.innerHTML = slideConfig.description;
-            }
-          } else {
-            slideText.parentNode.removeChild(slideText);
-          }
-          addClass(slideMedia.parentNode, "desc-".concat(position));
-          addClass(slideDesc.parentNode, "description-".concat(position));
-        }
-        addClass(slideMedia, "gslide-".concat(type));
-        addClass(slide, 'loaded');
-        if (type === 'video') {
-          slideVideo.apply(this.instance, [slide, slideConfig, this.index, finalCallback]);
-          return;
-        }
-        if (type === 'external') {
-          slideIframe.apply(this, [slide, slideConfig, this.index, finalCallback]);
-          return;
-        }
-        if (type === 'inline') {
-          slideInline.apply(this.instance, [slide, slideConfig, this.index, finalCallback]);
-          if (slideConfig.draggable) {
-            new DragSlides({
-              dragEl: slide.querySelector('.gslide-inline'),
-              toleranceX: settings.dragToleranceX,
-              toleranceY: settings.dragToleranceY,
-              slide: slide,
-              instance: this.instance
-            });
-          }
-          return;
-        }
-        if (type === 'image') {
-          slideImage(slide, slideConfig, this.index, function () {
-            var img = slide.querySelector('img');
-            if (slideConfig.draggable) {
-              new DragSlides({
-                dragEl: img,
-                toleranceX: settings.dragToleranceX,
-                toleranceY: settings.dragToleranceY,
-                slide: slide,
-                instance: _this.instance
-              });
-            }
-            if (slideConfig.zoomable && img.naturalWidth > img.offsetWidth) {
-              addClass(img, 'zoomable');
-              new ZoomImages(img, slide, function () {
-                _this.instance.resize();
-              });
-            }
-            if (isFunction(finalCallback)) {
-              finalCallback();
-            }
-          });
-          return;
-        }
-        if (isFunction(finalCallback)) {
-          finalCallback();
-        }
-      }
-    }, {
-      key: "slideShortDesc",
-      value: function slideShortDesc(string) {
-        var n = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 50;
-        var wordBoundary = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-        var div = document.createElement('div');
-        div.innerHTML = string;
-        var cleanedString = div.innerText;
-        var useWordBoundary = wordBoundary;
-        string = cleanedString.trim();
-        if (string.length <= n) {
-          return string;
-        }
-        var subString = string.substr(0, n - 1);
-        if (!useWordBoundary) {
-          return subString;
-        }
-        div = null;
-        return subString + '... <a href="#" class="desc-more">' + wordBoundary + '</a>';
-      }
-    }, {
-      key: "descriptionEvents",
-      value: function descriptionEvents(desc, data) {
-        var _this2 = this;
-        var moreLink = desc.querySelector('.desc-more');
-        if (!moreLink) {
-          return false;
-        }
-        addEvent('click', {
-          onElement: moreLink,
-          withCallback: function withCallback(event, target) {
-            event.preventDefault();
-            var body = document.body;
-            var desc = closest(target, '.gslide-desc');
-            if (!desc) {
-              return false;
-            }
-            desc.innerHTML = data.description;
-            addClass(body, 'gdesc-open');
-            var shortEvent = addEvent('click', {
-              onElement: [body, closest(desc, '.gslide-description')],
-              withCallback: function withCallback(event, target) {
-                if (event.target.nodeName.toLowerCase() !== 'a') {
-                  removeClass(body, 'gdesc-open');
-                  addClass(body, 'gdesc-closed');
-                  desc.innerHTML = data.smallDescription;
-                  _this2.descriptionEvents(desc, data);
-                  setTimeout(function () {
-                    removeClass(body, 'gdesc-closed');
-                  }, 400);
-                  shortEvent.destroy();
-                }
-              }
-            });
-          }
-        });
-      }
-    }, {
-      key: "create",
-      value: function create() {
-        return createHTML(this.instance.settings.slideHTML);
-      }
-    }, {
-      key: "getConfig",
-      value: function getConfig() {
-        if (!isNode(this.element) && !this.element.hasOwnProperty('draggable')) {
-          this.element.draggable = this.instance.settings.draggable;
-        }
-        var parser = new SlideConfigParser(this.instance.settings.slideExtraAttributes);
-        this.slideConfig = parser.parseConfig(this.element, this.instance.settings);
-        return this.slideConfig;
-      }
-    }]);
-    return Slide;
-  }();
-
-  var _version = '3.2.0';
+  var _version = '3.3.0';
   var isMobile$1 = isMobile();
   var isTouch$1 = isTouch();
   var html = document.getElementsByTagName('html')[0];
@@ -2151,7 +2145,7 @@
       this.apiEvents = [];
       this.fullElementsList = false;
     }
-    _createClass(GlightboxInit, [{
+    return _createClass(GlightboxInit, [{
       key: "init",
       value: function init() {
         var _this = this;
@@ -3084,7 +3078,6 @@
         return _version;
       }
     }]);
-    return GlightboxInit;
   }();
   function glightbox () {
     var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
