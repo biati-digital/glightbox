@@ -1,0 +1,14 @@
+{
+  "mode": "pre",
+  "tag": "beta",
+  "initialVersions": {
+    "@glightbox/drag-navigation": "1.0.0-beta.1",
+    "glightbox": "4.0.0-beta.3",
+    "@glightbox/image": "1.0.0-beta.1",
+    "@glightbox/keyboard-navigation": "1.0.0-beta.1",
+    "@glightbox/plugin-core": "1.0.0-beta.1",
+    "@glightbox/utils": "1.0.0-beta.1",
+    "@glightbox/video": "1.0.0-beta.1"
+  },
+  "changesets": []
+}
