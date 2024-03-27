@@ -524,7 +524,6 @@ iframe.wait-autoplay {
     .gslide-title {
         font-size: 1em;
         font-weight: normal;
-        font-family: arial;
         color: #000;
         margin-bottom: 19px;
         line-height: 1.4em;
@@ -533,7 +532,6 @@ iframe.wait-autoplay {
     .gslide-desc {
         font-size: 0.86em;
         margin-bottom: 0;
-        font-family: arial;
         line-height: 1.4em;
     }
 
