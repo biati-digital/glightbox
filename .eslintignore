@@ -1,0 +1,6 @@
+.changeset/
+node_modules
+**/CHANGELOG.md
+CHANGELOG.md
+**/CHANGELOG.md
+**/dist/**

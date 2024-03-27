@@ -1,0 +1,13 @@
+{
+  "extends": [
+    "stylelint-config-recommended"
+  ],
+  "ignoreFiles": [
+    "packages/**/dist/*.css"
+  ],
+  "rules": {
+    "no-descending-specificity": null,
+    "max-nesting-depth": 2,
+    "selector-max-id": 1
+  }
+}
