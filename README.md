@@ -233,6 +233,7 @@ myGallery.setElements([...]);
 | autoplayVideos | boolean | `true` | Autoplay videos on open. |
 | autofocusVideos | boolean | `false` | If true video will be focused on play to allow keyboard sortcuts for the player, this will deactivate prev and next arrows to change slide so use it only if you know what you are doing. |
 | plyr | object | `{}` | [View video player options.](#video-player) |
+| direction | string | `ltr` | Direction of the lightbox slide order (`ltr` for left to right or `rtl` for right to left). |
 
 ## Events
 
