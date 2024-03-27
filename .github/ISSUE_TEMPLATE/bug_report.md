@@ -11,6 +11,10 @@ Before creating a new issue, please make sure to use the search feature. New iss
 
 Please provide all the information below. We work on this library and provide support in our free time, so having all the details will help us to find and solve bugs faster.
 
+### Package and version
+
+For example: glightbox, @glightbox/image, @glightbox/video, etc.
+
 **Describe the bug**
 A clear and concise description of what the bug is.
 
@@ -35,4 +39,3 @@ Share a URL so we can see the error, in case you are not able to share your proj
 
 - OS: [e.g. iOS 17, macOS Catalina, Windows 11, etc.]
 - Browser [e.g. Chrome, Safari]
-- Glightbox Version [e.g. 4.0.0]
