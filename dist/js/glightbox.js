@@ -2879,9 +2879,12 @@
           if (winWidth <= 768) {
             var imgNode = image.querySelector('img');
           } else if (descriptionResize) {
+            var _slideTriggerNode$get;
             var descHeight = description.offsetHeight;
             var _imgNode = image.querySelector('img');
-            _imgNode.setAttribute('style', "max-height: calc(100vh - ".concat(descHeight, "px)"));
+            var slideTriggerNode = this.elements[this.index].node;
+            var maxHeightValue = (_slideTriggerNode$get = slideTriggerNode.getAttribute('data-height')) !== null && _slideTriggerNode$get !== void 0 ? _slideTriggerNode$get : '100vh';
+            _imgNode.setAttribute('style', "max-height: calc(".concat(maxHeightValue, " - ").concat(descHeight, "px)"));
             description.setAttribute('style', "max-width: ".concat(_imgNode.offsetWidth, "px;"));
           }
         }
