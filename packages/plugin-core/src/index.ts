@@ -4,7 +4,7 @@ export type PluginType = 'slide' | 'theme' | 'other';
 
 export interface PluginAssets {
     css?: string[];
-    js?: string[];
+    js?: ({ src: string; module?: boolean })[];
 }
 
 export interface PluginOptions {
@@ -23,7 +23,7 @@ export interface Plugin {
     build?: (buildParams: BuildParams) => Promise<boolean>;
     match?: (url: string) => boolean;
     cssStyle?: () => string;
-    assets?: () => PluginAssets;
+    assets?: () => PluginAssets | false;
 }
 
 export interface SlideParams {
@@ -107,8 +107,9 @@ export abstract class GLightboxPlugin implements Plugin {
      * Use this method to define assets useful in case
      * your plugins needs to insert a Javascript library
      * or a CSS file
+     * return false to stop the injection of assets
     */
-    assets(): PluginAssets {
+    assets(): PluginAssets | false {
         return {};
     }
 }

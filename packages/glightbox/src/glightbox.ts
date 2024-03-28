@@ -179,7 +179,17 @@ export default class GLightbox {
         if (slide?.url && slideType && slideNode && slideType?.build) {
             addClass(slideNode, 'preloading');
             try {
+                if (slideType?.assets && typeof slideType?.assets === 'function') {
+                    const slideAssets = slideType.assets();
+                    if (slideAssets) {
+                        const cssAssets = slideAssets?.css || [];
+                        const jsAssets = slideAssets?.js || [];
+                        await this.injectAssets([...cssAssets, ...jsAssets]);
+                    }
+                }
+
                 this.trigger('slide_before_load', slide);
+
                 await slideType.build({
                     index: index,
                     slide: slideNode.querySelector('.gl-media') as HTMLElement,
@@ -700,7 +710,6 @@ export default class GLightbox {
                 if (typeof methodFn === 'function') {
                     methodFn?.apply(plugin);
                 }
-                // plugin[method as (keyof typeof plugin)]?.apply(plugin);
             }
         });
     }
