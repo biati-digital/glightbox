@@ -1,6 +1,6 @@
 {
   "name": "@glightbox/image",
-  "version": "1.0.0-beta.2",
+  "version": "1.0.0-beta.3",
   "description": "GLightbox plugin to add support for displaying images in the lightbox",
   "author": "Biati Digital",
   "homepage": "https://biati-digital.github.io/glightbox/",
@@ -28,7 +28,7 @@
     "glightbox"
   ],
   "dependencies": {
-    "@glightbox/plugin-core": "1.0.0-beta.2"
+    "@glightbox/plugin-core": "1.0.0-beta.3"
   },
   "license": "GPLV3"
 }

@@ -10,5 +10,7 @@
     "@glightbox/utils": "1.0.0-beta.1",
     "@glightbox/video": "1.0.0-beta.1"
   },
-  "changesets": []
+  "changesets": [
+    "nine-books-hope"
+  ]
 }
