@@ -15,6 +15,7 @@ export default class GLightbox {
     nextButton: HTMLButtonElement | null = null;
     overlay: HTMLButtonElement | null = null;
     slidesContainer: HTMLElement | null = null;
+    observer: IntersectionObserver;
 
     constructor(options: Partial<GLightboxOptions> = {}) {
         this.options = mergeObjects(GLightboxDefaults, options);
@@ -288,7 +289,7 @@ export default class GLightbox {
 
         this.processVariables(this.modal);
 
-        const observer = new IntersectionObserver((entries) => {
+        this.observer = new IntersectionObserver((entries) => {
             entries.forEach((entry) => {
                 removeClass(entry.target, 'visible');
                 if (entry.isIntersecting && this.state.get('open')) {
@@ -333,7 +334,7 @@ export default class GLightbox {
                 this.slidesContainer?.insertAdjacentHTML('beforeend', slideHTML);
                 const created = this.slidesContainer?.querySelectorAll('.gl-slide')[index];
                 if (created) {
-                    observer.observe(created);
+                    this.observer.observe(created);
                 }
                 index++;
             }
@@ -399,6 +400,7 @@ export default class GLightbox {
     public destroy(): void {
         this.close();
         this.clearAllEvents(true);
+        this.observer.disconnect();
     }
 
     public reload(): void {
