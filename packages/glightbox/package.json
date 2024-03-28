@@ -1,6 +1,6 @@
 {
   "name": "glightbox",
-  "version": "4.0.0-beta.5",
+  "version": "4.0.0-beta.6",
   "description": "Beautiful Pure Javascript Lightbox",
   "homepage": "https://biati-digital.github.io/glightbox/",
   "repository": {
@@ -52,7 +52,7 @@
   "license": "GPLV3",
   "dependencies": {
     "@glightbox/utils": "1.0.0-beta.1",
-    "@glightbox/plugin-core": "1.0.0-beta.2"
+    "@glightbox/plugin-core": "1.0.0-beta.3"
   },
   "devDependencies": {
     "vite-plugin-static-copy": "^1.0.1"
