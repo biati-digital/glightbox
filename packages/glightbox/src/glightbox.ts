@@ -15,7 +15,7 @@ export default class GLightbox {
     nextButton: HTMLButtonElement | null = null;
     overlay: HTMLButtonElement | null = null;
     slidesContainer: HTMLElement | null = null;
-    observer: IntersectionObserver;
+    private observer: IntersectionObserver;
 
     constructor(options: Partial<GLightboxOptions> = {}) {
         this.options = mergeObjects(GLightboxDefaults, options);
