@@ -1,11 +1,11 @@
-import type { BuildParams, PluginOptions, PluginType } from '@glightbox/plugin-core';
+import type { BuildParams, PluginAssets, PluginOptions, PluginType } from '@glightbox/plugin-core';
 import { GLightboxPlugin } from '@glightbox/plugin-core';
 
 export interface VideoOptions extends PluginOptions {
     maxWidth?: string;
     autoPlay?: boolean;
     injectAssets?: boolean;
-    assets?: {
+    customAssets?: {
         css?: string[];
         js?: ({ src: string; module?: boolean })[];
     };
@@ -26,11 +26,18 @@ export default class VideoSlide extends GLightboxPlugin {
     type: PluginType = 'slide';
     options?: VideoOptions;
     players = new Map<string, unknown>();
+    playerAssets: PluginAssets;
     defaults: VideoOptions = {
         maxWidth: '840px',
         autoPlay: true,
         injectAssets: true,
-        assets: {
+        vistack: {}
+    };
+
+    constructor(options: Partial<VideoOptions> = {}) {
+        super();
+        this.options = { ...this.defaults, ...options };
+        this.playerAssets = {
             'css': [
                 'https://cdn.jsdelivr.net/npm/vidstack@^1.0.0/player/styles/default/theme.min.css',
                 'https://cdn.jsdelivr.net/npm/vidstack@^1.0.0/player/styles/default/layouts/video.min.css'
@@ -39,13 +46,7 @@ export default class VideoSlide extends GLightboxPlugin {
                 'src': 'https://cdn.jsdelivr.net/npm/vidstack@^1.0.0/cdn/vidstack.js',
                 'module': true
             }]
-        },
-        vistack: {}
-    };
-
-    constructor(options: Partial<VideoOptions> = {}) {
-        super();
-        this.options = { ...this.defaults, ...options };
+        };
     }
 
     init(): void {
@@ -116,12 +117,6 @@ export default class VideoSlide extends GLightboxPlugin {
             slide?.style.setProperty('--gl-video-max-width', videoWidth);
         }
 
-        if (this.options?.injectAssets && this.options?.assets) {
-            const cssAssets = this.options.assets?.css || [];
-            const jsAssets = this.options.assets?.js || [];
-            await this.instance.injectAssets([...cssAssets, ...jsAssets]);
-        }
-
         const player = document.getElementById(`gl-player-${randID}`);
         this.players.set(`player-${index}`, player);
         return true;
@@ -132,6 +127,16 @@ export default class VideoSlide extends GLightboxPlugin {
             return this.players.get(`player-${slideIndex}`) as VideoPlayer;
         }
         return false;
+    }
+
+    assets(): false | PluginAssets {
+        if (!this.options.injectAssets) {
+            return false;
+        }
+        if (this.options?.customAssets) {
+            return this.options.customAssets;
+        }
+        return this.playerAssets;
     }
 
     cssStyle(): string {
