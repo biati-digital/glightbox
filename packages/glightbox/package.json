@@ -1,0 +1,60 @@
+{
+  "name": "glightbox",
+  "version": "4.0.0-beta.5",
+  "description": "Beautiful Pure Javascript Lightbox",
+  "homepage": "https://biati-digital.github.io/glightbox/",
+  "repository": {
+    "url": "https://github.com/biati-digital/glightbox",
+    "type": "git"
+  },
+  "type": "module",
+  "main": "./dist/index.cjs.js",
+  "import": "./dist/index.es.js",
+  "scripts": {
+    "dev": "vite",
+    "watch": "vite build --watch",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.es.js",
+      "require": "./dist/index.cjs.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./src": {
+      "import": "./src/index.ts",
+      "require": "./src/index.ts",
+      "types": "./src/index.ts"
+    },
+    "./style": {
+      "import": "./dist/glightbox.css",
+      "require": "./dist/glightbox.css"
+    }
+  },
+  "directories": {
+    "src": "src"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "keywords": [
+    "lightbox",
+    "javascript",
+    "gallery",
+    "popup"
+  ],
+  "author": "Biati Digital",
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "GPLV3",
+  "dependencies": {
+    "@glightbox/utils": "1.0.0-beta.1",
+    "@glightbox/plugin-core": "1.0.0-beta.2"
+  },
+  "devDependencies": {
+    "vite-plugin-static-copy": "^1.0.1"
+  }
+}

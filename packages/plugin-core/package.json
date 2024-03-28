@@ -1,0 +1,42 @@
+{
+  "name": "@glightbox/plugin-core",
+  "version": "1.0.0-beta.2",
+  "description": "GLightbox Plugin Core",
+  "homepage": "https://biati-digital.github.io/glightbox/",
+  "repository": {
+    "url": "https://github.com/biati-digital/glightbox",
+    "type": "git"
+  },
+  "type": "module",
+  "main": "./dist/index.cjs.js",
+  "import": "./dist/index.es.js",
+  "types": "./src/index.d.ts",
+  "scripts": {
+    "dev": "vite",
+    "watch": "vite build --watch",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.es.js",
+      "require": "./dist/index.cjs.js",
+      "types": "./src/index.d.ts"
+    }
+  },
+  "files": [
+    "src/index.d.ts",
+    "dist"
+  ],
+  "keywords": [
+    "glightbox"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "glightbox": "^4.0.0-beta.5"
+  },
+  "author": "Biati Digital",
+  "license": "GPLV3"
+}

@@ -1,0 +1,35 @@
+{
+  "name": "@glightbox/drag-navigation",
+  "version": "1.0.0-beta.2",
+  "description": "GLightbox plugin to enable user drag to change slides",
+  "author": "Biati Digital",
+  "homepage": "https://biati-digital.github.io/glightbox/",
+  "repository": {
+    "url": "https://github.com/biati-digital/glightbox",
+    "type": "git"
+  },
+  "bugs": "https://github.com/biati-digital/glightbox/issues",
+  "type": "module",
+  "main": "./dist/index.cjs.js",
+  "module": "./dist/index.es.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "watch": "vite build --watch",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "glightbox"
+  ],
+  "dependencies": {
+    "@glightbox/plugin-core": "1.0.0-beta.2"
+  },
+  "license": "GPLV3"
+}
