@@ -1,0 +1,56 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - v4-beta
+
+  workflow_dispatch:
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+permissions: {}
+
+jobs:
+  release:
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install --no-save --no-fund --no-audit --legacy-peer-deps
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Creating .npmrc
+        run: |
+          cat << EOF > "$HOME/.npmrc"
+            //registry.npmjs.org/:_authToken=$NPM_TOKEN
+          EOF
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+
+      - name: Create Release Pull Request or Publish to npm
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          publish: npm run release
+          version: npm run version
+          commit: "chore: new release"
+          title: "chore: new release candidate"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
