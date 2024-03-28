@@ -44,8 +44,5 @@
     "vite": "^5.1.6",
     "vite-plugin-dts": "^3.6.0",
     "vite-plugin-static-copy": "^1.0.1"
-  },
-  "dependencies": {
-    "@glightbox/plugin-core": "^1.0.0-beta.1"
   }
 }
