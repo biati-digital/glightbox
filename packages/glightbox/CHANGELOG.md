@@ -1,5 +1,11 @@
 # glightbox
 
+## 4.0.0-beta.7
+
+### Patch Changes
+
+- [#474](https://github.com/biati-digital/glightbox/pull/474) [`c35831e`](https://github.com/biati-digital/glightbox/commit/c35831ec907b06b11b371a208aa4cf45324033ba) Thanks [@gingerchew](https://github.com/gingerchew)! - Adds cleanup for IntersectionObserver
+
 ## 4.0.0-beta.6
 
 ### Patch Changes

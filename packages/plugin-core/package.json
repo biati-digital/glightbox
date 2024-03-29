@@ -35,7 +35,7 @@
     "access": "public"
   },
   "devDependencies": {
-    "glightbox": "^4.0.0-beta.6"
+    "glightbox": "^4.0.0-beta.7"
   },
   "author": "Biati Digital",
   "license": "GPLV3"
