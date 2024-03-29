@@ -11,6 +11,7 @@
     "@glightbox/video": "1.0.0-beta.1"
   },
   "changesets": [
-    "nine-books-hope"
+    "nine-books-hope",
+    "tasty-melons-occur"
   ]
 }
