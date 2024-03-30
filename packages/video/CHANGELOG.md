@@ -1,5 +1,11 @@
 # @glightbox/video
 
+## 1.0.0-beta.4
+
+### Patch Changes
+
+- [`b67162d`](https://github.com/biati-digital/glightbox/commit/b67162dd9cfdb33e4e34a4d448c2353c0582bf8d) Thanks [@biati-digital](https://github.com/biati-digital)! - set property initializer
+
 ## 1.0.0-beta.3
 
 ### Patch Changes
