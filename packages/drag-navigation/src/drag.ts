@@ -8,7 +8,7 @@ export interface DragOptions extends PluginOptions {
 export default class DragNavigation extends GLightboxPlugin {
     name = 'drag';
     type: PluginType = 'other';
-    options: DragOptions;
+    options: DragOptions = {};
     isDown: boolean = false;
     slider: HTMLElement | null = null;
     actveSlide: HTMLElement | null = null;

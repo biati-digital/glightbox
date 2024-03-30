@@ -24,7 +24,7 @@ export interface VideoPlayer {
 export default class VideoSlide extends GLightboxPlugin {
     name = 'video';
     type: PluginType = 'slide';
-    options?: VideoOptions;
+    options: VideoOptions = {};
     players = new Map<string, unknown>();
     playerAssets: PluginAssets;
     defaults: VideoOptions = {

@@ -8,7 +8,7 @@ export interface ImageOptions extends PluginOptions {
 export default class ImageSlide extends GLightboxPlugin {
     name = 'image';
     type: PluginType = 'slide';
-    options?: ImageOptions;
+    options: ImageOptions = {};
     defaults: ImageOptions = {
         maxWidth: '100vw'
     };
