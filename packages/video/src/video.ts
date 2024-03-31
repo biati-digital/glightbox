@@ -1,5 +1,8 @@
 import type { BuildParams, PluginAssets, PluginOptions, PluginType } from '@glightbox/plugin-core';
 import { GLightboxPlugin } from '@glightbox/plugin-core';
+import { waitUntil } from '@glightbox/utils';
+
+declare const VidstackPlayer;
 
 export interface VideoOptions extends PluginOptions {
     maxWidth?: string;
@@ -39,11 +42,11 @@ export default class VideoSlide extends GLightboxPlugin {
         this.options = { ...this.defaults, ...options };
         this.playerAssets = {
             'css': [
-                'https://cdn.jsdelivr.net/npm/vidstack@^1.0.0/player/styles/default/theme.min.css',
-                'https://cdn.jsdelivr.net/npm/vidstack@^1.0.0/player/styles/default/layouts/video.min.css'
+                'https://cdn.vidstack.io/player/theme.css',
+                'https://cdn.vidstack.io/player/video.css'
             ],
             'js': [{
-                'src': 'https://cdn.jsdelivr.net/npm/vidstack@^1.0.0/cdn/vidstack.js',
+                'src': 'https://cdn.vidstack.io/player',
                 'module': true
             }]
         };
@@ -89,36 +92,28 @@ export default class VideoSlide extends GLightboxPlugin {
 
     async build({ index, slide, config }: BuildParams): Promise<boolean> {
         const randID = Math.floor(Math.random() * Date.now()) + index;
-        const playerAttr: { [key: string]: string | boolean | null } = {
-            'id': `gl-player-${randID}`,
-            'class': 'gl-video-player',
-            'viewType': 'video',
-            'controls': true,
-            'aspectRatio': '16/9',
-            'src': config.url,
-            'crossorigin': ''
-        };
-        const attrs = Object.entries(playerAttr).reduce((attrs, [key, value]) => {
-            const val = !value ? key : `${key}="${String(value)}"`;
-            return `${attrs} ${val}`;
-        }, '');
-
-        const html = `
-            <media-player ${attrs}>
-                <media-provider></media-provider>
-                <media-audio-layout></media-audio-layout>
-                <media-video-layout></media-video-layout>
-            </media-player>`;
-
+        const id = `gl-player-${randID}`;
         const videoWidth = config?.width || this.options.maxWidth;
+        const placeholder = document.createElement('div');
 
-        slide?.insertAdjacentHTML('beforeend', html);
-        if (videoWidth) {
-            slide?.style.setProperty('--gl-video-max-width', videoWidth);
-        }
+        placeholder.id = id;
 
-        const player = document.getElementById(`gl-player-${randID}`);
+        slide?.appendChild(placeholder);
+        slide?.style.setProperty('--gl-video-max-width', videoWidth);
+
+        await waitUntil(() => {
+            return typeof VidstackPlayer === 'function';
+        });
+
+        const player = await VidstackPlayer.create({
+            target: placeholder,
+            src: config?.url,
+            title: config?.title,
+            layout: new VidstackPlayer.Layout.Default(),
+        });
+
         this.players.set(`player-${index}`, player);
+
         return true;
     }
 
@@ -141,17 +136,14 @@ export default class VideoSlide extends GLightboxPlugin {
 
     cssStyle(): string {
         return `
-            .gl-type-video iframe.vds-youtube[data-no-controls] {
-                height: 100%;
-            }
-            .gl-type-video .vds-blocker {
-                display: none;
-            }
             .gl-type-video {
                 width: 100%;
                 max-width: var(--gl-video-max-width, 768px);
                 aspect-ratio: 16/9;
                 background-color: var(--gl-video-background-color, #000000);
+            }
+            .gl-type-video :where(.vds-video-layout .vds-controls-group) {
+                display: flex;
             }
         `;
     }

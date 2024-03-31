@@ -136,6 +136,39 @@ export function windowSize() {
     };
 }
 
+
+/**
+ * Wait until
+ * wait until all the validations
+ * are passed
+ */
+export function waitUntil(check, delay?: number, timeout?: number) {
+    return new Promise((resolve) => {
+        if (check()) {
+            resolve(true);
+            return;
+        }
+        delay = delay ?? 100;
+        timeout = timeout ?? 10000;
+        let timeoutPointer;
+        const intervalPointer = setInterval(() => {
+            if (!check()) {
+                return;
+            }
+            clearInterval(intervalPointer);
+            if (timeoutPointer) {
+                clearTimeout(timeoutPointer);
+            }
+            resolve(true);
+        }, delay);
+        if (timeout) {
+            timeoutPointer = setTimeout(() => {
+                clearInterval(intervalPointer);
+            }, timeout);
+        }
+    });
+}
+
 /**
  * Inject videos api
  * used for video player
