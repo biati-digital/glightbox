@@ -3,7 +3,7 @@
   top: 0;
   left: 0;
   width: 100dvw;
-  height: 100dvw;
+  height: 100dvh;
   overflow: hidden;
   z-index: 9999;
 }
@@ -18,7 +18,7 @@
   background: var(--gl-overlay, #111010f7);
   position: fixed;
   width: 100dvw;
-  height: 100dvw;
+  height: 100dvh;
   overflow: hidden;
   z-index: -1;
   inset: 0;
