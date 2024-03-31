@@ -1,5 +1,11 @@
 # glightbox
 
+## 4.0.0-beta.8
+
+### Patch Changes
+
+- [`c078589`](https://github.com/biati-digital/glightbox/commit/c078589f24a14e890593366913ae6c14884616a9) Thanks [@biati-digital](https://github.com/biati-digital)! - fixed lightbox and overlay height
+
 ## 4.0.0-beta.7
 
 ### Patch Changes
