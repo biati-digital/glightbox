@@ -10,7 +10,7 @@ export type VideoTypes = 'youtube' | 'vimeo' | 'local';
 export interface VideoOptions extends PluginOptions {
     maxWidth?: string;
     aspectRatio?: string;
-    vertivalAspectRatio?: string;
+    verticalAspectRatio?: string;
     autoPlay?: boolean;
     injectAssets?: boolean;
     vimeo?: {
@@ -44,7 +44,7 @@ export default class VideoSlide extends GLightboxPlugin {
     defaults: VideoOptions = {
         maxWidth: '840px',
         aspectRatio: '16/9',
-        vertivalAspectRatio: '9/16',
+        verticalAspectRatio: '9/16',
         autoPlay: true,
         injectAssets: true,
         vimeo: {
@@ -189,7 +189,7 @@ export default class VideoSlide extends GLightboxPlugin {
 
             if (config.url.includes('shorts')) {
                 slide?.style.setProperty('--gl-video-max-width', '460px');
-                slide?.style.setProperty('--gl-video-aspect-ratio', this.options.vertivalAspectRatio);
+                slide?.style.setProperty('--gl-video-aspect-ratio', this.options.verticalAspectRatio);
             }
 
             const iframe = createIframe({
