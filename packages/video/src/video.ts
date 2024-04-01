@@ -141,33 +141,6 @@ export default class VideoSlide extends GLightboxPlugin {
         });
     }
 
-
-    public playerDoAction(slide, action: string): void {
-        const player = this.slideHasPlayer(slide);
-        if (!player) {
-            return;
-        }
-        // API has not finished loading, listen for it
-        if (!player?.api) {
-            this.instance.once('video_api_ready', (data) => {
-                if (data?.id === player?.id) {
-                    this.playerDoAction(slide, action);
-                }
-            });
-            return;
-        }
-        if (player?.type === 'local') {
-            action === 'play' ? player.api.play() : player.api.pause();
-        }
-        if (player?.type === 'vimeo') {
-            action === 'play' ? player.api.play() : player.api.pause();
-        }
-        if (player?.type === 'youtube') {
-            action === 'play' ? player.api.playVideo() : player.api.pauseVideo();
-        }
-    }
-
-
     private buildVimeo(slide, config) {
         return new Promise((resolve) => {
             const vimeoID = /vimeo.*\/(\d+)/i.exec(config.url);
@@ -239,7 +212,7 @@ export default class VideoSlide extends GLightboxPlugin {
     }
 
 
-    private slideHasPlayer(slideNode): false | { type: VideoTypes; node: HTMLIFrameElement; id: string; api: VideoPlayer } {
+    private getSlidePlayer(slideNode): false | { type: VideoTypes; node: HTMLIFrameElement; id: string; api: VideoPlayer } {
         const iframe = slideNode.querySelector('iframe.gl-video');
         const video = slideNode.querySelector('video.gl-video-player');
         if (!iframe && !video) {
@@ -270,6 +243,31 @@ export default class VideoSlide extends GLightboxPlugin {
         }
 
         return false;
+    }
+
+    public playerDoAction(slide: HTMLElement, action: string): void {
+        const player = this.getSlidePlayer(slide);
+        if (!player) {
+            return;
+        }
+        // API has not finished loading, listen for it
+        if (!player?.api) {
+            this.instance.once('video_api_ready', (data) => {
+                if (data?.id === player?.id) {
+                    this.playerDoAction(slide, action);
+                }
+            });
+            return;
+        }
+        if (player?.type === 'local') {
+            action === 'play' ? player.api.play() : player.api.pause();
+        }
+        if (player?.type === 'vimeo') {
+            action === 'play' ? player.api.play() : player.api.pause();
+        }
+        if (player?.type === 'youtube') {
+            action === 'play' ? player.api.playVideo() : player.api.pauseVideo();
+        }
     }
 
     private isVimeo(url: string): boolean {
