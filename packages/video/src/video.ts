@@ -68,6 +68,12 @@ export default class VideoSlide extends GLightboxPlugin {
             }
         },
     };
+    private iframeAttrs: { [key: string]: string } = {
+        'allow': `autoplay; fullscreen; picture-in-picture`,
+        'class': 'gl-video',
+        'frameborder': '0',
+        'data-type': '',
+    };
 
     constructor(options: Partial<VideoOptions> = {}) {
         super();
@@ -151,12 +157,10 @@ export default class VideoSlide extends GLightboxPlugin {
                 url: videoUrl,
                 appendTo: slide,
                 attrs: {
+                    ...this.iframeAttrs,
                     'id': config.id,
-                    'allow': `autoplay; fullscreen; picture-in-picture`,
-                    'class': 'gl-video',
-                    'frameborder': '0',
-                    'data-type': 'vimeo',
-                },
+                    'data-type': 'vimeo'
+                }
             }) as HTMLIFrameElement;
 
             iframe.onload = () => {
@@ -174,7 +178,12 @@ export default class VideoSlide extends GLightboxPlugin {
 
     private buildYoutube(slide, config) {
         return new Promise((resolve) => {
-            const youtubeID = this.getYoutubeID(config.url);
+            const [a, , b] = config.url.replace(/(>|<)/gi, '').split(/^.*(?:(?:youtu\.?be(\.com)?\/|v\/|vi\/|u\/\w\/|embed\/|shorts\/)|(?:(?:watch)?\?v(?:i)?=|&v(?:i)?=))([^#&?]*).*/)
+            const youtubeID = b !== undefined ? b.split(/[^0-9a-z_-]/i)[0] : a
+            if (!youtubeID) {
+                throw new Error('Unable to get Youtube video ID');
+            }
+
             const params = this.buildURLParams(this.options?.youtube?.params ?? {});
             const videoUrl = `https://www.youtube.com/embed/${youtubeID}?${params}`
 
@@ -187,12 +196,10 @@ export default class VideoSlide extends GLightboxPlugin {
                 url: videoUrl,
                 appendTo: slide,
                 attrs: {
+                    ...this.iframeAttrs,
                     'id': config.id,
-                    'allow': `autoplay; fullscreen; picture-in-picture`,
-                    'class': 'gl-video',
-                    'frameborder': '0',
-                    'data-type': 'youtube',
-                },
+                    'data-type': 'youtube'
+                }
             }) as HTMLIFrameElement;
 
             iframe.onload = () => {
@@ -285,15 +292,6 @@ export default class VideoSlide extends GLightboxPlugin {
             return true;
         }
         return false;
-    }
-
-    private getYoutubeID(url: string): string {
-        const [a, , b] = url.replace(/(>|<)/gi, '').split(/^.*(?:(?:youtu\.?be(\.com)?\/|v\/|vi\/|u\/\w\/|embed\/|shorts\/)|(?:(?:watch)?\?v(?:i)?=|&v(?:i)?=))([^#&?]*).*/)
-        if (b !== undefined) {
-            return b.split(/[^0-9a-z_-]/i)[0]
-        } else {
-            return a
-        }
     }
 
     private buildURLParams(params: Record<string, string | number | boolean>): string {
