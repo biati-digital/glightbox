@@ -116,12 +116,13 @@ export default class GLightbox {
             this.trigger('slide_before_change', { current: this.state.get('prevActiveSlideIndex'), next: index });
         }
 
-        await this.preloadSlide(index, !first);
         const effect = this.options.appearance?.slideEffect;
         const openEffect = this.options.appearance?.openEffect;
         const scrollAnim = effect !== 'slide' || first ? 'instant' : 'smooth';
 
         slideNode.scrollIntoView({ behavior: scrollAnim, block: 'start', inline: 'start' });
+
+        await this.preloadSlide(index, !first);
 
         removeClass(media, 'gl-animation-ended');
 

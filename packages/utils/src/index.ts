@@ -136,6 +136,27 @@ export function windowSize() {
     };
 }
 
+
+export function createIframe(config) {
+    const { url, attrs, appendTo } = config;
+    const iframe = document.createElement('iframe');
+    iframe.className = 'gl-iframe';
+    iframe.src = url;
+    iframe.style.width = '100%';
+    iframe.style.height = '100%';
+
+    if (attrs) {
+        for (const [key, value] of Object.entries(attrs)) {
+            iframe.setAttribute(key, value as string);
+        }
+    }
+    if (appendTo) {
+        appendTo.appendChild(iframe);
+    }
+    return iframe
+}
+
+
 /**
  * Inject videos api
  * used for video player
