@@ -6,6 +6,9 @@
       "jsx": true
     }
   },
+  "globals": {
+    "Hls": "readonly"
+  },
   "rules": {
     "semi": ["warn", "always"],
     "no-extra-semi": "error",
