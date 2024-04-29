@@ -53,6 +53,7 @@ const defaults = {
     plyr: {
         css: 'https://cdn.plyr.io/3.6.12/plyr.css',
         js: 'https://cdn.plyr.io/3.6.12/plyr.js',
+        dash: 'https://cdn.dashjs.org/v4.7.4/dash.all.min.js',
         config: {
             ratio: '16:9', // or '4:3'
             fullscreen: { enabled: true, iosNative: true },

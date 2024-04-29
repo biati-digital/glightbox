@@ -6,7 +6,16 @@
  * @param {int} index
  * @param {function} callback
  */
-import { has, closest, injectAssets, addClass, removeClass, createHTML, isFunction, waitUntil } from '../utils/helpers.js';
+import {
+    has,
+    closest,
+    injectAssets,
+    addClass,
+    removeClass,
+    createHTML,
+    isFunction,
+    waitUntil
+} from '../utils/helpers.js';
 
 export default function slideVideo(slide, data, index, callback) {
     const slideContainer = slide.querySelector('.ginner-container');
@@ -20,7 +29,7 @@ export default function slideVideo(slide, data, index, callback) {
 
     const videoWrapper = slide.querySelector('.gvideo-wrapper');
 
-    injectAssets(this.settings.plyr.css, 'Plyr');
+    injectAssets(this.settings.plyr.css, 'Plyr', null);
 
     let url = data.href;
     let provider = data?.videoProvider;
@@ -67,24 +76,14 @@ export default function slideVideo(slide, data, index, callback) {
         videoWrapper.setAttribute('data-index', index);
 
         const playerConfig = has(this.settings.plyr, 'config') ? this.settings.plyr.config : {};
-        const player = new Plyr('#' + videoID, playerConfig);
-
-        player.on('ready', (event) => {
-            videoPlayers[videoID] = event.detail.plyr;
-            if (isFunction(callback)) {
-                callback();
-            }
-        });
-        waitUntil(
-            () => {
-                return slide.querySelector('iframe') && slide.querySelector('iframe').dataset.ready == 'true';
-            },
-            () => {
-                this.resize(slide);
-            }
-        );
-        player.on('enterfullscreen', handleMediaFullScreen);
-        player.on('exitfullscreen', handleMediaFullScreen);
+        const video = document.getElementById(videoID);
+        if (isDashVideo(url)) {
+            injectAssets(this.settings.plyr.dash, 'dashjs', () =>
+                initDashVideo(url, video, playerConfig, videoPlayers, callback, slide, videoID)
+            );
+        } else {
+            initPlyr(video, playerConfig, videoPlayers, callback, slide, videoID);
+        }
     });
 }
 
@@ -102,4 +101,81 @@ function handleMediaFullScreen(event) {
     if (event.type === 'exitfullscreen') {
         removeClass(media, 'fullscreen');
     }
+}
+
+function isDashVideo(url) {
+    return url && url.match(/mpegdash/g);
+}
+
+function initDashVideo(url, video, defaultOptions, videoPlayers, callback, slide, videoID) {
+    // eslint-disable-next-line new-cap
+    const yotpoDashPlayer = dashjs.MediaPlayer().create();
+    yotpoDashPlayer.initialize(video, url, true);
+    yotpoDashPlayer.on('streamInitialized', function () {
+        defaultOptions = configureQualityOptions(yotpoDashPlayer, defaultOptions, videoID);
+        initPlyr(video, defaultOptions, videoPlayers, callback, slide, videoID);
+        let settings = yotpoDashPlayer.getSettings();
+        settings.streaming.abr.autoSwitchBitrate.video = true;
+    });
+}
+
+function configureQualityOptions(yotpoDashPlayer, defaultOptions) {
+    const bitratesInfo = yotpoDashPlayer.getBitrateInfoListFor('video');
+    const bitrate = [];
+    bitrate.unshift(0);
+    for (let i = 0; i < bitratesInfo.length; i++) {
+        bitrate.push(bitratesInfo[i]['height']);
+    }
+
+    defaultOptions.quality = {
+        default: bitrate[0],
+        options: bitrate,
+        forced: true,
+        onChange: (newQuality) => {
+            let settings = yotpoDashPlayer.getSettings();
+            const bitratesInfo = yotpoDashPlayer.getBitrateInfoListFor('video');
+            if (newQuality === 0) {
+                settings.streaming.abr.autoSwitchBitrate.video = true;
+                yotpoDashPlayer.updateSettings(settings);
+            } else {
+                settings.streaming.abr.autoSwitchBitrate.video = false;
+                yotpoDashPlayer.updateSettings(settings);
+                let qualityIndex = bitratesInfo.findIndex(b => b.height === newQuality);
+                if (qualityIndex !== -1) {
+                    yotpoDashPlayer.setQualityFor('video', qualityIndex, true);
+                }
+            }
+        }
+    };
+
+    defaultOptions.i18n = {
+        qualityLabel: {
+            0: 'Auto'
+        }
+    };
+
+    return defaultOptions;
+}
+
+function initPlyr(video, defaultOptions, videoPlayers, callback, slide, videoID) {
+    const player = new Plyr(video, defaultOptions);
+    player.on('ready', (event) => {
+        videoPlayers[videoID] = event.detail.plyr;
+        if (isFunction(callback)) {
+            callback();
+        }
+    });
+    waitUntil(
+        () => {
+            return slide.querySelector('iframe') && slide.querySelector('iframe').dataset.ready == 'true';
+        },
+        () => {
+            this.resize(slide);
+        },
+        null,
+        null
+    );
+    player.on('enterfullscreen', handleMediaFullScreen);
+    player.on('exitfullscreen', handleMediaFullScreen);
+    return player;
 }
