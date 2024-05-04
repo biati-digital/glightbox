@@ -1591,7 +1591,7 @@
   }
   function initDashVideo(url, video, defaultOptions, videoPlayers, callback, slide, videoID) {
     var yotpoDashPlayer = dashjs.MediaPlayer().create();
-    yotpoDashPlayer.initialize(video, url, true);
+    yotpoDashPlayer.initialize(video, url, false);
     yotpoDashPlayer.on('streamInitialized', function () {
       defaultOptions = configureQualityOptions(yotpoDashPlayer, defaultOptions);
       initPlyr(video, defaultOptions, videoPlayers, callback, slide, videoID);

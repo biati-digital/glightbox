@@ -110,7 +110,7 @@ function isDashVideo(url) {
 function initDashVideo(url, video, defaultOptions, videoPlayers, callback, slide, videoID) {
     // eslint-disable-next-line new-cap
     const yotpoDashPlayer = dashjs.MediaPlayer().create();
-    yotpoDashPlayer.initialize(video, url, true);
+    yotpoDashPlayer.initialize(video, url, false);
     yotpoDashPlayer.on('streamInitialized', function () {
         defaultOptions = configureQualityOptions(yotpoDashPlayer, defaultOptions, videoID);
         initPlyr(video, defaultOptions, videoPlayers, callback, slide, videoID);
