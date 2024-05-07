@@ -1035,10 +1035,12 @@
             vDistancePercent = 0;
           }
         }
-        if (!mediaImage) {
-          return cssTransform(media, "translate3d(".concat(hDistancePercent, "%, 0, 0)"));
+        if (instance.settings.touchFollowAxis) {
+          if (!mediaImage) {
+            return cssTransform(media, "translate3d(".concat(hDistancePercent, "%, 0, 0)"));
+          }
+          cssTransform(media, "translate3d(".concat(hDistancePercent, "%, ").concat(vDistancePercent, "%, 0)"));
         }
-        cssTransform(media, "translate3d(".concat(hDistancePercent, "%, ").concat(vDistancePercent, "%, 0)"));
       },
       touchEnd: function touchEnd() {
         if (!process) {
@@ -1123,13 +1125,13 @@
           return;
         }
         if (evt.direction == 'Left') {
-          if (instance.index == instance.elements.length - 1) {
+          if (instance.index == instance.elements.length - 1 && !instance.loop()) {
             return resetSlideMove(media);
           }
           instance.nextSlide();
         }
         if (evt.direction == 'Right') {
-          if (instance.index == 0) {
+          if (instance.index == 0 && !instance.loop()) {
             return resetSlideMove(media);
           }
           instance.prevSlide();
@@ -2608,9 +2610,6 @@
             slide: this.activeSlide,
             player: this.getSlidePlayerInstance(this.index)
           }]);
-        }
-        if (this.prevActiveSlideIndex > this.index && this.settings.slideEffect == 'slide') {
-          animOut = this.settings.cssEfects.slideBack.out;
         }
         animateElement(prevSlide, animOut, function () {
           var container = prevSlide.querySelector('.ginner-container');

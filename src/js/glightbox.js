@@ -393,6 +393,7 @@ class GlightboxInit {
         } else if (index >= this.elements.length) {
             index = 0;
         }
+
         this.showSlide(index);
     }
 
@@ -634,10 +635,10 @@ class GlightboxInit {
                 }
             ]);
         }
-        if (this.prevActiveSlideIndex > this.index && this.settings.slideEffect == 'slide') {
-            // going back
-            animOut = this.settings.cssEfects.slideBack.out;
-        }
+        // if (this.prevActiveSlideIndex > this.index && this.settings.slideEffect == 'slide') {
+        //     // going back
+        //     animOut = this.settings.cssEfects.slideBack.out;
+        // }
         _.animateElement(prevSlide, animOut, () => {
             let container = prevSlide.querySelector('.ginner-container');
             let media = prevSlide.querySelector('.gslide-media');
