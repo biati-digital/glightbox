@@ -1,4 +1,4 @@
-// Type definitions for Glightbox 3.2.0
+// Type definitions for Glightbox 3.2.1
 // Project: https://github.com/biati-digital/glightbox/blob/master/README.md
 // Definitions by: Ngoc Tu Nguyen <https://github.com/tomasvn>
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
@@ -340,7 +340,7 @@ declare class GlightboxInit {
      /**
      * Open lightbox
      */
-    open(element: Element, startAt: number): void
+    open(element?: Element, startAt?: number): void
 
     /**
      * Open at specific index
@@ -350,7 +350,7 @@ declare class GlightboxInit {
     /**
      * Set Slide
      */
-    private showSlide(index: number, first: boolean): void;
+    private showSlide(index?: number, first?: boolean): void;
 
     /**
      * Preload slides
@@ -378,12 +378,12 @@ declare class GlightboxInit {
     /**
      * Insert slide
      */
-    insertSlide(config: Record<any, any>, index: number): void;
+    insertSlide(config?: Record<any, any>, index?: number): void;
 
     /**
      * Remove slide
      */
-    removeSlide(index: number): boolean | undefined;
+    removeSlide(index?: number): boolean | undefined;
 
     /**
      * Slide In
@@ -428,7 +428,7 @@ declare class GlightboxInit {
      * Play video at specified
      * node or index
      */
-    playSlideVideo(slide: Element): void;
+    playSlideVideo(slide: Element | number): void;
 
     /**
      * Play media player at specified
