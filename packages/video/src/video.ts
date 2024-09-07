@@ -213,6 +213,8 @@ export default class VideoSlide extends GLightboxPlugin {
                         }
                     }
                 });
+                playerAPI.play = () => { playerAPI.playVideo() };
+                playerAPI.pause = () => { playerAPI.pauseVideo() };
                 this.youtubePlayers.set(config.id, playerAPI);
             };
         });
@@ -266,29 +268,31 @@ export default class VideoSlide extends GLightboxPlugin {
             });
             return;
         }
-        if (player?.type === 'local') {
-            action === 'play' ? player.api.play() : player.api.pause();
+        const actions = {
+            'play': player.api.play,
+            'pause': player.api.pause
         }
-        if (player?.type === 'vimeo') {
-            action === 'play' ? player.api.play() : player.api.pause();
-        }
-        if (player?.type === 'youtube') {
-            action === 'play' ? player.api.playVideo() : player.api.pauseVideo();
+        if (action in actions) {
+            actions[action].apply(player.api);
         }
     }
 
     private isVimeo(url: string): boolean {
-        if (url.match(/vimeo\.com\/([0-9]*)/)) {
+        return url.includes('vimeo.com');
+    }
+
+    private isYoutube(url: string): boolean {
+        if (url.includes('youtube.com') ||
+            url.includes('youtu.be') ||
+            url.includes('youtube-nocookie.com')
+        ) {
             return true;
         }
         return false;
     }
 
-    private isYoutube(url: string): boolean {
-        if (url.match(/(youtube\.com|youtube-nocookie\.com)\/watch\?v=([a-zA-Z0-9\-_]+)/) ||
-            url.match(/youtu\.be\/([a-zA-Z0-9\-_]+)/) ||
-            url.match(/(youtube\.com|youtube-nocookie\.com)\/embed\/([a-zA-Z0-9\-_]+)/) ||
-            url.match(/(youtube\.com|youtube-nocookie\.com)\/shorts\/([a-zA-Z0-9\-_]+)/)) {
+    private isRegularVideo(url: string): boolean {
+        if (url.match(/\.(mpg|avi|webm|mov|ogv|mp4)/)) {
             return true;
         }
         return false;
@@ -301,13 +305,6 @@ export default class VideoSlide extends GLightboxPlugin {
             if (val === true) { val = '1' }
             return `${key}=${val}`;
         }).join('&');
-    }
-
-    private isRegularVideo(url: string): boolean {
-        if (url.match(/\.(mpg|avi|webm|mov|ogv|mp4)/)) {
-            return true;
-        }
-        return false;
     }
 
     destroy(): void {
