@@ -15,6 +15,7 @@ export default class GLightbox {
     nextButton: HTMLButtonElement | null = null;
     overlay: HTMLButtonElement | null = null;
     slidesContainer: HTMLElement | null = null;
+    reduceMotion: boolean = false;
     private observer: IntersectionObserver;
 
     constructor(options: Partial<GLightboxOptions> = {}) {
@@ -22,8 +23,7 @@ export default class GLightbox {
 
         const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
         if ((!reduceMotion || reduceMotion.matches) && this.options.appearance?.slideEffect) {
-            this.options.appearance.slideEffect = false;
-            this.options.appearance.openEffect = false;
+            this.reduceMotion = true;
         }
 
         this.init();
@@ -76,7 +76,7 @@ export default class GLightbox {
         this.trigger('open');
         this.state.set('open', true);
         this.modal?.focus();
-        addClass(document.body, 'gl-open');
+        addClass(document.getElementsByTagName('html')[0], 'gl-open');
     }
 
     public prevSlide(): void {
@@ -116,8 +116,8 @@ export default class GLightbox {
             this.trigger('slide_before_change', { current: this.state.get('prevActiveSlideIndex'), next: index });
         }
 
-        const effect = this.options.appearance?.slideEffect;
-        const openEffect = this.options.appearance?.openEffect;
+        const effect = this.reduceMotion ? false : this.options.appearance?.slideEffect;
+        const openEffect = this.reduceMotion ? false : this.options.appearance?.openEffect;
         const scrollAnim = effect !== 'slide' || first ? 'instant' : 'smooth';
 
         slideNode.scrollIntoView({ behavior: scrollAnim, block: 'start', inline: 'start' });
@@ -247,6 +247,7 @@ export default class GLightbox {
         this.overlay = this.modal.querySelector<HTMLButtonElement>('.gl-overlay');
         this.slidesContainer = document.getElementById('gl-slider');
 
+        addClass(this.modal, this.reduceMotion ? 'gl-reduce-motion' : 'gl-motion');
         addClass(this.modal, 'gl-theme-' + (this.options?.appearance?.theme ?? 'base'));
         addClass(this.modal, 'gl-slide-effect-' + (this.options?.appearance?.slideEffect || 'none'));
 
@@ -355,7 +356,7 @@ export default class GLightbox {
 
         this.runPluginsMethod('destroy');
 
-        removeClass(document.body, 'gl-open gl-crollbar-fixer');
+        removeClass(document.getElementsByTagName('html')[0], 'gl-open');
 
         const hiddenElements = document.querySelectorAll('*[data-gl-hidden="true"]');
         if (hiddenElements) {
@@ -365,7 +366,7 @@ export default class GLightbox {
             });
         }
 
-        if (this.options.appearance?.slideEffect === 'none') {
+        if (this.reduceMotion || this.options.appearance?.slideEffect === 'none') {
             this.modal.parentNode?.removeChild(this.modal);
         } else {
             const currentSlide = this.state.get('activeSlide');
