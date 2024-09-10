@@ -1,16 +1,25 @@
+.gl-open {
+  overflow: hidden;
+  scrollbar-gutter: stable;
+  background-color: var(--gl-overlay, #111010f7);
+}
+
 .gl-lightbox {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100dvw;
+  width: 100vw;
   height: 100dvh;
   overflow: hidden;
   z-index: 9999;
 }
 
-.gl-open {
+.gl-open body {
   touch-action: none;
-  overflow-y: hidden;
+}
+
+.gl-open.gl-open body::-webkit-scrollbar {
+  opacity: 0;
 }
 
 .gl-overlay {
@@ -23,8 +32,16 @@
   z-index: -1;
   inset: 0;
   opacity: 0;
-  transition: opacity 0.3s ease-in-out;
+  transition: opacity 0.2s ease-in-out;
   will-change: opacity;
+}
+
+.gl-overlay-in {
+  opacity: 1;
+}
+
+.gl-motion .gl-overlay-in {
+  animation: gl-fade-in 0.2s ease forwards;
 }
 
 .gl-single-slide {
@@ -41,11 +58,6 @@
   padding: 2rem 4rem;
   min-width: 200px;
   text-align: center;
-}
-
-.gl-overlay-in {
-  animation: gl-fade-in 0.3s ease forwards;
-  opacity: 1;
 }
 
 .gl-inline-desc {
@@ -214,23 +226,23 @@
   transition-delay: 0.05s;
 }
 
-.gl-slide-effect-fade .gl-slide.visible.loaded .gl-media {
+.gl-motion .gl-slide-effect-fade .gl-slide.visible.loaded .gl-media {
   animation: gl-fade-in 0.3s ease;
 }
 
-.gl-slide.visible.loaded .gl-media.gl-zoom-in {
+.gl-motion .gl-slide.visible.loaded .gl-media.gl-zoom-in {
   animation: gl-zoom-in 0.3s ease;
 }
 
-.gl-slide.visible.loaded .gl-media.gl-zoom-out {
+.gl-motion .gl-slide.visible.loaded .gl-media.gl-zoom-out {
   animation: gl-zoom-out 0.3s ease;
 }
 
-.gl-slide.visible.loaded .gl-media.gl-fade-in {
+.gl-motion .gl-slide.visible.loaded .gl-media.gl-fade-in {
   animation: gl-fade-in 0.5s ease;
 }
 
-.gl-slide.visible.loaded .gl-media.gl-fade-out {
+.gl-motion .gl-slide.visible.loaded .gl-media.gl-fade-out {
   animation: gl-fade-out 0.4s ease;
 }
 
