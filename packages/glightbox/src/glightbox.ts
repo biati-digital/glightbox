@@ -1,5 +1,6 @@
 import type { Plugin } from '@glightbox/plugin-core';
 import { EventType, addClass, addEvent, animate, hasClass, injectAssets, isNode, mergeObjects, removeClass } from '@glightbox/utils';
+import '@style';
 import { GLightboxDefaults } from './options';
 import type { ApiEvent, GLightboxOptions, SlideConfig } from './types';
 
