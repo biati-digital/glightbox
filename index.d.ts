@@ -1,4 +1,4 @@
-// Type definitions for Glightbox 3.2.0
+// Type definitions for Glightbox 3.2.1
 // Project: https://github.com/biati-digital/glightbox/blob/master/README.md
 // Definitions by: Ngoc Tu Nguyen <https://github.com/tomasvn>
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
@@ -335,22 +335,22 @@ declare class GlightboxInit {
     /**
      * Initialize lightbox
      */
-    init(): void;
+    private init(): void;
 
      /**
      * Open lightbox
      */
-    open(element: Element, startAt: number): void
+    public open(element?: Element, startAt?: number): void
 
     /**
      * Open at specific index
      */
-    openAt(index?: number): void;
+    public openAt(index?: number): void;
 
     /**
      * Set Slide
      */
-    private showSlide(index: number, first: boolean): void;
+    private showSlide(index?: number, first?: boolean): void;
 
     /**
      * Preload slides
@@ -361,29 +361,29 @@ declare class GlightboxInit {
      * Load previous slide
      * calls goToslide
      */
-    prevSlide(): void;
+    public prevSlide(): void;
 
     /**
      * Load next slide
      * calls goToslide
      */
-    nextSlide(): void;
+    public nextSlide(): void;
 
     /**
      * Go to slide
      * calls set slide
      */
-    goToSlide(index?: number): void;
+    public goToSlide(index?: number): void;
 
     /**
      * Insert slide
      */
-    insertSlide(config: Record<any, any>, index: number): void;
+    insertSlide(config?: Record<any, any>, index?: number): void;
 
     /**
      * Remove slide
      */
-    removeSlide(index: number): boolean | undefined;
+    public removeSlide(index?: number): boolean | undefined;
 
     /**
      * Slide In
@@ -428,7 +428,7 @@ declare class GlightboxInit {
      * Play video at specified
      * node or index
      */
-    playSlideVideo(slide: Element): void;
+    playSlideVideo(slide: Element | number): void;
 
     /**
      * Play media player at specified
@@ -477,12 +477,12 @@ declare class GlightboxInit {
     /**
      * Get the active slide
      */
-    getActiveSlide(): Element;
+    public getActiveSlide(): Element;
 
     /**
      * Get the active index
      */
-    getActiveSlideIndex(): number | undefined;
+    public getActiveSlideIndex(): number | undefined;
 
     /**
      * Get the defined
@@ -509,7 +509,7 @@ declare class GlightboxInit {
      * Reload Lightbox
      * reload and apply events to nodes
      */
-    reload(): void;
+    public reload(): void;
 
     /**
      * Update navigation classes on slide change
@@ -526,29 +526,29 @@ declare class GlightboxInit {
      * closes the lightbox and removes the slides
      * and some classes
      */
-    close(): boolean | undefined;
+    public close(): boolean | undefined;
 
     /**
      * Destroy lightbox
      * and all events
      */
-    destroy(): void;
+    public destroy(): void;
 
     /**
      * Set event
      */
-    on(eventName: Glightbox.EventTypes, callback: () => void, once?: boolean): void;
+    public on(eventName: Glightbox.EventTypes, callback: () => void, once?: boolean): void;
 
     /**
      * Set event once
      */
-    once(eventName: Glightbox.EventTypes, callback: () => void): void;
+    public once(eventName: Glightbox.EventTypes, callback: () => void): void;
 
     /**
      * Triggers an specific event
      * with data
      */
-    trigger<T extends Glightbox.EventTypes>(eventName: T, data?: Glightbox.Payload<T>): void;
+    public trigger<T extends Glightbox.EventTypes>(eventName: T, data?: Glightbox.Payload<T>): void;
 
     /**
      * Removes all events
