@@ -1,7 +1,6 @@
-const fs = require('fs');
+const fs = require('node:fs');
 const chokidar = require('chokidar');
-const path = require('path');
-const notify = require('./notifications');
+const path = require('node:path');
 const jscompiler = require('./jscompiler');
 const postcssCompiler = require('./postcss');
 const terser = require('terser');
@@ -38,7 +37,7 @@ async function handleJavascript(file) {
     }).catch(error => console.log(error));
 
     if (!res) {
-        notify('Build Error', `View logs for more info`);
+        console.log('Build Error', `View logs for more info`);
         console.log(res)
         return false;
     }
@@ -50,7 +49,7 @@ async function handleJavascript(file) {
     const minifyPath = path.join(config.js.dest, minName);
     fs.writeFileSync(minifyPath, minified.code);
 
-    notify('Javascript Build', `Compiled and Minified ${name}`);
+    console.log('Javascript Build', `Compiled and Minified ${name}`);
 }
 
 
@@ -72,7 +71,7 @@ async function handlePostCSS(file) {
     if (!res) {
         return false;
     }
-    notify('PostCSS Build', `Compiled and Minified ${name}`);
+    console.log('PostCSS Build', `Compiled and Minified ${name}`);
 }
 
 
@@ -101,6 +100,6 @@ function filesWatcher() {
             return handlePostCSS(path);
         }
     })
-    watcher.on('ready', () => notify('Watching files', 'Initial scan complete. Ready for changes'))
+    watcher.on('ready', () => console.log('Watching files', 'Initial scan complete. Ready for changes'))
 }
 filesWatcher();
