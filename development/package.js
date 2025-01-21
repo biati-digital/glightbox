@@ -4,7 +4,6 @@ const jetpack = require('fs-jetpack');
 const path = require('path');
 const archiver = require('archiver');
 const args = process.argv.slice(2);
-const notify = require('./notifications');
 const folder = path.join(__dirname, '/..');
 
 /**
@@ -63,7 +62,7 @@ async function createFolder() {
             '!.DS_Store'
         ]
     });
-    notify('Created folder', `Created folder correctly`);
+    console.log('Created folder', `Created folder correctly`);
 
     const zip = await createZip(tmpfolder).catch((error) => {
         jetpack.remove(tmpfolder);
@@ -73,7 +72,7 @@ async function createFolder() {
     jetpack.remove(tmpfolder);
     jetpack.move(zip, path.join(folder, folderName + '-master.zip'));
 
-    notify('Done', `Packaging process ended correctly`);
+    console.log('Done', `Packaging process ended correctly`);
 }
 createFolder();
 
@@ -84,11 +83,11 @@ async function createZip(folder) {
         const archive = archiver('zip', { zlib: { level: 9 } });
 
         output.on('close', () => {
-            notify('Zipped', `zip archive was created correctly`);
+            console.log('Zipped', `zip archive was created correctly`);
             resolve(name);
         });
         archive.on('error', (err) => {
-            notify('Package Error', `The was an error creating the zip.`);
+            console.log('Package Error', `The was an error creating the zip.`);
             reject(err);
         });
 
