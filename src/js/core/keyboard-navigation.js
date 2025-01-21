@@ -54,7 +54,7 @@ export default function keyboardNavigation(instance) {
 
                 if (!focusedButton) {
                     const activeElement = document.activeElement && document.activeElement.nodeName ? document.activeElement.nodeName.toLocaleLowerCase() : false;
-                    if (activeElement == 'input' || activeElement == 'textarea' || activeElement == 'button') {
+                    if (activeElement == 'input' || activeElement == 'textarea' || activeElement == 'button' || activeElement == 'select') {
                         return;
                     }
                 }
