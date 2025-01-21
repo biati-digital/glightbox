@@ -85,10 +85,10 @@ export default function keyboardNavigation(instance) {
                 }
             }
             if (key == 39) {
-                instance.nextSlide();
+                instance.settings.direction === 'rtl' ? instance.prevSlide() : instance.nextSlide();
             }
             if (key == 37) {
-                instance.prevSlide();
+                instance.settings.direction === 'rtl' ? instance.nextSlide() : instance.prevSlide();
             }
             if (key == 27) {
                 instance.close();
