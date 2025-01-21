@@ -2865,11 +2865,15 @@
           if (winWidth <= 768) {
             var imgNode = image.querySelector('img');
           } else if (descriptionResize) {
-            var _slideTriggerNode$get;
+            var _this$elements$this$i;
             var descHeight = description.offsetHeight;
             var _imgNode = image.querySelector('img');
-            var slideTriggerNode = this.elements[this.index].node;
-            var maxHeightValue = (_slideTriggerNode$get = slideTriggerNode.getAttribute('data-height')) !== null && _slideTriggerNode$get !== void 0 ? _slideTriggerNode$get : '100vh';
+            var slideTriggerNode = (_this$elements$this$i = this.elements[this.index]) === null || _this$elements$this$i === void 0 ? void 0 : _this$elements$this$i.node;
+            var maxHeightValue = '100vh';
+            if (slideTriggerNode) {
+              var _slideTriggerNode$get;
+              maxHeightValue = (_slideTriggerNode$get = slideTriggerNode.getAttribute('data-height')) !== null && _slideTriggerNode$get !== void 0 ? _slideTriggerNode$get : maxHeightValue;
+            }
             _imgNode.setAttribute('style', "max-height: calc(".concat(maxHeightValue, " - ").concat(descHeight, "px)"));
             description.setAttribute('style', "max-width: ".concat(_imgNode.offsetWidth, "px;"));
           }

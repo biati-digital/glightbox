@@ -1087,8 +1087,11 @@ class GlightboxInit {
 
                 // if a slide height is set via data-height, we want to use that
                 // if not, we fall back to 100vh
-                const slideTriggerNode = this.elements[this.index].node;
-                const maxHeightValue = slideTriggerNode.getAttribute('data-height') ?? '100vh';
+                const slideTriggerNode = this.elements[this.index]?.node;
+                let maxHeightValue = '100vh';
+                if (slideTriggerNode) {
+                    maxHeightValue = slideTriggerNode.getAttribute('data-height') ?? maxHeightValue;
+                }
 
                 imgNode.setAttribute('style', `max-height: calc(${maxHeightValue} - ${descHeight}px)`);
                 description.setAttribute('style', `max-width: ${imgNode.offsetWidth}px;`);
