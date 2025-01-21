@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## 3.3.1
+
+- Fixed: handle optional slide trigger node for max height calculation
+- Improved: types.d.ts mark some params as optional
+
 ## 3.3.0
 
 - New: glightbox types #411
