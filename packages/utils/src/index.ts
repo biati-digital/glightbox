@@ -46,17 +46,19 @@ export function hasClass(node: HTMLElement | Element, name: string): boolean {
 
 export function addEvent(eventName: string, {
     element,
+    signal,
     callback,
     preventDefault = true,
     once = false,
-    useCapture = false
+    capture = false
 }: {
     element: HTMLElement | typeof window | null | string,
+    signal?: AbortSignal | undefined,
     callback: (this: unknown, el: HTMLElement, event: Event) => void,
     preventDefault?: boolean,
     once?: boolean,
-    useCapture?: boolean
-}, thisArg?: unknown): EventType {
+    capture?: boolean
+}, thisArg?: unknown): void {
     let items: (HTMLElement | Element | null)[] = [];
     const id = callback.toString().trim().replace(/\s/g, '');
     const isString = typeof element === 'string';
@@ -70,31 +72,23 @@ export function addEvent(eventName: string, {
         }
     }
 
-    const handler: EventType = function (event: Event) {
-        if (typeof callback === 'function') {
-            if (preventDefault) {
-                event.preventDefault();
-            }
-            callback.call(thisArg, this, event);
+    const handler = (event: Event) => {
+        if (preventDefault) {
+            event.preventDefault();
         }
-        if (once) {
-            handler.destroy();
-        }
-    }
-
-    handler.destroy = function () {
-        items.forEach(el => {
-            el?.removeEventListener(eventName, handler, useCapture);
-        });
+        callback.call(thisArg, event.currentTarget as HTMLElement, event);
     };
-    items.forEach((el) => {
+
+    for (const el of items) {
         if (el && (el as EventElement).attachedEvent !== id) {
-            el.addEventListener(eventName, handler, useCapture);
+            el.addEventListener(eventName, handler, {
+                capture,
+                once,
+                signal,
+            });
             (el as EventElement).attachedEvent = id;
         }
-    });
-
-    return handler;
+    }
 }
 
 export function animate(element: HTMLElement, classes: string): Promise<boolean> {
