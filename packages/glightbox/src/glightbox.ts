@@ -16,7 +16,7 @@ export default class GLightbox {
     nextButton: HTMLButtonElement | null = null;
     overlay: HTMLButtonElement | null = null;
     slidesContainer: HTMLElement | null = null;
-    reduceMotion: boolean = false;
+    reduceMotion = false;
     private observer: IntersectionObserver;
 
     constructor(options: Partial<GLightboxOptions> = {}) {
@@ -225,12 +225,12 @@ export default class GLightbox {
 
         const children = document.body.querySelectorAll(':scope > *');
         if (children) {
-            [...children].forEach((el: HTMLElement) => {
-                if (el.parentNode == document.body && el.nodeName.charAt(0) !== '#' && el.hasAttribute && !el.hasAttribute('aria-hidden')) {
-                    el.ariaHidden = 'true';
-                    el.dataset.glHidden = 'true';
+            for (const el of children) {
+                if (el.parentNode === document.body && el.nodeName.charAt(0) !== '#' && el.hasAttribute && !el.hasAttribute('aria-hidden')) {
+                    (el as HTMLElement).ariaHidden = 'true';
+                    (el as HTMLElement).dataset.glHidden = 'true';
                 }
-            });
+            }
         }
 
         const root = this.options?.root ?? document.body;
@@ -249,8 +249,8 @@ export default class GLightbox {
         this.slidesContainer = document.getElementById('gl-slider');
 
         addClass(this.modal, this.reduceMotion ? 'gl-reduce-motion' : 'gl-motion');
-        addClass(this.modal, 'gl-theme-' + (this.options?.appearance?.theme ?? 'base'));
-        addClass(this.modal, 'gl-slide-effect-' + (this.options?.appearance?.slideEffect || 'none'));
+        addClass(this.modal, `gl-theme-${this.options?.appearance?.theme ?? 'base'}`);
+        addClass(this.modal, `gl-slide-effect-${this.options?.appearance?.slideEffect || 'none'}`);
 
         if (this.options?.appearance?.cssVariables) {
             for (const [key, value] of Object.entries(this.options.appearance.cssVariables)) {
@@ -293,10 +293,10 @@ export default class GLightbox {
         this.processVariables(this.modal);
 
         this.observer = new IntersectionObserver((entries) => {
-            entries.forEach((entry) => {
+            for (const entry of entries) {
                 removeClass(entry.target, 'visible');
                 if (entry.isIntersecting && this.state.get('open')) {
-                    const enteredIndex = parseInt(entry.target?.getAttribute('data-index') ?? '0');
+                    const enteredIndex = Number.parseInt(entry.target?.getAttribute('data-index') ?? '0');
                     addClass(entry.target, 'visible');
 
                     // on scroll make sure to recheck active indexes
@@ -310,7 +310,7 @@ export default class GLightbox {
                         this.preloadSlide(enteredIndex - 1);
                     }
                 }
-            });
+            }
         }, {
             root: this.modal,
             rootMargin: '0px',
@@ -361,10 +361,10 @@ export default class GLightbox {
 
         const hiddenElements = document.querySelectorAll('*[data-gl-hidden="true"]');
         if (hiddenElements) {
-            hiddenElements.forEach((el: HTMLElement) => {
-                el.ariaHidden = 'false';
-                delete el.dataset.glHidden;
-            });
+            for (const el of hiddenElements) {
+                (el as HTMLElement).ariaHidden = 'false';
+                delete (el as HTMLElement).dataset.glHidden;
+            }
         }
 
         if (this.reduceMotion || this.options.appearance?.slideEffect === 'none') {
@@ -392,7 +392,9 @@ export default class GLightbox {
 
         const styles = document.querySelectorAll('.gl-css');
         if (styles) {
-            styles.forEach((style) => style?.parentNode?.removeChild(style));
+            for (const style of styles) {
+                style?.parentNode?.removeChild(style);
+            }
         }
 
         this.trigger('close');
@@ -440,7 +442,7 @@ export default class GLightbox {
                 }
 
                 let matched = false;
-                if (slideType?.match && slideType.match(item.url.toLowerCase())) {
+                if (slideType?.match?.(item.url.toLowerCase())) {
                     item.type = key;
                     matched = true;
                 }
@@ -481,10 +483,10 @@ export default class GLightbox {
             return;
         }
         const parsedItemsData: SlideConfig[] = [];
-        [...items].forEach(item => {
+        for (const item of items) {
             const itemData: SlideConfig = this.parseConfigFromNode(item as HTMLElement);
             parsedItemsData.push(itemData);
-        });
+        }
         this.setItems(parsedItemsData);
     }
 
@@ -637,7 +639,7 @@ export default class GLightbox {
             }
         }
 
-        if (data?.description && data.description.startsWith('.')) {
+        if (data?.description?.startsWith('.')) {
             const description = document.querySelector(data.description)?.innerHTML;
             if (description) {
                 data.description = description;
@@ -657,7 +659,7 @@ export default class GLightbox {
     private getRegisteredSlideType(id: string): false | Plugin {
         if (this.plugins.has('slide')) {
             const slideModules = this.plugins.get('slide');
-            if (slideModules && slideModules.has(id)) {
+            if (slideModules?.has(id)) {
                 return slideModules.get(id) as Plugin;
             }
         }

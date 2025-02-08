@@ -29,7 +29,7 @@ export default class ImageSlide extends GLightboxPlugin {
     build({ index, slide, config }: BuildParams): Promise<boolean> {
         return new Promise((resolve, reject) => {
             const img = new Image();
-            const titleID = 'gl-slide-title-' + index;
+            const titleID = `gl-slide-title-${index}`;
             const imgWidth = config?.width || this.options.maxWidth;
 
             img.addEventListener('load', () => resolve(true), false);

@@ -4,7 +4,7 @@ import { GLightboxPlugin } from '@glightbox/plugin-core';
 export default class KeyboardNavigation extends GLightboxPlugin {
     name = 'keyboard';
     type: PluginType = 'other';
-    largest: number = -1;
+    largest = -1;
     keyBoardEvent: ((e: KeyboardEvent) => void) | null = null;
 
     init(): void {

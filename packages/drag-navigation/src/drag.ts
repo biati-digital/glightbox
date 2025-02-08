@@ -9,14 +9,14 @@ export default class DragNavigation extends GLightboxPlugin {
     name = 'drag';
     type: PluginType = 'other';
     options: DragOptions = {};
-    isDown: boolean = false;
+    isDown = false;
     slider: HTMLElement | null = null;
     actveSlide: HTMLElement | null = null;
     startX = 0;
-    scrollLeft: number = 0;
-    activeSlideIndex: number = 0;
-    movedAmount: number = 0;
-    movedDirection: string = '';
+    scrollLeft = 0;
+    activeSlideIndex = 0;
+    movedAmount = 0;
+    movedDirection = '';
     defaults: DragOptions = {
         dragToleranceX: 10
     };
@@ -64,7 +64,7 @@ export default class DragNavigation extends GLightboxPlugin {
         this.startX = e.pageX - this.slider.offsetLeft;
         this.scrollLeft = this.slider.scrollLeft;
         this.actveSlide = this.slider.querySelector('.visible');
-        this.activeSlideIndex = parseInt(this.actveSlide?.getAttribute('data-index') || '0');
+        this.activeSlideIndex = Number.parseInt(this.actveSlide?.getAttribute('data-index') || '0');
     }
 
     onMouseUp() {

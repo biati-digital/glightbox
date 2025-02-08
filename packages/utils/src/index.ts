@@ -1,5 +1,5 @@
 export interface EventType {
-    (event: Event): void; // Just an example
+    (event: Event): void;
     destroy(): void;
 }
 
@@ -7,9 +7,6 @@ interface EventElement extends HTMLElement {
     attachedEvent: string;
 }
 
-/**
- * Merge two or more objects
- */
 export const mergeObjects = <T extends object = object>(target: T, ...sources: T[]): T => {
     if (!sources.length) {
         return target;
@@ -35,32 +32,18 @@ export const mergeObjects = <T extends object = object>(target: T, ...sources: T
     return mergeObjects(target, ...sources);
 };
 
-
-/**
- * Add element class
- */
 export function addClass(node: HTMLElement | Element, classes: string): void {
     node.classList.add(...classes.split(' '));
 }
 
-/**
- * Remove element class
- */
 export function removeClass(node: HTMLElement | Element, classes: string): void {
     node.classList.remove(...classes.split(' '));
 }
 
-/**
- * Has class
- */
 export function hasClass(node: HTMLElement | Element, name: string): boolean {
     return node.classList.contains(name);
 }
 
-/**
- * Add Event
- * Add an event listener
- */
 export function addEvent(eventName: string, {
     element,
     callback,
@@ -123,12 +106,6 @@ export function animate(element: HTMLElement, classes: string): Promise<boolean>
     });
 }
 
-/**
- * Return screen size
- * return the current screen dimensions
- *
- * @returns {object}
- */
 export function windowSize() {
     return {
         width: window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
@@ -156,14 +133,6 @@ export function createIframe(config) {
     return iframe
 }
 
-
-/**
- * Inject videos api
- * used for video player
- *
- * @param {string} url
- * @param {function} callback
- */
 export function injectAssets(url: string | { src: string; module?: boolean }): Promise<boolean> {
     return new Promise((resolve, reject) => {
         if (!url) {
@@ -176,10 +145,10 @@ export function injectAssets(url: string | { src: string; module?: boolean }): P
             src = url;
         }
 
-        let found;
+        let found: NodeListOf<HTMLLinkElement | HTMLScriptElement>;
         const scriptType = src.includes('.css') ? 'css' : 'js';
         if (scriptType === 'css') {
-            found = document.querySelectorAll('link[href="' + src + '"]');
+            found = document.querySelectorAll(`link[href="${src}"]`);
             if (found && found.length > 0) {
                 resolve(true);
                 return;
@@ -203,7 +172,7 @@ export function injectAssets(url: string | { src: string; module?: boolean }): P
             return;
         }
 
-        found = document.querySelectorAll('script[src="' + src + '"]');
+        found = document.querySelectorAll(`script[src="${src}"]`);
         if (found && found.length > 0) {
             resolve(true);
             return;
