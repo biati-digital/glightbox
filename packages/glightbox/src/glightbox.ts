@@ -1,5 +1,5 @@
 import type { Plugin } from '@glightbox/plugin-core';
-import { EventType, addClass, addEvent, animate, hasClass, injectAssets, isNode, mergeObjects, removeClass } from '@glightbox/utils';
+import { addClass, addEvent, animate, hasClass, injectAssets, isNode, mergeObjects, removeClass } from '@glightbox/utils';
 import '@style';
 import { GLightboxDefaults } from './options';
 import type { ApiEvent, GLightboxOptions, SlideConfig } from './types';
@@ -7,7 +7,6 @@ import type { ApiEvent, GLightboxOptions, SlideConfig } from './types';
 export default class GLightbox {
     options: GLightboxOptions;
     apiEvents: Set<ApiEvent> = new Set();
-    events: Map<string, EventType> = new Map();
     state: Map<string, number | boolean | HTMLElement> = new Map();
     plugins: Map<string, Map<string, Plugin>> = new Map();
     items: Set<SlideConfig> = new Set();
@@ -18,6 +17,7 @@ export default class GLightbox {
     slidesContainer: HTMLElement | null = null;
     reduceMotion = false;
     private observer: IntersectionObserver;
+    private eventsController: AbortController = new AbortController();
 
     constructor(options: Partial<GLightboxOptions> = {}) {
         this.options = mergeObjects(GLightboxDefaults, options);
@@ -38,12 +38,14 @@ export default class GLightbox {
         }
 
         if (this.options.setClickEvent) {
-            this.events.set('gallery', addEvent('click', {
+            addEvent('click', {
                 element: '*[data-glightbox]',
+                signal: this.eventsController.signal,
                 callback: (target: HTMLElement) => {
+                    console.log("clicked", target);
                     this.open(target);
                 }
-            }));
+            })
         }
     }
 
@@ -259,27 +261,31 @@ export default class GLightbox {
         }
 
         if (closeButton) {
-            this.events.set('close', addEvent('click', {
+            addEvent('click', {
                 element: closeButton,
+                signal: this.eventsController.signal,
                 callback: () => this.close()
-            }));
+            });
         }
         if (this.nextButton) {
-            this.events.set('next', addEvent('click', {
+            addEvent('click', {
                 element: this.nextButton,
+                signal: this.eventsController.signal,
                 callback: () => this.nextSlide()
-            }));
+            });
         }
 
         if (this.prevButton) {
-            this.events.set('prev', addEvent('click', {
+            addEvent('click', {
                 element: this.prevButton,
+                signal: this.eventsController.signal,
                 callback: () => this.prevSlide()
-            }));
+            });
         }
         if (this.options.closeOnOutsideClick) {
-            this.events.set('outClose', addEvent('click', {
+            addEvent('click', {
                 element: this.modal,
+                signal: this.eventsController.signal,
                 callback: (target: HTMLElement, e: Event) => {
                     if (target && e?.target && !(e?.target as HTMLElement)?.closest('.gl-media')) {
                         if (!(e.target as HTMLElement).closest('.gl-btn')) {
@@ -287,7 +293,7 @@ export default class GLightbox {
                         }
                     }
                 }
-            }));
+            });
         }
 
         this.processVariables(this.modal);
@@ -404,8 +410,7 @@ export default class GLightbox {
 
     public destroy(): void {
         this.close();
-        this.clearAllEvents(true);
-        this.observer.disconnect();
+        this.clearAllEvents();
     }
 
     public reload(): void {
@@ -756,15 +761,9 @@ export default class GLightbox {
         });
     }
 
-    private clearAllEvents(fullClear = false): void {
-        for (const [key, event] of this.events) {
-            if (!fullClear && key === 'gallery') {
-                continue;
-            }
-            event?.destroy();
-            this.events.delete(key);
-        }
-        fullClear && this.events.clear();
+    private clearAllEvents(): void {
+        this.eventsController.abort();
+        this.observer.disconnect();
         this.apiEvents.clear();
     }
 }
