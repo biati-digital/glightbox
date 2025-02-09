@@ -8,8 +8,8 @@
     "type": "git"
   },
   "type": "module",
-  "main": "./dist/index.cjs.js",
-  "import": "./dist/index.es.js",
+  "main": "./dist/glightbox.es.js",
+  "import": "./dist/glightbox.es.js",
   "scripts": {
     "dev": "vite",
     "watch": "vite build --watch",
@@ -18,18 +18,15 @@
   },
   "exports": {
     ".": {
-      "import": "./dist/index.es.js",
-      "require": "./dist/index.cjs.js",
+      "import": "./dist/glightbox.es.js",
       "types": "./dist/index.d.ts"
     },
     "./src": {
       "import": "./src/index.ts",
-      "require": "./src/index.ts",
-      "types": "./src/index.ts"
+      "types": "./src/index.d.ts"
     },
     "./style": {
-      "import": "./dist/glightbox.css",
-      "require": "./dist/glightbox.css"
+      "import": "./dist/glightbox.css"
     }
   },
   "directories": {
@@ -51,10 +48,7 @@
   },
   "license": "GPLV3",
   "dependencies": {
-    "@glightbox/utils": "1.0.0-beta.1",
-    "@glightbox/plugin-core": "1.0.0-beta.3"
-  },
-  "devDependencies": {
-    "vite-plugin-static-copy": "^1.0.1"
+    "@glightbox/plugin-core": "1.0.0-beta.3",
+    "@glightbox/utils": "1.0.0-beta.1"
   }
 }

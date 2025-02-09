@@ -9,7 +9,7 @@
     "type": "git"
   },
   "type": "module",
-  "main": "./dist/index.cjs.js",
+  "main": "./dist/index.es.js",
   "module": "./dist/index.es.js",
   "types": "./dist/index.d.ts",
   "files": [

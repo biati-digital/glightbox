@@ -1,5 +1,12 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "files": {
+    "ignore": [
+      "packages/**/dist/*",
+      "packages/**/*.mjs",
+      "packages/**/*.d.ts"
+    ]
+  },
   "linter": {
     "rules": {
       "correctness": {
@@ -8,6 +15,29 @@
       "style": {
         "noParameterAssign": "off"
       }
+    }
+  },
+  "css": {
+    "formatter": {
+      "enabled": true,
+      "quoteStyle": "double",
+      "indentStyle": "space",
+      "indentWidth": 2
+    },
+    "linter": {
+      "enabled": true
+    },
+    "parser": {
+      "cssModules": true
+    }
+  },
+  "json": {
+    "formatter": {
+      "enabled": false,
+      "trailingCommas": "none"
+    },
+    "linter": {
+      "enabled": false
     }
   }
 }

@@ -8,7 +8,7 @@
     "type": "git"
   },
   "type": "module",
-  "main": "./dist/index.cjs.js",
+  "main": "./dist/index.es.js",
   "import": "./dist/index.es.js",
   "types": "./src/index.d.ts",
   "scripts": {
@@ -20,7 +20,6 @@
   "exports": {
     ".": {
       "import": "./dist/index.es.js",
-      "require": "./dist/index.cjs.js",
       "types": "./src/index.d.ts"
     }
   },

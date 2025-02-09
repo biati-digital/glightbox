@@ -45,7 +45,6 @@
 }
 
 .gl-single-slide {
-
   .gl-prev,
   .gl-next {
     display: none;
@@ -156,7 +155,7 @@
   cursor: pointer;
   font: inherit;
   margin: 0;
-  opacity: var(--gl-button-opacity, .5);
+  opacity: var(--gl-button-opacity, 0.5);
   padding: 0;
   position: absolute;
   touch-action: manipulation;
@@ -179,7 +178,7 @@
 
 .gl-btn[disabled] {
   cursor: default;
-  opacity: var(--gl-button-opacity-disabled, .2);
+  opacity: var(--gl-button-opacity-disabled, 0.2);
 }
 
 .gl-btn:not([disabled]):hover {
