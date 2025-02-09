@@ -1,3 +1,2 @@
-export { default as GLightbox } from './glightbox';
-export * from './types';
-
+export { default as GLightbox } from "./glightbox";
+export * from "./types";

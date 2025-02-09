@@ -1,2 +1,1 @@
-export { default as ImageSlide } from './drag';
-
+export { default as ImageSlide } from "./drag";

@@ -1,2 +1,1 @@
-export { default as VideoSlide } from './video';
-
+export { default as VideoSlide } from "./video";

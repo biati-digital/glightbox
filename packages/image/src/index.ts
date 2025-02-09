@@ -1,2 +1,1 @@
-export { default as ImageSlide } from './image';
-
+export { default as ImageSlide } from "./image";

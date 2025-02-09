@@ -1,2 +1,1 @@
-export { default as KeyboardNavigation } from './keyboard';
-
+export { default as KeyboardNavigation } from "./keyboard";
