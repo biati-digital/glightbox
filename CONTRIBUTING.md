@@ -10,7 +10,7 @@ Fork and clone the repository and run in the root:
 npm install
 ```
 
-Type definitions are generated automatically after install, VS Code should be able to find the new files but if it complains about missing types just open the command palette and typ: "TypeScript: Restart TS Server"
+Type definitions are generated automatically after install, VS Code should be able to find the new files but if it complains about missing types just open the command palette and type: "TypeScript: Restart TS Server"
 
 ## Working on a package
 
@@ -30,7 +30,8 @@ You can also run the watcher at the root level to watch all packages for changes
 After you've finished making your changes, ensure there are no errors and that your code can build correctly.
 
 ```bash
-# in the root run this two commands
+# in the root run this commands
+npm run format
 npm run lint
 npm run build
 ```
@@ -38,7 +39,7 @@ npm run build
 ## Before you open a Pull Request
 
 - Follow the same conding style.
-- Use eslint to verify your code.
+- Use biome to verify your code. `npm run format` to properly format the code and then `npm run lint`.
 - **DO NOT** commit changes in the dist directory, this files are generated automatically by Github Actions.
 - Follow Git best practices (especially use meaningful commit messages).
 - Add a changeset (If required) specifying the packages you worked with a description
