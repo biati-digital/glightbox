@@ -53,7 +53,6 @@ export default class GLightbox {
 			addEvent("click", {
 				element: "*[data-glightbox]",
 				callback: (target: HTMLElement) => {
-					console.log("add event click");
 					this.open(target);
 				},
 			});
@@ -819,7 +818,6 @@ export default class GLightbox {
 			return;
 		}
 		const el = document.createElement("style");
-		el.type = "text/css";
 		el.className = "gl-css";
 		el.innerText = css;
 		document.head.appendChild(el);
