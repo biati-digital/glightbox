@@ -181,6 +181,11 @@ class GlightboxInit {
             index = 0;
         }
 
+        const activeElement = document.activeElement;
+        if (activeElement) {
+          activeElement.blur();
+        }
+
         this.build();
 
         _.animateElement(this.overlay, this.settings.openEffect === 'none' ? 'none' : this.settings.cssEfects.fade.in);
