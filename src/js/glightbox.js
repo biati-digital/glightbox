@@ -116,9 +116,9 @@ defaults.lightboxHTML = `<div id="glightbox-body" class="glightbox-container" ta
     <div class="goverlay"></div>
     <div class="gcontainer">
     <div id="glightbox-slider" class="gslider"></div>
-    <button class="gclose gbtn" aria-label="Close" data-taborder="3">{closeSVG}</button>
-    <button class="gprev gbtn" aria-label="Previous" data-taborder="2">{prevSVG}</button>
-    <button class="gnext gbtn" aria-label="Next" data-taborder="1">{nextSVG}</button>
+    <button class="gclose gbtn" aria-label="{closeButtonText}" data-taborder="3">{closeSVG}</button>
+    <button class="gprev gbtn" aria-label="{prevButtonText}" data-taborder="2">{prevSVG}</button>
+    <button class="gnext gbtn" aria-label="{nextButtonText}" data-taborder="1">{nextSVG}</button>
 </div>
 </div>`;
 
@@ -954,11 +954,17 @@ class GlightboxInit {
         const nextSVG = _.has(this.settings.svg, 'next') ? this.settings.svg.next : '';
         const prevSVG = _.has(this.settings.svg, 'prev') ? this.settings.svg.prev : '';
         const closeSVG = _.has(this.settings.svg, 'close') ? this.settings.svg.close : '';
+        const closeButtonText = this.settings.closeButtonText ?? 'Close';
+        const prevButtonText = this.settings.prevButtonText ?? 'Previous';
+        const nextButtonText = this.settings.nextButtonText ?? 'Next';
 
         let lightboxHTML = this.settings.lightboxHTML;
         lightboxHTML = lightboxHTML.replace(/{nextSVG}/g, nextSVG);
         lightboxHTML = lightboxHTML.replace(/{prevSVG}/g, prevSVG);
         lightboxHTML = lightboxHTML.replace(/{closeSVG}/g, closeSVG);
+        lightboxHTML = lightboxHTML.replace(/{closeButtonText}/g, closeButtonText);
+        lightboxHTML = lightboxHTML.replace(/{prevButtonText}/g, prevButtonText);
+        lightboxHTML = lightboxHTML.replace(/{nextButtonText}/g, nextButtonText);
 
         lightboxHTML = _.createHTML(lightboxHTML);
         document.body.appendChild(lightboxHTML);
