@@ -142,6 +142,24 @@ declare namespace Glightbox {
          */
         closeButton?: boolean;
         /**
+         * Text for the close button.
+         *
+         * @default 'Close'
+         */
+        closeButtonText?: string;
+        /**
+         * Text for the next slide button.
+         *
+         * @default 'Next'
+         */
+        nextButtonText?: string;
+        /**
+         * Text for the previous slide button.
+         *
+         * @default 'Previous'
+         */
+        prevButtonText?: string;
+        /**
          * Enable or disable the touch navigation (swipe).
          * 
          * @default true
