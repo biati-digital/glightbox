@@ -95,7 +95,7 @@ declare namespace Glightbox {
          * 
          * @default null
          */
-        elements?: [] | null;
+        elements?: any[] | null;
         /**
          * Name of the skin, it will add a class to the lightbox
          * so you can style it with css.
@@ -566,3 +566,4 @@ declare function GLightbox(options: Glightbox.Options): InstanceType<typeof Glig
 
 export = GLightbox;
 export as namespace GLightbox;
+
