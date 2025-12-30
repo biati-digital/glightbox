@@ -95,7 +95,7 @@ declare namespace Glightbox {
          * 
          * @default null
          */
-        elements?: [] | null;
+        elements?: ({ href: string; type: 'image'; title?: string; description?: string; alt?: string } | { href: string; type: 'video'; source: string; width?: number } | { content: string | HTMLElement })[] | null;
         /**
          * Name of the skin, it will add a class to the lightbox
          * so you can style it with css.
