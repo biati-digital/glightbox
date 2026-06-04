@@ -20,7 +20,11 @@ export default function slideVideo(slide, data, index, callback) {
 
     const videoWrapper = slide.querySelector('.gvideo-wrapper');
 
-    injectAssets(this.settings.plyr.css, 'Plyr');
+    if (typeof this.settings.plyr.css === 'function') {
+        this.settings.plyr.css();
+    } else {
+        injectAssets(this.settings.plyr.css, 'Plyr');
+    }
 
     let url = data.href;
     let provider = data?.videoProvider;
@@ -28,7 +32,7 @@ export default function slideVideo(slide, data, index, callback) {
 
     slideMedia.style.maxWidth = data.width;
 
-    injectAssets(this.settings.plyr.js, 'Plyr', () => {
+    const initPlyr = (Plyr, config) => {
         // Set vimeo videos
         if (!provider && url.match(/vimeo\.com\/([0-9]*)/)) {
             provider = 'vimeo';
@@ -46,27 +50,37 @@ export default function slideVideo(slide, data, index, callback) {
         // if no provider, default to local
         if (provider === 'local' || !provider) {
             provider = 'local';
-            let html = '<video id="' + videoID + '" ';
-            html += `style="background:#000; max-width: ${data.width};" `;
-            html += 'preload="metadata" ';
-            html += 'x-webkit-airplay="allow" ';
-            html += 'playsinline ';
-            html += 'controls ';
-            html += 'class="gvideo-local">';
-            html += `<source src="${url}">`;
-            html += '</video>';
-            customPlaceholder = createHTML(html);
+
+            const video = document.createElement('video');
+            video.id = videoID;
+            video.className = 'gvideo-local';
+            video.preload = 'metadata';
+            video.playsInline = true;
+            video.controls = true;
+            video.style.background = '#000';
+            video.style.maxWidth = data.width;
+            video.setAttribute('x-webkit-airplay', 'allow');
+
+            const source = document.createElement('source');
+            source.src = url;
+            video.appendChild(source);
+
+            customPlaceholder = video;
         }
 
-        // prettier-ignore
-        const placeholder = customPlaceholder ? customPlaceholder : createHTML(`<div id="${videoID}" data-plyr-provider="${provider}" data-plyr-embed-id="${url}"></div>`);
+        if (!customPlaceholder) {
+            customPlaceholder = document.createElement('div');
+            customPlaceholder.id = videoID;
+            customPlaceholder.dataset.plyrProvider = provider;
+            customPlaceholder.dataset.plyrEmbedId = url;
+        }
 
         addClass(videoWrapper, `${provider}-video gvideo`);
-        videoWrapper.appendChild(placeholder);
+        videoWrapper.appendChild(customPlaceholder);
         videoWrapper.setAttribute('data-id', videoID);
         videoWrapper.setAttribute('data-index', index);
 
-        const playerConfig = has(this.settings.plyr, 'config') ? this.settings.plyr.config : {};
+        const playerConfig = config || (has(this.settings.plyr, 'config') ? this.settings.plyr.config : {});
         const player = new Plyr('#' + videoID, playerConfig);
 
         player.on('ready', (event) => {
@@ -85,7 +99,13 @@ export default function slideVideo(slide, data, index, callback) {
         );
         player.on('enterfullscreen', handleMediaFullScreen);
         player.on('exitfullscreen', handleMediaFullScreen);
-    });
+    };
+
+    if (typeof this.settings.plyr.js === 'function') {
+        this.settings.plyr.js().then(v => initPlyr(v.Plyr, v.config));
+    } else {
+        injectAssets(this.settings.plyr.js, 'Plyr', () => initPlyr(window.Plyr));
+    }
 }
 
 /**
