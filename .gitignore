@@ -1,28 +1,18 @@
-.idea
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-*.7z
-*.dmg
-*.gz
-*.iso
-*.jar
-*.rar
-*.tar
-*.zip
-/sitepsd
-/node_modules
-/release
-/release.zip
-/icons.zip
-/.vscode
-/.nova
-/dist/js/glightboxTest.min.js
-/dist/js/glightboxTest.js
-/src/js/glightboxTest.js
-sitepsd.psd
-package-lock.json
+# Build and Release Folders
+bin-debug/
+bin-release/
+[Oo]bj/
+[Bb]in/
+
+# Other files and folders
+.settings/
+
+# Executables
+*.swf
+*.air
+*.ipa
+*.apk
+
+# Project files, i.e. `.project`, `.actionScriptProperties` and `.flexProperties`
+# should NOT be excluded as they contain compiler settings and other important
+# information for Eclipse / Flash Builder.
