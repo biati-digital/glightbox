@@ -9,6 +9,10 @@ import TouchEvents from './touch-events.js';
 import { addEvent, addClass, removeClass, hasClass, closest, whichTransitionEvent, cssTransform, windowSize } from '../utils/helpers.js';
 
 function resetSlideMove(slide) {
+    if (!slide) {
+        return;
+    }
+
     const transitionEnd = whichTransitionEvent();
     const windowWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
 
